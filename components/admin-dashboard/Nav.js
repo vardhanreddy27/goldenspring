@@ -43,11 +43,13 @@ export function SidebarNav({ activeMenu, onMenuChange }) {
   );
 }
 
-export function MobileBottomNav({ activeMenu, onMenuChange }) {
+export function MobileBottomNav({ activeMenu, onMenuChange, items }) {
+  const mobileItems = items || navItems;
+
   return (
     <div className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white/95 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur lg:hidden">
-      <div className="grid grid-cols-5 gap-2">
-        {navItems.map(({ id, label, icon: Icon }) => (
+      <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${mobileItems.length}, minmax(0, 1fr))` }}>
+        {mobileItems.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             type="button"

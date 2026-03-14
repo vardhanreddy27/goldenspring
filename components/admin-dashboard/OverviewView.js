@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -9,6 +10,7 @@ import {
   Area as AreaShape,
 } from "recharts";
 import {
+  alerts,
   attendanceTrend,
   highlights,
   metricDrilldown,
@@ -17,6 +19,8 @@ import {
   upcomingModules,
   timetableModules,
 } from "@/components/admin-dashboard/data";
+
+const EMPTY_ROWS = [];
 
 function MetricCard({ item, isActive, onOpen }) {
   const Icon = item.icon;
@@ -41,28 +45,63 @@ function MetricCard({ item, isActive, onOpen }) {
 }
 
 function DrilldownPanel({ activeMetric }) {
-  if (!activeMetric || !metricDrilldown[activeMetric]) {
+  const detail = metricDrilldown[activeMetric];
+  const rows = detail ? detail.rows : EMPTY_ROWS;
+  const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const pageSize = 6;
+
+  const filteredRows = useMemo(() => {
+    const term = query.trim().toLowerCase();
+    if (!term) {
+      return rows;
+    }
+
+    return rows.filter((row) => row.join(" ").toLowerCase().includes(term));
+  }, [rows, query]);
+
+  const totalPages = Math.max(Math.ceil(filteredRows.length / pageSize), 1);
+  const safePage = Math.min(page, totalPages);
+  const pageRows = useMemo(() => {
+    const start = (safePage - 1) * pageSize;
+    return filteredRows.slice(start, start + pageSize);
+  }, [filteredRows, safePage]);
+
+  if (!detail) {
     return null;
   }
-
-  const detail = metricDrilldown[activeMetric];
 
   return (
     <div className="mt-3 overflow-hidden rounded-3xl border border-blue-200 bg-blue-50/60 p-4 transition-all duration-300">
       <p className="text-sm font-medium text-blue-700">{detail.title}</p>
       <p className="mt-1 text-sm text-slate-600">{detail.subtitle}</p>
-      <div className="mt-3 overflow-x-auto rounded-2xl bg-white p-2 ring-1 ring-slate-200">
-        <table className="min-w-full border-separate border-spacing-y-1 text-sm">
-          <thead>
-            <tr className="text-left text-slate-500">
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <input
+          type="text"
+          value={query}
+          onChange={(event) => {
+            setQuery(event.target.value);
+            setPage(1);
+          }}
+          placeholder="Search in this table"
+          className="min-w-56 flex-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-blue-200 focus:ring"
+        />
+        <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600 ring-1 ring-slate-200">
+          {filteredRows.length} rows
+        </span>
+      </div>
+      <div className="mt-3 overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+        <table className="min-w-full text-sm">
+          <thead className="bg-slate-50 text-left text-slate-500">
+            <tr>
               {detail.columns.map((col) => (
                 <th key={col} className="px-3 py-2 font-medium">{col}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {detail.rows.map((row) => (
-              <tr key={row.join("-")} className="rounded-xl bg-slate-50 ring-1 ring-slate-200">
+            {pageRows.map((row) => (
+              <tr key={row.join("-")} className="border-t border-slate-100 hover:bg-blue-50/40">
                 {row.map((cell) => (
                   <td key={cell} className="px-3 py-2 text-slate-700">{cell}</td>
                 ))}
@@ -71,12 +110,49 @@ function DrilldownPanel({ activeMetric }) {
           </tbody>
         </table>
       </div>
+      <div className="mt-3 flex items-center justify-between text-sm text-slate-600">
+        <p>
+          Page {safePage} of {totalPages}
+        </p>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+            disabled={safePage === 1}
+            className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <button
+            type="button"
+            onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={safePage === totalPages}
+            className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
 
-export default function OverviewView({ activeTrend, onTrendChange, leaveRequests, activeMetric, onOpenMetric }) {
+export default function OverviewView({ activeTrend, onTrendChange, leaveRequests, activeMetric, onOpenMetric, onNavigate }) {
   const trend = attendanceTrend[activeTrend];
+  const [activeHighlight, setActiveHighlight] = useState("alerts");
+  const [activeModule, setActiveModule] = useState(null);
+
+  const dynamicHighlightValue = (item) => {
+    if (item.title === "Pending Leaves") {
+      return leaveRequests.filter((x) => x.status === "Pending").length;
+    }
+    if (item.title === "Approved") {
+      return leaveRequests.filter((x) => x.status === "Approved").length;
+    }
+    return item.value;
+  };
+
+  const activeModuleItem = [...upcomingModules, ...timetableModules].find((item) => item.key === activeModule);
 
   return (
     <>
@@ -88,7 +164,7 @@ export default function OverviewView({ activeTrend, onTrendChange, leaveRequests
 
       <DrilldownPanel activeMetric={activeMetric} />
 
-      <section className="mt-4 rounded-[2rem] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+      <section className="mt-4 rounded-4xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm text-slate-500">Attendance trend</p>
@@ -109,7 +185,7 @@ export default function OverviewView({ activeTrend, onTrendChange, leaveRequests
           </div>
         </div>
 
-        <div className="mt-5 min-w-0 min-h-[16rem] h-64 rounded-3xl bg-slate-50 p-4 ring-1 ring-slate-200 sm:h-72">
+        <div className="mt-5 min-w-0 min-h-64 h-64 rounded-3xl bg-slate-50 p-4 ring-1 ring-slate-200 sm:h-72">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={trend}>
               <defs>
@@ -139,49 +215,91 @@ export default function OverviewView({ activeTrend, onTrendChange, leaveRequests
         </div>
       </section>
 
-      <section className="mt-4 rounded-[2rem] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+      <section className="mt-4 rounded-4xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
         <p className="text-sm text-slate-500">Operational highlights</p>
         <h2 className="mt-1 text-2xl font-semibold">Action cards</h2>
         <div className="mt-4 grid gap-3 xl:grid-cols-3">
           {highlights.map((item) => (
-            <article
+            <button
               key={item.title}
-              className="rounded-[1.5rem] p-5"
+              type="button"
+              onClick={() => {
+                setActiveHighlight(item.key);
+                if (item.key === "pendingLeaves" || item.key === "approved") {
+                  onNavigate("approvals");
+                }
+              }}
+              className="rounded-3xl p-5 text-left transition hover:-translate-y-0.5"
               style={{ backgroundColor: `${item.color}15`, border: `1px solid ${item.color}40` }}
             >
               <p className="text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: item.color }}>{item.title}</p>
-              <p className="mt-2 text-5xl font-bold leading-none" style={{ color: item.color }}>{item.title === "Pending Leaves" ? leaveRequests.filter((x) => x.status === "Pending").length : item.title === "Approved" ? leaveRequests.filter((x) => x.status === "Approved").length : item.value}</p>
+              <p className="mt-2 text-5xl font-bold leading-none" style={{ color: item.color }}>{dynamicHighlightValue(item)}</p>
               <p className="mt-2 text-sm" style={{ color: item.color }}>{item.subtitle}</p>
-            </article>
+              <p className="mt-2 text-xs font-semibold" style={{ color: item.color }}>{item.actionLabel}</p>
+            </button>
           ))}
         </div>
+        {activeHighlight === "alerts" ? (
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            {alerts.map((alert) => (
+              <div key={alert.title} className="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+                <p className="font-semibold text-slate-900">{alert.title}</p>
+                <p className="mt-1 text-sm text-slate-600">{alert.detail}</p>
+                <p className="mt-2 text-xs font-semibold text-rose-600">{alert.priority} priority</p>
+              </div>
+            ))}
+          </div>
+        ) : null}
       </section>
 
       <section className="mt-4 grid gap-4 xl:grid-cols-[1fr_1fr]">
-        <article className="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+        <article className="rounded-4xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
           <p className="text-sm text-slate-500">Upcoming modules</p>
           <h2 className="mt-1 text-xl font-semibold">Events, sports and calendar</h2>
           <div className="mt-4 space-y-3">
             {upcomingModules.map((item) => (
-              <div key={item.title} className="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+              <button
+                key={item.title}
+                type="button"
+                onClick={() => {
+                  setActiveModule(item.key);
+                  onNavigate(item.linkTo);
+                }}
+                className="w-full rounded-2xl bg-slate-50 p-4 text-left ring-1 ring-slate-200 transition hover:bg-blue-50"
+              >
                 <p className="font-semibold text-slate-900">{item.title}</p>
                 <p className="mt-1 text-sm text-slate-600">{item.detail}</p>
-              </div>
+              </button>
             ))}
           </div>
         </article>
 
-        <article className="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+        <article className="rounded-4xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
           <p className="text-sm text-slate-500">Timetable and substitution</p>
           <h2 className="mt-1 text-xl font-semibold">Automation status</h2>
           <div className="mt-4 space-y-3">
             {timetableModules.map((item) => (
-              <div key={item.title} className="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+              <button
+                key={item.title}
+                type="button"
+                onClick={() => {
+                  setActiveModule(item.key);
+                  onNavigate(item.linkTo);
+                }}
+                className="w-full rounded-2xl bg-slate-50 p-4 text-left ring-1 ring-slate-200 transition hover:bg-blue-50"
+              >
                 <p className="font-semibold text-slate-900">{item.title}</p>
                 <p className="mt-1 text-sm text-slate-600">{item.detail}</p>
-              </div>
+              </button>
             ))}
           </div>
+          {activeModuleItem ? (
+            <div className="mt-4 rounded-2xl bg-blue-50 p-4 ring-1 ring-blue-200">
+              <p className="text-sm font-semibold text-blue-700">Selected module</p>
+              <p className="mt-1 font-semibold text-slate-900">{activeModuleItem.title}</p>
+              <p className="mt-1 text-sm text-slate-600">{activeModuleItem.detail}</p>
+            </div>
+          ) : null}
         </article>
       </section>
     </>

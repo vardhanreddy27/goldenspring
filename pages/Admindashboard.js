@@ -7,11 +7,15 @@ import ApprovalsView from "@/components/admin-dashboard/ApprovalsView";
 import OverviewView from "@/components/admin-dashboard/OverviewView";
 import ProfileView from "@/components/admin-dashboard/ProfileView";
 import SearchResults from "@/components/admin-dashboard/SearchResults";
+import TimetableView from "@/components/admin-dashboard/TimetableView";
 import { MobileBottomNav, SidebarNav } from "@/components/admin-dashboard/Nav";
 import {
   alerts,
   initialBroadcastMessages,
   initialLeaveRequests,
+  initialTimetableUpdates,
+  navItems,
+  teacherPerformance,
 } from "@/components/admin-dashboard/data";
 
 export default function AdminDashboard({ user = {} }) {
@@ -21,7 +25,8 @@ export default function AdminDashboard({ user = {} }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [leaveRequests, setLeaveRequests] = useState(initialLeaveRequests);
   const [broadcastMessages, setBroadcastMessages] = useState(initialBroadcastMessages);
-  const [broadcastForm, setBroadcastForm] = useState({ audience: "Teachers", message: "" });
+  const [broadcastForm, setBroadcastForm] = useState({ audience: "Everyone", message: "" });
+  const [timetableAssignments, setTimetableAssignments] = useState(initialTimetableUpdates);
   const [profileForm, setProfileForm] = useState({
     name: user.name || "",
     email: user.email || "",
@@ -40,7 +45,8 @@ export default function AdminDashboard({ user = {} }) {
       { tab: "overview", title: "Attendance Trend", text: "students teachers today weekly monthly" },
       { tab: "overview", title: "Events and Sports", text: "events sports calendar timetable substitute" },
       { tab: "attendance", title: "Daily Attendance Windows", text: "morning evening students teachers present total" },
-      { tab: "attendance", title: "Section Attendance", text: "9th class section a b c 10th" },
+      { tab: "attendance", title: "Section Attendance", text: "class 1 to 10 section a b c d boys girls" },
+      { tab: "timetable", title: "Timetable and Substitution", text: "late absent teacher allocation substitute engine" },
       { tab: "approvals", title: "Leave Approvals", text: "start date end date approve reject" },
       { tab: "communication", title: "Communication", text: "teachers students parents messages" },
       { tab: "communication", title: "Teacher Performance", text: "performance rating attendance syllabus" },
@@ -112,13 +118,32 @@ export default function AdminDashboard({ user = {} }) {
     setActiveMetric((prev) => (prev === metricKey ? null : metricKey));
   }
 
+  function handleTimetableReassign(id, teacherName) {
+    setTimetableAssignments((prev) => prev.map((item) => {
+      if (item.id !== id) {
+        return item;
+      }
+
+      const matchedTeacher = teacherPerformance.find((teacher) => teacher.name === teacherName);
+
+      return {
+        ...item,
+        replacementTeacher: teacherName,
+        replacementTeacherSubject: matchedTeacher?.subject || item.replacementTeacherSubject,
+        status: "Reassigned by Principal",
+      };
+    }));
+  }
+
+  const mobileNavItems = navItems.filter((item) => item.id !== "timetable");
+
   return (
     <div className="min-h-dvh bg-[#eef3fb] text-slate-950 lg:flex">
       <SidebarNav activeMenu={activeMenu} onMenuChange={setActiveMenu} />
 
       <main className="relative flex-1 pb-28 lg:pb-8">
         <div className="mx-auto flex min-h-dvh max-w-6xl flex-col px-3 pb-8 pt-3 sm:px-5 lg:px-6 lg:pt-6">
-          <section className="rounded-[2rem] bg-white/80 p-4 shadow-sm ring-1 ring-white/60 backdrop-blur sm:p-5">
+          <section className="rounded-4xl bg-white/80 p-4 shadow-sm ring-1 ring-white/60 backdrop-blur sm:p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <div className="flex items-center gap-3 lg:hidden">
@@ -162,9 +187,11 @@ export default function AdminDashboard({ user = {} }) {
               leaveRequests={leaveRequests}
               activeMetric={activeMetric}
               onOpenMetric={handleOpenMetric}
+              onNavigate={setActiveMenu}
             />
           ) : null}
           {activeMenu === "attendance" ? <AttendanceView /> : null}
+          {activeMenu === "timetable" ? <TimetableView assignments={timetableAssignments} onReassign={handleTimetableReassign} /> : null}
           {activeMenu === "approvals" ? <ApprovalsView leaveRequests={leaveRequests} onDecision={handleLeaveDecision} /> : null}
           {activeMenu === "communication" ? (
             <CommunicationView
@@ -172,6 +199,9 @@ export default function AdminDashboard({ user = {} }) {
               onBroadcastInputChange={handleBroadcastInputChange}
               onBroadcastSend={handleBroadcastSend}
               broadcastForm={broadcastForm}
+              timetableAssignments={timetableAssignments}
+              onReassign={handleTimetableReassign}
+              onOpenTimetable={() => setActiveMenu("timetable")}
             />
           ) : null}
           {activeMenu === "profile" ? (
@@ -185,7 +215,7 @@ export default function AdminDashboard({ user = {} }) {
           ) : null}
         </div>
 
-        <MobileBottomNav activeMenu={activeMenu} onMenuChange={setActiveMenu} />
+        <MobileBottomNav activeMenu={activeMenu} onMenuChange={setActiveMenu} items={mobileNavItems} />
       </main>
     </div>
   );

@@ -46,14 +46,77 @@ export const attendanceWindows = [
   { period: "Evening", studentsPresent: 1194, studentsTotal: 1286, teachersPresent: 45, teachersTotal: 48 },
 ];
 
-export const sectionWiseAttendance = [
-  { section: "9-A", morning: "39/42", evening: "38/42", teachersMorning: "5/5", teachersEvening: "5/5" },
-  { section: "9-B", morning: "37/40", evening: "36/40", teachersMorning: "5/5", teachersEvening: "4/5" },
-  { section: "9-C", morning: "35/38", evening: "34/38", teachersMorning: "5/5", teachersEvening: "5/5" },
-  { section: "10-A", morning: "42/45", evening: "41/45", teachersMorning: "5/5", teachersEvening: "5/5" },
-  { section: "10-B", morning: "40/44", evening: "39/44", teachersMorning: "5/5", teachersEvening: "5/5" },
-  { section: "10-C", morning: "38/42", evening: "37/42", teachersMorning: "5/5", teachersEvening: "5/5" },
+function formatGradeLabel(grade) {
+  if (grade === 1) return "1st";
+  if (grade === 2) return "2nd";
+  if (grade === 3) return "3rd";
+  return `${grade}th`;
+}
+
+export const gradeSectionMap = [
+  { grade: 1, sections: ["a", "b"] },
+  { grade: 2, sections: ["a", "b", "c"] },
+  { grade: 3, sections: ["a", "b"] },
+  { grade: 4, sections: ["a", "b", "c"] },
+  { grade: 5, sections: ["a", "b"] },
+  { grade: 6, sections: ["a", "b", "c"] },
+  { grade: 7, sections: ["a", "b", "c"] },
+  { grade: 8, sections: ["a", "b", "c"] },
+  { grade: 9, sections: ["a", "b", "c", "d"] },
+  { grade: 10, sections: ["a", "b", "c", "d"] },
 ];
+
+const gradeStrength = {
+  1: 95,
+  2: 112,
+  3: 98,
+  4: 118,
+  5: 105,
+  6: 124,
+  7: 128,
+  8: 132,
+  9: 176,
+  10: 198,
+};
+
+export const classSectionStrength = gradeSectionMap.map((item, index) => {
+  const total = gradeStrength[item.grade];
+  const todayPresent = Math.max(total - (index % 4) - 6, 0);
+  return {
+    grade: formatGradeLabel(item.grade),
+    sections: item.sections.join(", "),
+    total,
+    today: `${todayPresent}/${total}`,
+  };
+});
+
+export const sectionWiseAttendance = gradeSectionMap.flatMap((gradeItem, gradeIndex) => {
+  return gradeItem.sections.map((sectionName, sectionIndex) => {
+    const sectionTotal = Math.floor(gradeStrength[gradeItem.grade] / gradeItem.sections.length);
+    const studentsPresentMorning = Math.max(sectionTotal - ((gradeIndex + sectionIndex) % 4), 0);
+    const studentsPresentEvening = Math.max(studentsPresentMorning - (sectionIndex % 2), 0);
+    const boysTotal = Math.floor(sectionTotal * 0.52);
+    const girlsTotal = sectionTotal - boysTotal;
+    const boysPresentMorning = Math.max(boysTotal - ((gradeIndex + sectionIndex) % 3), 0);
+    const girlsPresentMorning = Math.max(studentsPresentMorning - boysPresentMorning, 0);
+    const boysPresentEvening = Math.max(boysPresentMorning - (sectionIndex % 2), 0);
+    const girlsPresentEvening = Math.max(studentsPresentEvening - boysPresentEvening, 0);
+
+    return {
+      id: `${gradeItem.grade}-${sectionName}`,
+      className: formatGradeLabel(gradeItem.grade),
+      section: sectionName,
+      studentsMorning: `${studentsPresentMorning}/${sectionTotal}`,
+      studentsEvening: `${studentsPresentEvening}/${sectionTotal}`,
+      teachersMorning: `${4 + (gradeIndex % 2)}/${4 + (gradeIndex % 2)}`,
+      teachersEvening: `${4 + ((gradeIndex + 1) % 2)}/${4 + (gradeIndex % 2)}`,
+      boysMorning: `${boysPresentMorning}/${boysTotal}`,
+      girlsMorning: `${girlsPresentMorning}/${girlsTotal}`,
+      boysEvening: `${boysPresentEvening}/${boysTotal}`,
+      girlsEvening: `${girlsPresentEvening}/${girlsTotal}`,
+    };
+  });
+});
 
 export const topMetrics = [
   { key: "teaching", title: "Teaching Staff", value: "48", icon: Users },
@@ -70,10 +133,12 @@ export const metricDrilldown = {
     subtitle: "Subject, class ownership and attendance",
     columns: ["Teacher", "Subject", "Classes", "Today"],
     rows: [
-      ["Ms. Kavya", "Mathematics", "9-A, 10-A", "Present"],
-      ["Mr. Rakesh", "Science", "8-B, 9-B", "Present"],
-      ["Ms. Sowmya", "English", "7-A, 8-A", "Present"],
-      ["Mr. Harish", "Social", "9-C, 10-C", "On Leave"],
+      ["Ms. Kavya", "Mathematics", "9th-a, 10th-a", "Present"],
+      ["Mr. Rakesh", "Science", "8th-b, 9th-b", "Present"],
+      ["Ms. Sowmya", "English", "7th-a, 8th-a", "Present"],
+      ["Mr. Harish", "Social", "9th-c, 10th-c", "On Leave"],
+      ["Ms. Nisha", "Biology", "10th-b, 10th-c", "Present"],
+      ["Mr. Praveen", "Physics", "9th-d, 10th-d", "Present"],
     ],
   },
   nonTeaching: {
@@ -85,40 +150,38 @@ export const metricDrilldown = {
       ["Prasad", "Transport Incharge", "Full Day", "Present"],
       ["Sunitha", "Admin Office", "Morning", "Present"],
       ["Ramu", "Security", "Evening", "Present"],
+      ["Srinivas", "Accounts", "Morning", "Present"],
+      ["Latha", "Library", "Morning", "Present"],
     ],
   },
   students: {
     title: "Student Distribution",
     subtitle: "Class-wise and section-wise student strength",
     columns: ["Class", "Sections", "Total Students", "Today"],
-    rows: [
-      ["9th", "A, B, C", "120", "111/120"],
-      ["10th", "A, B, C", "131", "120/131"],
-      ["8th", "A, B", "86", "80/86"],
-      ["7th", "A, B", "85", "79/85"],
-    ],
+    rows: classSectionStrength.map((item) => [item.grade, item.sections, String(item.total), item.today]),
   },
   classes: {
     title: "Classes Overview",
     subtitle: "Total classes and mapped sections",
     columns: ["Grade", "Sections", "Class Teacher", "Room"],
-    rows: [
-      ["9th", "A, B, C", "Ms. Kavya", "R-21"],
-      ["10th", "A, B, C", "Mr. Rakesh", "R-24"],
-      ["8th", "A, B", "Ms. Sowmya", "R-17"],
-      ["7th", "A, B", "Mr. Harish", "R-13"],
-    ],
+    rows: classSectionStrength.map((item, index) => [
+      item.grade,
+      item.sections,
+      ["Ms. Kavya", "Mr. Rakesh", "Ms. Sowmya", "Mr. Harish", "Ms. Nisha"][index % 5],
+      `R-${11 + index}`,
+    ]),
   },
   sections: {
     title: "Sections Overview",
     subtitle: "Section strength and attendance",
-    columns: ["Section", "Students", "Class Teacher", "Attendance"],
-    rows: [
-      ["9-A", "42", "Ms. Kavya", "39/42"],
-      ["9-B", "40", "Mr. Rakesh", "37/40"],
-      ["10-A", "45", "Ms. Sowmya", "42/45"],
-      ["10-C", "42", "Mr. Harish", "38/42"],
-    ],
+    columns: ["Class", "Section", "Students", "Class Teacher", "Attendance"],
+    rows: sectionWiseAttendance.map((item, index) => [
+      item.className,
+      item.section,
+      item.studentsMorning.split("/")[1],
+      ["Ms. Kavya", "Mr. Rakesh", "Ms. Sowmya", "Mr. Harish", "Ms. Nisha"][index % 5],
+      item.studentsMorning,
+    ]),
   },
   buses: {
     title: "Transport Buses",
@@ -134,9 +197,9 @@ export const metricDrilldown = {
 };
 
 export const highlights = [
-  { title: "Open Alerts", value: 4, subtitle: "Need action", color: "#111827" },
-  { title: "Pending Leaves", value: 2, subtitle: "Waiting approval", color: "#d97706" },
-  { title: "Approved", value: 1, subtitle: "Completed", color: "#059669" },
+  { key: "alerts", title: "Open Alerts", value: 4, subtitle: "Need action", color: "#111827", actionLabel: "Open alerts panel" },
+  { key: "pendingLeaves", title: "Pending Leaves", value: 2, subtitle: "Waiting approval", color: "#d97706", actionLabel: "Go to approvals" },
+  { key: "approved", title: "Approved", value: 1, subtitle: "Completed", color: "#2563eb", actionLabel: "View approved" },
 ];
 
 export const alerts = [
@@ -165,49 +228,160 @@ export const initialLeaveRequests = [
   { id: 2, name: "Anil Kumar", role: "Lab Assistant", staffType: "Non-Teaching", leaveType: "Casual", startDate: "2026-03-16", endDate: "2026-03-16", days: 1, status: "Pending" },
   { id: 3, name: "Sowmya", role: "English Teacher", staffType: "Teaching", leaveType: "Medical", startDate: "2026-03-14", endDate: "2026-03-15", days: 2, status: "Approved" },
   { id: 4, name: "Prasad", role: "Transport Incharge", staffType: "Non-Teaching", leaveType: "Emergency", startDate: "2026-03-13", endDate: "2026-03-13", days: 1, status: "Rejected" },
+  { id: 5, name: "Renuka", role: "Biology Teacher", staffType: "Teaching", leaveType: "Casual", startDate: "2026-03-20", endDate: "2026-03-20", days: 1, status: "Pending" },
+  { id: 6, name: "Murali", role: "PET", staffType: "Teaching", leaveType: "Official", startDate: "2026-03-18", endDate: "2026-03-18", days: 1, status: "Approved" },
+  { id: 7, name: "Keerthi", role: "Office Staff", staffType: "Non-Teaching", leaveType: "Medical", startDate: "2026-03-22", endDate: "2026-03-23", days: 2, status: "Pending" },
+  { id: 8, name: "Rahul", role: "Science Teacher", staffType: "Teaching", leaveType: "Casual", startDate: "2026-03-25", endDate: "2026-03-25", days: 1, status: "Rejected" },
 ];
 
 export const notices = [
   { audience: "Teachers", icon: Bell, sentToday: 6 },
   { audience: "Students", icon: BookOpen, sentToday: 9 },
   { audience: "Parents", icon: Megaphone, sentToday: 12 },
+  { audience: "Everyone", icon: Megaphone, sentToday: 4 },
 ];
 
-export const teacherPerformance = [
-  { name: "Ms. Kavya", subject: "Mathematics", attendance: "22/23", syllabus: "86%", rating: "A" },
-  { name: "Mr. Rakesh", subject: "Science", attendance: "21/23", syllabus: "82%", rating: "A" },
-  { name: "Ms. Sowmya", subject: "English", attendance: "23/23", syllabus: "89%", rating: "A+" },
-  { name: "Mr. Harish", subject: "Social", attendance: "20/23", syllabus: "78%", rating: "B+" },
+const staffNames = [
+  "Ms. Kavya", "Mr. Rakesh", "Ms. Sowmya", "Mr. Harish", "Ms. Nisha", "Mr. Praveen", "Ms. Anusha", "Mr. Mahesh",
+  "Ms. Sirisha", "Mr. Teja", "Ms. Divya", "Mr. Rohan", "Ms. Meghana", "Mr. Kiran", "Ms. Harika", "Mr. Aditya",
+  "Ms. Pooja", "Mr. Santhosh", "Ms. Renu", "Mr. Vamshi", "Ms. Priya", "Mr. Dinesh", "Ms. Navya", "Mr. Lokesh",
+  "Ms. Bhavya", "Mr. Chandra", "Ms. Sushma", "Mr. Arvind", "Ms. Tejaswi", "Mr. Sai",
 ];
+
+const subjects = ["Mathematics", "Science", "English", "Social", "Biology", "Physics", "Chemistry", "Computer"];
+
+export const teacherPerformance = staffNames.map((name, index) => {
+  const attendancePresent = 20 + (index % 4);
+  const attendanceTotal = 23;
+  const syllabus = 76 + ((index * 3) % 16);
+  const rating = syllabus >= 89 ? "A+" : syllabus >= 84 ? "A" : syllabus >= 79 ? "B+" : "B";
+
+  return {
+    id: `staff-${index + 1}`,
+    name,
+    subject: subjects[index % subjects.length],
+    attendance: `${attendancePresent}/${attendanceTotal}`,
+    syllabus: `${syllabus}%`,
+    rating,
+  };
+});
 
 export const initialBroadcastMessages = [
+  { id: 4, audience: "Students", message: "Tomorrow periods 1 and 2 will run as per revised timetable.", time: "11:56 AM" },
+  { id: 3, audience: "Everyone", message: "Final exam prep timetable is now visible in the calendar section.", time: "09:20 AM" },
   { id: 1, audience: "Teachers", message: "Submit evening attendance by 4:15 PM.", time: "10:30 AM" },
   { id: 2, audience: "Parents", message: "PTM schedule shared in parent app.", time: "11:20 AM" },
 ];
 
 export const upcomingModules = [
-  { title: "Sports Meet", detail: "Inter-house athletics on Friday, 9:30 AM" },
-  { title: "Competitions", detail: "Math and Science competitions registration closes tomorrow" },
-  { title: "Results", detail: "Unit test results publication scheduled for 21 March" },
-  { title: "Calendar", detail: "Parent meeting and lab schedule synced to academic calendar" },
+  { key: "sports", title: "Sports Meet", detail: "Inter-house athletics on Friday, 9:30 AM", linkTo: "attendance" },
+  { key: "competitions", title: "Competitions", detail: "Math and Science competitions registration closes tomorrow", linkTo: "communication" },
+  { key: "results", title: "Results", detail: "Unit test results publication scheduled for 21 March", linkTo: "overview" },
+  { key: "calendar", title: "Calendar", detail: "Parent meeting and lab schedule synced to academic calendar", linkTo: "timetable" },
 ];
 
 export const timetableModules = [
-  { title: "Timetable Update", detail: "Class 9-B and 10-A evening periods rebalanced" },
-  { title: "Substitute Engine", detail: "Absent teacher slots auto-assigned by workload rules" },
-  { title: "Attendance Exceptions", detail: "2 late teachers flagged and mapped to backup coverage" },
+  { key: "timetableUpdate", title: "Timetable Update", detail: "Class 9-B and 10-A evening periods rebalanced", linkTo: "timetable" },
+  { key: "substituteEngine", title: "Substitute Engine", detail: "Absent teacher slots auto-assigned by workload rules", linkTo: "timetable" },
+  { key: "attendanceExceptions", title: "Attendance Exceptions", detail: "2 late teachers flagged and mapped to backup coverage", linkTo: "timetable" },
 ];
 
-export const syllabusBySection = [
-  { section: "9-A", Mathematics: 82, Science: 76, English: 88, Social: 72 },
-  { section: "9-B", Mathematics: 79, Science: 71, English: 86, Social: 70 },
-  { section: "10-A", Mathematics: 84, Science: 81, English: 89, Social: 75 },
-  { section: "10-B", Mathematics: 77, Science: 74, English: 83, Social: 69 },
+export const syllabusBySection = gradeSectionMap.flatMap((item, gradeIndex) => {
+  return item.sections.map((sectionName, sectionIndex) => {
+    const base = 68 + gradeIndex + sectionIndex;
+    return {
+      className: formatGradeLabel(item.grade),
+      section: sectionName,
+      Mathematics: Math.min(base + 10, 95),
+      Science: Math.min(base + 7, 95),
+      English: Math.min(base + 12, 96),
+      Social: Math.min(base + 6, 93),
+    };
+  });
+});
+
+export const initialTimetableUpdates = [
+  {
+    id: 1,
+    className: "9th",
+    section: "b",
+    period: "P5",
+    subject: "Science",
+    previousTeacher: "Mr. Rakesh",
+    previousTeacherSubject: "Science",
+    reasonType: "Late",
+    reason: "Late by 25 mins",
+    replacementTeacher: "Ms. Nisha",
+    replacementTeacherSubject: "Biology",
+    replacementOptions: ["Ms. Nisha", "Mr. Teja", "Mr. Rohan"],
+    status: "Auto-assigned",
+  },
+  {
+    id: 2,
+    className: "10th",
+    section: "a",
+    period: "P6",
+    subject: "Math",
+    previousTeacher: "Ms. Kavya",
+    previousTeacherSubject: "Mathematics",
+    reasonType: "Absent",
+    reason: "Medical leave",
+    replacementTeacher: "Mr. Praveen",
+    replacementTeacherSubject: "Physics",
+    replacementOptions: ["Mr. Praveen", "Ms. Harika", "Mr. Aditya"],
+    status: "Auto-assigned",
+  },
+  {
+    id: 3,
+    className: "7th",
+    section: "c",
+    period: "P3",
+    subject: "English",
+    previousTeacher: "Ms. Sirisha",
+    previousTeacherSubject: "English",
+    reasonType: "Absent",
+    reason: "On duty",
+    replacementTeacher: "Ms. Divya",
+    replacementTeacherSubject: "English",
+    replacementOptions: ["Ms. Divya", "Ms. Pooja", "Ms. Renu"],
+    status: "Scheduled",
+  },
+  {
+    id: 4,
+    className: "5th",
+    section: "b",
+    period: "P4",
+    subject: "Social",
+    previousTeacher: "Mr. Harish",
+    previousTeacherSubject: "Social",
+    reasonType: "Late",
+    reason: "Late by 15 mins",
+    replacementTeacher: "Mr. Teja",
+    replacementTeacherSubject: "Social",
+    replacementOptions: ["Mr. Teja", "Mr. Santhosh", "Mr. Lokesh"],
+    status: "Auto-assigned",
+  },
+  {
+    id: 5,
+    className: "8th",
+    section: "a",
+    period: "P2",
+    subject: "Science",
+    previousTeacher: "Ms. Anusha",
+    previousTeacherSubject: "Science",
+    reasonType: "Absent",
+    reason: "Absent",
+    replacementTeacher: "Mr. Rohan",
+    replacementTeacherSubject: "Chemistry",
+    replacementOptions: ["Mr. Rohan", "Ms. Meghana", "Mr. Kiran"],
+    status: "Auto-assigned",
+  },
 ];
 
 export const navItems = [
   { id: "overview", label: "Overview", icon: LayoutGrid },
   { id: "attendance", label: "Attendance", icon: ClipboardCheck },
+  { id: "timetable", label: "Timetable", icon: CalendarDays },
   { id: "approvals", label: "Approvals", icon: UserRoundCheck },
   { id: "communication", label: "Communication", icon: Bell },
   { id: "profile", label: "Profile", icon: UserCircle2 },
