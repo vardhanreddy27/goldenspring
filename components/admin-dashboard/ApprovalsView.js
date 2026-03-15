@@ -22,7 +22,7 @@ export default function ApprovalsView({ leaveRequests, onDecision }) {
     return Object.entries(counts).map(([name, value]) => ({
       name,
       value,
-      color: name === "Approved" ? "#fbbf24" : name === "Pending" ? "#8b6400" : "#ef4444",
+      color: name === "Approved" ? "#16a34a" : name === "Pending" ? "#f2b705" : "#ef4444",
     }));
   }, [leaveRequests]);
 
@@ -140,9 +140,7 @@ export default function ApprovalsView({ leaveRequests, onDecision }) {
               <div key={item.name} className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2 ring-1 ring-slate-200">
                 <div className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                  <span>
-                    {item.name} {item.name === "Approved" ? "(Blue)" : item.name === "Pending" ? "(Amber)" : "(Red)"}
-                  </span>
+                  <span>{item.name}</span>
                 </div>
                 <span className="font-semibold text-slate-900">{item.value}</span>
               </div>

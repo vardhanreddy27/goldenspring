@@ -47,10 +47,10 @@ export const attendanceWindows = [
 ];
 
 function formatGradeLabel(grade) {
-  if (grade === 1) return "1st";
-  if (grade === 2) return "2nd";
-  if (grade === 3) return "3rd";
-  return `${grade}th`;
+  if (grade === 1) return "1st class";
+  if (grade === 2) return "2nd class";
+  if (grade === 3) return "3rd class";
+  return `${grade}th class`;
 }
 
 export const gradeSectionMap = [
@@ -248,13 +248,13 @@ const staffNames = [
   "Ms. Bhavya", "Mr. Chandra", "Ms. Sushma", "Mr. Arvind", "Ms. Tejaswi", "Mr. Sai",
 ];
 
-const subjects = ["Mathematics", "Science", "English", "Social", "Biology", "Physics", "Chemistry", "Computer"];
+const subjects = ["Telugu", "English", "Hindi", "Mathematics", "Science", "Social"];
 
 export const teacherPerformance = staffNames.map((name, index) => {
   const attendancePresent = 20 + (index % 4);
   const attendanceTotal = 23;
   const syllabus = 76 + ((index * 3) % 16);
-  const rating = syllabus >= 89 ? "A+" : syllabus >= 84 ? "A" : syllabus >= 79 ? "B+" : "B";
+  const activityParticipation = 72 + ((index * 4) % 22);
 
   return {
     id: `staff-${index + 1}`,
@@ -262,7 +262,7 @@ export const teacherPerformance = staffNames.map((name, index) => {
     subject: subjects[index % subjects.length],
     attendance: `${attendancePresent}/${attendanceTotal}`,
     syllabus: `${syllabus}%`,
-    rating,
+    activityParticipation: `${activityParticipation}%`,
   };
 });
 
@@ -292,6 +292,8 @@ export const syllabusBySection = gradeSectionMap.flatMap((item, gradeIndex) => {
     return {
       className: formatGradeLabel(item.grade),
       section: sectionName,
+      Telugu: Math.min(base + 8, 94),
+      Hindi: Math.min(base + 9, 95),
       Mathematics: Math.min(base + 10, 95),
       Science: Math.min(base + 7, 95),
       English: Math.min(base + 12, 96),
@@ -383,6 +385,6 @@ export const navItems = [
   { id: "attendance", label: "Attendance", icon: ClipboardCheck },
   { id: "timetable", label: "Timetable", icon: CalendarDays },
   { id: "approvals", label: "Approvals", icon: UserRoundCheck },
-  { id: "communication", label: "Communication", icon: Bell },
+  { id: "communication", label: "More", icon: BookOpen },
   { id: "profile", label: "Profile", icon: UserCircle2 },
 ];

@@ -50,8 +50,10 @@ export default function AdminDashboard({ user = {} }) {
       { tab: "attendance", title: "Section Attendance", text: "class 1 to 10 section a b c d boys girls" },
       { tab: "timetable", title: "Timetable and Substitution", text: "late absent teacher allocation substitute engine" },
       { tab: "approvals", title: "Leave Approvals", text: "start date end date approve reject" },
-      { tab: "communication", title: "Communication", text: "teachers students parents messages" },
-      { tab: "communication", title: "Teacher Performance", text: "performance rating attendance syllabus" },
+      { tab: "communication", title: "More", text: "alerts teachers performance class performance calendar events results sports competitions" },
+      { tab: "communication", title: "Teachers Performance", text: "attendance syllabus activity participation" },
+      { tab: "communication", title: "Class Performance", text: "telugu english hindi mathematics science social progress" },
+      { tab: "communication", title: "Calendar", text: "month upcoming events dates" },
       { tab: "profile", title: "Profile", text: "name email number role" },
     ];
 
@@ -176,6 +178,7 @@ export default function AdminDashboard({ user = {} }) {
   }
 
   const mobileNavItems = navItems.filter((item) => item.id !== "profile");
+  const isProfileView = activeMenu === "profile";
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
@@ -185,8 +188,8 @@ export default function AdminDashboard({ user = {} }) {
     <div className="min-h-dvh bg-[#eef3fb] text-slate-950 lg:flex">
       <SidebarNav activeMenu={activeMenu} onMenuChange={setActiveMenu} />
 
-      <main className="relative flex-1 pb-28 lg:pb-8">
-        <div className="mx-auto flex min-h-dvh max-w-6xl flex-col px-3 pb-8 pt-3 sm:px-5 lg:px-6 lg:pt-6">
+      <main className={`relative flex-1 ${isProfileView ? "pb-24 lg:pb-8" : "pb-28 lg:pb-8"}`}>
+        <div className={`mx-auto flex max-w-6xl flex-col px-3 pb-8 pt-3 sm:px-5 lg:px-6 lg:pt-6 ${isProfileView ? "min-h-0" : "min-h-dvh"}`}>
           <section className="rounded-4xl bg-white/80 p-4 shadow-sm ring-1 ring-white/60 backdrop-blur sm:p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
