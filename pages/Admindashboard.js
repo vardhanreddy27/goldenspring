@@ -292,6 +292,15 @@ export async function getServerSideProps(context) {
     };
   }
 
+  if (session.user?.userType === "teacher") {
+    return {
+      redirect: {
+        destination: "/Teacherdashboard",
+        permanent: false,
+      },
+    };
+  }
+
   return {
     props: {
       user: {

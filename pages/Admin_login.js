@@ -270,9 +270,10 @@ export async function getServerSideProps(context) {
   const session = await getServerSession(context.req, context.res, authOptions);
 
   if (session) {
+    const destination = session.user?.userType === "teacher" ? "/Teacherdashboard" : "/Admindashboard";
     return {
       redirect: {
-        destination: "/Admindashboard",
+        destination,
         permanent: false,
       },
     };

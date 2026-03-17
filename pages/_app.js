@@ -7,12 +7,17 @@ import { useRouter } from "next/router";
 export default function App({ Component, pageProps }) {
   const router = useRouter();
   const isAdminInstallContext = router.pathname === "/Admin_login";
+  const isTeacherInstallContext = router.pathname === "/Teacher_login" || router.pathname === "/Teacherdashboard";
   const appTitle = isAdminInstallContext
     ? "NMS ADMIN"
-    : "Nagarjuna Model School";
+    : isTeacherInstallContext
+      ? "NMS TEACHERS"
+      : "Nagarjuna Model School";
   const manifestPath = isAdminInstallContext
     ? "/manifest-admin.webmanifest"
-    : "/manifest.webmanifest";
+    : isTeacherInstallContext
+      ? "/manifest-teacher.webmanifest"
+      : "/manifest.webmanifest";
 
   useEffect(() => {
     if (typeof window === "undefined") {
