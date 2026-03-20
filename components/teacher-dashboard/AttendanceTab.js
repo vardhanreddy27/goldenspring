@@ -160,12 +160,12 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
 
   return (
     <section className="mt-4 space-y-4">
-      <article className="bg-white p-4 sm:p-5">
+      <article className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] p-4 sm:p-5">
         <p className="text-sm text-slate-500">School attendance</p>
         <h2 className="mt-1 text-xl font-semibold">Swipe attendance for assigned classes</h2>
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl bg-slate-50 p-3">
+          <div className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-muted)] p-3">
             <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Assigned morning class</p>
             <p className="mt-1 text-sm font-semibold text-slate-900">
               {morningClass ? `Class ${morningClass.className} - Section ${morningClass.section}` : "Not set"}
@@ -174,13 +174,13 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
               type="button"
               onClick={() => startAttendance("Morning")}
               disabled={morningSubmitted || !morningClass}
-              className="mt-2.5 w-full rounded-xl bg-[#f2b705] px-3 py-2 text-sm font-semibold text-white hover:bg-[#d9a300] disabled:cursor-not-allowed disabled:opacity-50"
+              className="mt-2.5 w-full rounded-xl bg-[var(--app-accent)] px-3 py-2 text-sm font-semibold text-white hover:bg-[#b07e10] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {morningSubmitted ? "Morning attendance submitted" : "Start Morning Roll Call"}
             </button>
           </div>
 
-          <div className="rounded-2xl bg-slate-50 p-3">
+          <div className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-muted)] p-3">
             <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Assigned evening class</p>
             <p className="mt-1 text-sm font-semibold text-slate-900">
               {eveningClass ? `Class ${eveningClass.className} - Section ${eveningClass.section}` : "Not set"}
@@ -189,7 +189,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
               type="button"
               onClick={() => startAttendance("Evening")}
               disabled={eveningSubmitted || !eveningClass}
-              className="mt-2.5 w-full rounded-xl bg-[#f2b705] px-3 py-2 text-sm font-semibold text-white hover:bg-[#d9a300] disabled:cursor-not-allowed disabled:opacity-50"
+              className="mt-2.5 w-full rounded-xl bg-[var(--app-accent)] px-3 py-2 text-sm font-semibold text-white hover:bg-[#b07e10] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {eveningSubmitted ? "Evening attendance submitted" : "Start Evening Roll Call"}
             </button>
@@ -221,16 +221,16 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
         </div>
       </article>
 
-      <article className="bg-white p-4 sm:p-5">
+      <article className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] p-4 sm:p-5">
         <p className="text-sm text-slate-500">My attendance</p>
         <h2 className="mt-1 text-xl font-semibold">Check in for today</h2>
         <div className="mt-4 space-y-3">
-          <div className="rounded-2xl bg-slate-50 p-4">
+          <div className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-muted)] p-4">
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-xl bg-white px-3 py-3 ring-1 ring-slate-200">
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Morning</p>
-                  <span className="rounded-full bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">
+                  <span className="rounded-full bg-[var(--app-success-soft)] px-2 py-1 text-xs font-semibold text-[var(--app-success-text)] ring-1 ring-emerald-200">
                     {teacherSelfAttendance.morning.status}
                   </span>
                 </div>
@@ -240,7 +240,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
               <div className="rounded-xl bg-white px-3 py-3 ring-1 ring-slate-200">
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Afternoon</p>
-                  <span className="rounded-full bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-700 ring-1 ring-amber-200">
+                  <span className="rounded-full bg-[var(--app-accent-soft)] px-2 py-1 text-xs font-semibold text-[#8b6400] ring-1 ring-amber-200">
                     {teacherSelfAttendance.afternoon.status}
                   </span>
                 </div>
@@ -253,7 +253,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
 
           <button
             type="button"
-            className="w-full rounded-2xl bg-[#f2b705] px-4 py-3 text-sm font-semibold text-white hover:bg-[#d9a300]"
+            className="w-full rounded-2xl bg-[var(--app-accent)] px-4 py-3 text-sm font-semibold text-white hover:bg-[#b07e10]"
           >
             Check In
           </button>
@@ -262,7 +262,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
 
       {attendanceDraft ? (
         <div
-          className={`fixed inset-0 z-50 flex items-end bg-slate-950/40 transition-opacity duration-200 ${sheetOpen ? "opacity-100" : "opacity-0"}`}
+          className={`fixed inset-0 z-50 flex items-end bg-slate-950/35 transition-opacity duration-200 ${sheetOpen ? "opacity-100" : "opacity-0"}`}
           onClick={closeAttendanceSheet}
         >
           <div
@@ -319,14 +319,14 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
                   <button
                     type="button"
                     onClick={() => markCurrentStudent("Absent")}
-                    className="rounded-xl bg-rose-100 px-4 py-2.5 text-sm font-semibold text-rose-700"
+                    className="rounded-xl bg-[var(--app-danger-soft)] px-4 py-2.5 text-sm font-semibold text-[var(--app-danger-text)]"
                   >
                     ← Absent
                   </button>
                   <button
                     type="button"
                     onClick={() => markCurrentStudent("Present")}
-                    className="rounded-xl bg-emerald-100 px-4 py-2.5 text-sm font-semibold text-emerald-700"
+                    className="rounded-xl bg-[var(--app-success-soft)] px-4 py-2.5 text-sm font-semibold text-[var(--app-success-text)]"
                   >
                     Present →
                   </button>
@@ -346,8 +346,8 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
                       <span
                         className={`rounded-full px-2 py-1 text-xs font-semibold ring-1 ${
                           student.status === "Present"
-                            ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
-                            : "bg-rose-50 text-rose-700 ring-rose-200"
+                            ? "bg-[var(--app-success-soft)] text-[var(--app-success-text)] ring-emerald-200"
+                            : "bg-[var(--app-danger-soft)] text-[var(--app-danger-text)] ring-rose-200"
                         }`}
                       >
                         {student.status}
@@ -357,7 +357,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
                 </div>
 
                 <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
-                  <p className="rounded-lg bg-emerald-50 px-3 py-2 font-semibold text-emerald-700">
+                  <p className="rounded-lg bg-[var(--app-success-soft)] px-3 py-2 font-semibold text-[var(--app-success-text)]">
                     Present: {attendanceDraft.students.filter((student) => student.status === "Present").length}
                   </p>
                   <p className="rounded-lg bg-white px-3 py-2 font-semibold text-slate-700">
@@ -368,7 +368,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
                 <button
                   type="button"
                   onClick={submitAttendance}
-                  className="mt-3 w-full rounded-xl bg-[#f2b705] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#d9a300]"
+                  className="mt-3 w-full rounded-xl bg-[var(--app-accent)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#b07e10]"
                 >
                   Submit attendance
                 </button>

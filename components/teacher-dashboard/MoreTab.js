@@ -5,7 +5,7 @@ import { moreTools, moreToolDetails } from "./data";
 export function MoreTab({ onOpenToolModal }) {
   return (
     <section className="mt-4">
-      <article className="bg-white p-4 sm:p-5">
+      <article className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] p-4 sm:p-5">
         <p className="text-sm text-slate-500">More tools</p>
         <h2 className="mt-1 text-xl font-semibold">Teacher utility modules</h2>
 
@@ -17,9 +17,9 @@ export function MoreTab({ onOpenToolModal }) {
                 key={tool.key}
                 type="button"
                 onClick={() => onOpenToolModal(tool.key)}
-                className="aspect-square rounded-2xl bg-slate-50 p-4 text-left transition hover:bg-[#fff8dc]"
+                className="aspect-square rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-muted)] p-4 text-left transition hover:bg-[var(--app-accent-soft)]"
               >
-                <Icon className="h-5 w-5 text-[#b88600]" />
+                <Icon className="h-5 w-5 text-[#8b6400]" />
                 <p className="mt-3 text-sm font-semibold text-slate-900">{tool.title}</p>
                 <p className="mt-1 text-xs text-slate-600">{tool.subtitle}</p>
               </button>
@@ -85,7 +85,7 @@ export function ProfileBottomSheet({
               name="name"
               value={profileForm.name}
               onChange={onProfileChange}
-              className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#f2b705] focus:ring-4 focus:ring-[#fff2c7]"
+              className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[var(--app-accent)] focus:ring-4 focus:ring-[var(--app-accent-soft)]"
             />
           </div>
 
@@ -96,7 +96,7 @@ export function ProfileBottomSheet({
               name="subject"
               value={profileForm.subject}
               onChange={onProfileChange}
-              className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#f2b705] focus:ring-4 focus:ring-[#fff2c7]"
+              className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[var(--app-accent)] focus:ring-4 focus:ring-[var(--app-accent-soft)]"
             />
           </div>
 
@@ -107,7 +107,7 @@ export function ProfileBottomSheet({
               name="number"
               value={profileForm.number}
               onChange={onProfileChange}
-              className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#f2b705] focus:ring-4 focus:ring-[#fff2c7]"
+              className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[var(--app-accent)] focus:ring-4 focus:ring-[var(--app-accent-soft)]"
             />
           </div>
 
@@ -143,7 +143,7 @@ export function ProfileBottomSheet({
             <button
               type="submit"
               disabled={profileSaving}
-              className="w-full rounded-2xl bg-[#f2b705] px-4 py-3 text-sm font-semibold text-white hover:bg-[#d9a300] disabled:cursor-not-allowed disabled:bg-[#f3da84]"
+              className="w-full rounded-2xl bg-[var(--app-accent)] px-4 py-3 text-sm font-semibold text-white hover:bg-[#b07e10] disabled:cursor-not-allowed disabled:bg-[#e6cc8a]"
             >
               {profileSaving ? "Saving..." : "Update profile"}
             </button>
@@ -310,7 +310,7 @@ export function ToolModal({ activeTool, onClose }) {
                 key={row.classRef}
                 type="button"
                 onClick={() => setSelectedSection(row.classRef)}
-                className={`rounded-xl border px-3 py-2.5 text-left ${selectedSection === row.classRef ? "border-[#f2b705] bg-[#fff8dc]" : "border-slate-200 bg-slate-50"}`}
+                className={`rounded-xl border px-3 py-2.5 text-left ${selectedSection === row.classRef ? "border-[var(--app-accent)] bg-[var(--app-accent-soft)]" : "border-slate-200 bg-slate-50"}`}
               >
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-sm font-semibold text-slate-900">{row.classRef}</p>
@@ -359,7 +359,7 @@ export function ToolModal({ activeTool, onClose }) {
             </div>
           </div>
 
-          <div className="rounded-xl bg-[#fff8dc] px-3 py-2 text-sm text-[#8b6400]">
+          <div className="rounded-xl bg-[var(--app-accent-soft)] px-3 py-2 text-sm text-[#8b6400]">
             Leave days: <span className="font-semibold">{leaveDays || 0}</span>
           </div>
 
@@ -375,7 +375,7 @@ export function ToolModal({ activeTool, onClose }) {
             type="button"
             onClick={addLeaveRequest}
             disabled={!fromDate || !toDate || !leaveReason.trim() || !leaveDays}
-            className="w-full rounded-xl bg-[#f2b705] px-4 py-2.5 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full rounded-xl bg-[var(--app-accent)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#b07e10] disabled:cursor-not-allowed disabled:opacity-50"
           >
             Submit Leave Request
           </button>
@@ -420,7 +420,7 @@ export function ToolModal({ activeTool, onClose }) {
               placeholder="Quiz title for lesson"
               className="rounded-xl border border-slate-300 px-3 py-2.5 text-sm"
             />
-            <button type="button" onClick={addQuiz} className="rounded-xl bg-[#f2b705] px-4 py-2.5 text-sm font-semibold text-white">
+            <button type="button" onClick={addQuiz} className="rounded-xl bg-[var(--app-accent)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#b07e10]">
               Add
             </button>
           </div>
@@ -473,7 +473,7 @@ export function ToolModal({ activeTool, onClose }) {
               placeholder="Add classroom note"
               className="rounded-xl border border-slate-300 px-3 py-2.5 text-sm"
             />
-            <button type="button" onClick={addNote} className="rounded-xl bg-[#f2b705] px-4 py-2.5 text-sm font-semibold text-white">
+            <button type="button" onClick={addNote} className="rounded-xl bg-[var(--app-accent)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#b07e10]">
               Add
             </button>
           </div>
@@ -509,7 +509,7 @@ export function ToolModal({ activeTool, onClose }) {
               placeholder="Write announcement"
               className="rounded-xl border border-slate-300 px-3 py-2.5 text-sm"
             />
-            <button type="button" onClick={addAnnouncement} className="rounded-xl bg-[#f2b705] px-4 py-2.5 text-sm font-semibold text-white">
+            <button type="button" onClick={addAnnouncement} className="rounded-xl bg-[var(--app-accent)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#b07e10]">
               Post
             </button>
           </div>
@@ -564,7 +564,7 @@ export function ToolModal({ activeTool, onClose }) {
         <button
           type="button"
           onClick={onClose}
-          className="mt-5 w-full rounded-2xl bg-[#f2b705] px-4 py-3 text-sm font-semibold text-white hover:bg-[#d9a300]"
+          className="mt-5 w-full rounded-2xl bg-[var(--app-accent)] px-4 py-3 text-sm font-semibold text-white hover:bg-[#b07e10]"
         >
           Continue
         </button>

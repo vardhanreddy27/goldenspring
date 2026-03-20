@@ -13,7 +13,7 @@ export function TeacherSidebar({ activeMenu, onMenuChange }) {
     <aside className="hidden w-72 shrink-0 bg-slate-950 text-slate-100 lg:flex lg:flex-col">
       <div className="px-7 pb-6 pt-8">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f2b705] text-lg font-bold text-white">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--app-accent)] text-lg font-bold text-white">
             N
           </div>
           <div>
@@ -31,7 +31,7 @@ export function TeacherSidebar({ activeMenu, onMenuChange }) {
             onClick={() => onMenuChange(id)}
             className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-medium transition-all duration-200 active:scale-[0.97] ${
               activeMenu === id
-                ? "bg-[#f2b705] text-white"
+                ? "bg-[var(--app-accent)] text-white"
                 : "text-slate-300 hover:bg-slate-900 hover:text-white"
             }`}
           >
@@ -67,11 +67,11 @@ export function TeacherBottomNav({ activeMenu, onMenuChange }) {
             type="button"
             onClick={() => onMenuChange(id)}
             className={`flex min-h-14 w-full flex-col items-center justify-center gap-0.5 rounded-xl py-1.5 text-[11px] font-medium transition-colors duration-200 active:scale-95 ${
-              activeMenu === id ? "bg-[#fff8dc] text-[#b88600]" : "text-slate-500"
+              activeMenu === id ? "bg-[var(--app-accent-soft)] text-[#8b6400]" : "text-slate-500"
             }`}
           >
             <span
-              className={`mb-0.5 block h-0.75 w-5 rounded-full bg-[#f2b705] transition-all duration-250 ${
+              className={`mb-0.5 block h-0.75 w-5 rounded-full bg-[var(--app-accent)] transition-all duration-250 ${
                 activeMenu === id ? "opacity-100" : "opacity-0"
               }`}
             />

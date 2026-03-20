@@ -61,7 +61,7 @@ export default function TimetableTab({ calendarDate, setCalendarDate, monthGrid,
   return (
     <section className="mt-4 grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
       {/* Left — Monthly calendar with event markers */}
-      <article className="bg-white p-4 sm:p-5">
+      <article className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] p-4 sm:p-5">
         <div className="flex items-center justify-between gap-3">
           <div>
             <h2 className="mt-1 text-xl font-semibold">Quiz and exam markers</h2>
@@ -117,7 +117,7 @@ export default function TimetableTab({ calendarDate, setCalendarDate, monthGrid,
                 onClick={() => openDatePopup(key)}
                 className={`flex h-12 flex-col items-center justify-center rounded-xl ${
                   isToday
-                    ? "bg-[#fff8dc] border border-[#f2b705]"
+                    ? "border border-[var(--app-accent)] bg-[var(--app-accent-soft)]"
                     : "bg-slate-50"
                 }`}
               >
@@ -177,7 +177,7 @@ export default function TimetableTab({ calendarDate, setCalendarDate, monthGrid,
       </article>
 
       {/* Right — Calendar timings and weekly plan */}
-      <article className="bg-white p-4 sm:p-5">
+      <article className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] p-4 sm:p-5">
         <p className="text-sm text-slate-500">Calendar timings</p>
         <h2 className="mt-1 text-xl font-semibold">Upcoming academic flow</h2>
 
@@ -201,7 +201,7 @@ export default function TimetableTab({ calendarDate, setCalendarDate, monthGrid,
 
       {activeDate ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4" onClick={closeDatePopup}>
-          <div className="w-full max-w-lg rounded-3xl bg-white p-5 shadow-2xl ring-1 ring-slate-200" onClick={(event) => event.stopPropagation()}>
+          <div className="w-full max-w-lg rounded-3xl bg-white p-5 ring-1 ring-[var(--app-border)]" onClick={(event) => event.stopPropagation()}>
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-sm text-slate-500">Manage date events</p>
@@ -230,7 +230,7 @@ export default function TimetableTab({ calendarDate, setCalendarDate, monthGrid,
                 placeholder="e.g. 9th B - Quiz on Tenses"
                 className="rounded-xl border border-slate-300 px-3 py-2.5 text-sm"
               />
-              <button type="button" onClick={addEventToDate} className="rounded-xl bg-[#f2b705] px-4 py-2.5 text-sm font-semibold text-white">
+              <button type="button" onClick={addEventToDate} className="rounded-xl bg-[var(--app-accent)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#b07e10]">
                 Add
               </button>
             </div>

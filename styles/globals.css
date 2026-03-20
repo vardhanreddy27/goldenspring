@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
+:root {
+  --app-bg: #f7f9fc;
+  --app-surface: #ffffff;
+  --app-surface-muted: #eef3f8;
+  --app-border: #dbe4ee;
+  --app-text: #0f172a;
+  --app-text-soft: #5b6b84;
+  --app-accent: #c79216;
+  --app-accent-soft: #fff4d6;
+  --app-success-soft: #dff5e9;
+  --app-success-text: #0f7a4f;
+  --app-danger-soft: #f9e1e5;
+  --app-danger-text: #b4233c;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -15,8 +30,8 @@ body {
 
 body {
   font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: #eef2ff;
-  color: #1a1a1a;
+  background: var(--app-bg);
+  color: var(--app-text);
   touch-action: manipulation;
 }
 
