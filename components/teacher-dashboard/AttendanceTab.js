@@ -160,7 +160,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
 
   return (
     <section className="mt-4 space-y-4">
-      <article className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] p-4 sm:p-5">
+      <article className="bg-[var(--app-surface)] p-4 sm:p-5">
         <p className="text-sm text-slate-500">School attendance</p>
         <h2 className="mt-1 text-xl font-semibold">Swipe attendance for assigned classes</h2>
 
@@ -221,7 +221,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
         </div>
       </article>
 
-      <article className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] p-4 sm:p-5">
+      <article className="bg-[var(--app-surface)] p-4 sm:p-5">
         <p className="text-sm text-slate-500">My attendance</p>
         <h2 className="mt-1 text-xl font-semibold">Check in for today</h2>
         <div className="mt-4 space-y-3">
