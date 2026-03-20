@@ -72,7 +72,7 @@ function DrilldownPanel({ activeMetric }) {
   }
 
   return (
-    <div className="mt-3 overflow-hidden rounded-3xl border border-[#f7e2a3] bg-[#fff8dc]/60 p-4 transition-all duration-300">
+    <div className="mt-3 overflow-hidden rounded-3xl border border-[#f7e2a3] bg-[#fff4d6]/60 p-4 transition-all duration-300">
       <p className="text-sm font-medium text-[#8b6400]">{detail.title}</p>
       <p className="mt-1 text-sm text-slate-600">{detail.subtitle}</p>
       <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -101,7 +101,7 @@ function DrilldownPanel({ activeMetric }) {
           </thead>
           <tbody>
             {pageRows.map((row) => (
-              <tr key={row.join("-")} className="border-t border-slate-100 hover:bg-[#fff8dc]/40">
+              <tr key={row.join("-")} className="border-t border-slate-100 hover:bg-[#fff4d6]/40">
                 {row.map((cell) => (
                   <td key={cell} className="px-3 py-2 text-slate-700">{cell}</td>
                 ))}
@@ -192,22 +192,22 @@ export default function OverviewView({ activeTrend, onTrendChange, leaveRequests
             <AreaChart data={trend}>
               <defs>
                 <linearGradient id="studentsFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#f2b705" stopOpacity={0.25} />
-                  <stop offset="95%" stopColor="#f2b705" stopOpacity={0.03} />
+                  <stop offset="5%" stopColor="#c79216" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="#c79216" stopOpacity={0.03} />
                 </linearGradient>
               </defs>
               <CartesianGrid vertical={false} stroke="#dbe3f0" strokeDasharray="4 4" />
               <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fill: "#64748b", fontSize: 12 }} />
               <YAxis tickLine={false} axisLine={false} tick={{ fill: "#64748b", fontSize: 12 }} />
               <Tooltip />
-              <AreaShape type="monotone" dataKey="students" stroke="#f2b705" fill="url(#studentsFill)" strokeWidth={3} />
+              <AreaShape type="monotone" dataKey="students" stroke="#c79216" fill="url(#studentsFill)" strokeWidth={3} />
               <AreaShape type="monotone" dataKey="teachers" stroke="#0f172a" fillOpacity={0} strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-slate-600">
-          <span className="inline-flex items-center gap-2 rounded-full bg-[#fff8dc] px-3 py-1 text-[#8b6400]">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#f2b705]" />
+          <span className="inline-flex items-center gap-2 rounded-full bg-[#fff4d6] px-3 py-1 text-[#8b6400]">
+            <span className="h-2.5 w-2.5 rounded-full bg-[#c79216]" />
             Students line
           </span>
           <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-slate-700">
@@ -267,7 +267,7 @@ export default function OverviewView({ activeTrend, onTrendChange, leaveRequests
                   setActiveModule(item.key);
                   onNavigate(item.linkTo);
                 }}
-                className="w-full rounded-2xl bg-slate-50 p-4 text-left transition hover:bg-[#fff8dc]"
+                className="w-full rounded-2xl bg-slate-50 p-4 text-left transition hover:bg-[#fff4d6]"
               >
                 <p className="font-semibold text-slate-900">{item.title}</p>
                 <p className="mt-1 text-sm text-slate-600">{item.detail}</p>
@@ -288,7 +288,7 @@ export default function OverviewView({ activeTrend, onTrendChange, leaveRequests
                   setActiveModule(item.key);
                   onNavigate(item.linkTo);
                 }}
-                className="w-full rounded-2xl bg-slate-50 p-4 text-left transition hover:bg-[#fff8dc]"
+                className="w-full rounded-2xl bg-slate-50 p-4 text-left transition hover:bg-[#fff4d6]"
               >
                 <p className="font-semibold text-slate-900">{item.title}</p>
                 <p className="mt-1 text-sm text-slate-600">{item.detail}</p>
@@ -296,7 +296,7 @@ export default function OverviewView({ activeTrend, onTrendChange, leaveRequests
             ))}
           </div>
           {activeModuleItem ? (
-            <div className="mt-4 rounded-2xl bg-[#fff8dc] p-4 ring-1 ring-[#f7e2a3]">
+            <div className="mt-4 rounded-2xl bg-[#fff4d6] p-4 ring-1 ring-[#f7e2a3]">
               <p className="text-sm font-semibold text-[#8b6400]">Selected module</p>
               <p className="mt-1 font-semibold text-slate-900">{activeModuleItem.title}</p>
               <p className="mt-1 text-sm text-slate-600">{activeModuleItem.detail}</p>

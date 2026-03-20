@@ -12,7 +12,7 @@ export default function SearchResults({ results, onSelect }) {
             key={`${item.tab}-${item.title}`}
             type="button"
             onClick={() => onSelect(item.tab)}
-            className="rounded-xl bg-white px-3 py-2 text-left text-sm text-slate-700 ring-1 ring-slate-200 hover:bg-[#fff8dc]"
+            className="rounded-xl bg-white px-3 py-2 text-left text-sm text-slate-700 ring-1 ring-slate-200 hover:bg-[#fff4d6]"
           >
             {item.title}
           </button>

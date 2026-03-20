@@ -102,7 +102,7 @@ const CALENDAR_EVENTS = [
   { date: "2026-04-03", title: "Sports meet", detail: "Inter-house athletics events." },
 ];
 
-function ProgressBar({ label, value, color = "#f2b705" }) {
+function ProgressBar({ label, value, color = "#c79216" }) {
   return (
     <div className="rounded-xl bg-white px-3 py-2">
       <div className="mb-1 flex items-center justify-between text-xs font-medium text-slate-700">
@@ -259,9 +259,9 @@ export default function CommunicationView({
                     setTeacherPage(1);
                     setClassPage(1);
                   }}
-                  className="rounded-3xl bg-slate-50 p-4 text-left transition hover:-translate-y-0.5 hover:bg-[#fff8dc]"
+                  className="rounded-3xl bg-slate-50 p-4 text-left transition hover:-translate-y-0.5 hover:bg-[#fff4d6]"
                 >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#fff8dc] text-[#8b6400]">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#fff4d6] text-[#8b6400]">
                     <Icon className="h-5 w-5" />
                   </div>
                   <p className="mt-4 font-semibold text-slate-900">{item.title}</p>
@@ -308,7 +308,7 @@ export default function CommunicationView({
                 rows={4}
                 className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm"
               />
-              <button type="submit" className="w-full rounded-xl bg-[#f2b705] px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-[#d9a300] active:scale-[0.98]">Send alert</button>
+              <button type="submit" className="w-full rounded-xl bg-[#c79216] px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-[#b07e10] active:scale-[0.98]">Send alert</button>
             </form>
 
             <div className="rounded-2xl bg-white p-3">
@@ -317,7 +317,7 @@ export default function CommunicationView({
                 {broadcastMessages.map((item) => (
                   <div key={item.id} className="rounded-2xl bg-slate-50 p-3">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="rounded-full bg-[#fff8dc] px-2 py-1 text-xs font-semibold text-[#8b6400]">To: {item.audience}</p>
+                      <p className="rounded-full bg-[#fff4d6] px-2 py-1 text-xs font-semibold text-[#8b6400]">To: {item.audience}</p>
                       <span className="text-xs text-slate-500">{item.time}</span>
                     </div>
                     <p className="mt-2 text-sm text-slate-700">{item.message}</p>
@@ -347,7 +347,7 @@ export default function CommunicationView({
               placeholder="Search teacher or subject"
               className="w-full flex-1 rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none ring-[#f7e2a3] focus:ring sm:min-w-48"
             />
-            <span className="rounded-full bg-[#fff8dc] px-3 py-1 text-xs font-semibold text-[#8b6400]">{filteredTeachers.length} staff</span>
+            <span className="rounded-full bg-[#fff4d6] px-3 py-1 text-xs font-semibold text-[#8b6400]">{filteredTeachers.length} staff</span>
           </div>
 
           <div className="mt-4 grid gap-3 xl:grid-cols-2">
@@ -363,7 +363,7 @@ export default function CommunicationView({
                   </span>
                 </div>
                 <div className="mt-4 space-y-3">
-                  <ProgressBar label="Syllabus completion" value={parseInt(row.syllabus, 10)} color="#f2b705" />
+                  <ProgressBar label="Syllabus completion" value={parseInt(row.syllabus, 10)} color="#c79216" />
                   <ProgressBar label="Activity participation" value={parseInt(row.activityParticipation, 10)} color="#16a34a" />
                 </div>
               </div>
@@ -412,7 +412,7 @@ export default function CommunicationView({
               placeholder="Search class section"
               className="w-full flex-1 rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none ring-[#f7e2a3] focus:ring sm:min-w-48"
             />
-            <span className="rounded-full bg-[#fff8dc] px-3 py-1 text-xs font-semibold text-[#8b6400]">{filteredClasses.length} sections</span>
+            <span className="rounded-full bg-[#fff4d6] px-3 py-1 text-xs font-semibold text-[#8b6400]">{filteredClasses.length} sections</span>
           </div>
 
           <div className="mt-4 grid gap-4 xl:grid-cols-2">
@@ -500,7 +500,7 @@ export default function CommunicationView({
                   <div
                     key={date.toISOString()}
                     className={`flex h-12 items-center justify-center rounded-xl text-sm font-medium ${
-                      isToday ? "bg-[#f2b705] text-white" : hasEvent ? "bg-[#fff8dc] text-[#8b6400]" : "bg-white text-slate-700"
+                      isToday ? "bg-[#c79216] text-white" : hasEvent ? "bg-[#fff4d6] text-[#8b6400]" : "bg-white text-slate-700"
                     }`}
                   >
                     {date.getDate()}
@@ -517,7 +517,7 @@ export default function CommunicationView({
                 <div key={item.date + item.title} className="rounded-2xl bg-white p-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="font-semibold text-slate-900">{item.title}</p>
-                    <span className="rounded-full bg-[#fff8dc] px-3 py-1 text-xs font-semibold text-[#8b6400]">
+                    <span className="rounded-full bg-[#fff4d6] px-3 py-1 text-xs font-semibold text-[#8b6400]">
                       {new Date(item.date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
                     </span>
                   </div>
@@ -546,7 +546,7 @@ export default function CommunicationView({
             <div key={item.title} className="rounded-3xl bg-slate-50 p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="text-lg font-semibold text-slate-900">{item.title}</p>
-                <span className="rounded-full bg-[#fff8dc] px-3 py-1 text-xs font-semibold text-[#8b6400]">{item.meta}</span>
+                <span className="rounded-full bg-[#fff4d6] px-3 py-1 text-xs font-semibold text-[#8b6400]">{item.meta}</span>
               </div>
               <p className="mt-2 text-sm text-slate-600">{item.detail}</p>
             </div>

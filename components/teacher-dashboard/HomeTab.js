@@ -28,7 +28,7 @@ export default function HomeTab({ weekDays, today }) {
 
   return (
     <section className="mt-4 space-y-4">
-      <article className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] p-4 sm:p-5">
+      <article className=" bg-[var(--app-surface)] p-4 sm:p-5">
         <p className="text-sm text-slate-500">This week</p>
         <h2 className="mt-1 text-xl font-semibold">Teacher calendar view</h2>
 
@@ -60,7 +60,7 @@ export default function HomeTab({ weekDays, today }) {
 
       <div className="flex flex-col gap-4 xl:flex-row">
       <div className="flex flex-1 flex-col gap-4">
-        <article className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] p-4 sm:p-5">
+        <article className="bg-[var(--app-surface)] p-4 sm:p-5">
           <p className="text-sm text-slate-500">Today classes</p>
           <h2 className="mt-1 text-xl font-semibold">Class timings for today</h2>
 
@@ -88,7 +88,7 @@ export default function HomeTab({ weekDays, today }) {
           </div>
         </article>
 
-        <article className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] p-4 sm:p-5">
+        <article className=" bg-[var(--app-surface)] p-4 sm:p-5">
           <p className="text-sm text-slate-500">Today&apos;s overview</p>
           <h2 className="mt-1 text-xl font-semibold">What needs your attention</h2>
 
@@ -107,7 +107,7 @@ export default function HomeTab({ weekDays, today }) {
         </article>
       </div>
 
-      <article className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] p-4 sm:p-5 xl:flex-1">
+      <article className=" bg-[var(--app-surface)] p-4 sm:p-5 xl:flex-1">
         <p className="text-sm text-slate-500">Notify parents &amp; students</p>
         <h2 className="mt-1 text-xl font-semibold">Today&apos;s homework</h2>
 

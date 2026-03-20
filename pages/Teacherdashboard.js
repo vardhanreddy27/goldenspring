@@ -148,7 +148,7 @@ export default function TeacherDashboard({ user }) {
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-3 lg:hidden">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#f2b705] text-base font-bold text-white">N</div>
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#c79216] text-base font-bold text-white">N</div>
                     <div>
                       <p className="text-2xl font-semibold tracking-[0.22em]">NMS</p>
                       <p className="text-sm text-slate-500">Teacher Workspace</p>

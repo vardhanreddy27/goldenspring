@@ -52,14 +52,14 @@ export default function AttendanceView() {
               <XAxis dataKey="period" tickLine={false} axisLine={false} tick={{ fill: "#64748b", fontSize: 12 }} />
               <YAxis tickLine={false} axisLine={false} tick={{ fill: "#64748b", fontSize: 12 }} />
               <Tooltip />
-              <Bar dataKey="studentsPresent" name="Students Present" fill="#f2b705" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="studentsPresent" name="Students Present" fill="#c79216" radius={[8, 8, 0, 0]} />
               <Bar dataKey="teachersPresent" name="Teachers Present" fill="#0f172a" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-slate-600">
-          <span className="inline-flex items-center gap-2 rounded-full bg-[#fff8dc] px-3 py-1 text-[#8b6400]">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#f2b705]" />
+          <span className="inline-flex items-center gap-2 rounded-full bg-[#fff4d6] px-3 py-1 text-[#8b6400]">
+            <span className="h-2.5 w-2.5 rounded-full bg-[#c79216]" />
             Students
           </span>
           <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-slate-700">
@@ -86,7 +86,7 @@ export default function AttendanceView() {
             <p className="font-semibold text-emerald-700">Device readiness</p>
             <p className="mt-1">96% teacher devices are geo-fence ready.</p>
           </div>
-          <div className="rounded-2xl bg-[#fff8dc] p-4">
+          <div className="rounded-2xl bg-[#fff4d6] p-4">
             <p className="font-semibold text-[#8b6400]">Pending setup</p>
             <p className="mt-1">2 teachers need location permission update.</p>
           </div>
@@ -111,7 +111,7 @@ export default function AttendanceView() {
             placeholder="Search by class or section"
             className="min-w-56 flex-1 rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none ring-[#f7e2a3] focus:ring"
           />
-          <span className="rounded-full bg-[#fff8dc] px-3 py-1 text-xs font-semibold text-[#8b6400]">
+          <span className="rounded-full bg-[#fff4d6] px-3 py-1 text-xs font-semibold text-[#8b6400]">
             {filteredSections.length} sections
           </span>
         </div>
@@ -134,8 +134,8 @@ export default function AttendanceView() {
                   <tr
                     key={row.id}
                     onClick={() => setActiveSectionId(row.id)}
-                    className={`cursor-pointer border-t border-slate-100 text-slate-700 hover:bg-[#fff8dc]/50 ${
-                      activeSectionId === row.id ? "bg-[#fff8dc]/60" : ""
+                    className={`cursor-pointer border-t border-slate-100 text-slate-700 hover:bg-[#fff4d6]/50 ${
+                      activeSectionId === row.id ? "bg-[#fff4d6]/60" : ""
                     }`}
                   >
                     <td className="px-3 py-3">{row.className}</td>
@@ -150,7 +150,7 @@ export default function AttendanceView() {
             </table>
           </div>
 
-            <div className="rounded-2xl bg-[#fff8dc] p-4">
+            <div className="rounded-2xl bg-[#fff4d6] p-4">
             <p className="text-sm font-semibold text-[#8b6400]">Selected section details</p>
             {activeSection ? (
               <>

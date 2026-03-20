@@ -5,7 +5,7 @@ import { CheckCircle2, XCircle } from "lucide-react";
 function statusClass(status) {
   if (status === "Approved") return "bg-emerald-50 text-emerald-700";
   if (status === "Rejected") return "bg-red-50 text-red-700";
-  return "bg-[#fff8dc] text-[#8b6400]";
+  return "bg-[#fff4d6] text-[#8b6400]";
 }
 
 export default function ApprovalsView({ leaveRequests, onDecision }) {
@@ -22,7 +22,7 @@ export default function ApprovalsView({ leaveRequests, onDecision }) {
     return Object.entries(counts).map(([name, value]) => ({
       name,
       value,
-      color: name === "Approved" ? "#16a34a" : name === "Pending" ? "#f2b705" : "#ef4444",
+      color: name === "Approved" ? "#16a34a" : name === "Pending" ? "#c79216" : "#ef4444",
     }));
   }, [leaveRequests]);
 
@@ -61,7 +61,7 @@ export default function ApprovalsView({ leaveRequests, onDecision }) {
             placeholder="Search by staff name, role, leave type or status"
             className="min-w-[16rem] flex-1 rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none ring-[#f7e2a3] focus:ring"
           />
-          <span className="rounded-full bg-[#fff8dc] px-3 py-1 text-xs font-semibold text-[#8b6400]">{filteredRequests.length} requests</span>
+          <span className="rounded-full bg-[#fff4d6] px-3 py-1 text-xs font-semibold text-[#8b6400]">{filteredRequests.length} requests</span>
         </div>
 
         <div className="mt-4 space-y-3">

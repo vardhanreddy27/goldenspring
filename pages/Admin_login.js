@@ -32,7 +32,7 @@ export default function Admin_login() {
         icon: "error",
         title: "Access denied",
         text: unauthorizedMessage,
-        confirmButtonColor: "#f2b705",
+        confirmButtonColor: "#c79216",
       });
     }
   }, [router.isReady, router.query.error, unauthorizedMessage]);
@@ -57,7 +57,7 @@ export default function Admin_login() {
         icon: "error",
         title: "Sign in failed",
         text: result.error,
-        confirmButtonColor: "#f2b705",
+        confirmButtonColor: "#c79216",
       });
       return;
     }
@@ -105,7 +105,7 @@ export default function Admin_login() {
                   id="userId"
                   type="text"
                   placeholder="Enter your user id"
-                  className="mt-1.5 w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#f2b705] focus:ring-4 focus:ring-[#fff2c7]"
+                  className="mt-1.5 w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
                   autoComplete="username"
                   value={userId}
                   onChange={(event) => setUserId(event.target.value)}
@@ -121,7 +121,7 @@ export default function Admin_login() {
                   id="password"
                   type="password"
                   placeholder="Enter your password"
-                  className="mt-1.5 w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#f2b705] focus:ring-4 focus:ring-[#fff2c7]"
+                  className="mt-1.5 w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
                   autoComplete="current-password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
@@ -137,7 +137,7 @@ export default function Admin_login() {
 
               <button
                 type="submit"
-                className="w-full rounded-full bg-[#f2b705] py-3 text-sm font-semibold text-white shadow-[0_16px_40px_-22px_rgba(242,183,5,0.8)] hover:bg-[#d9a300] focus:outline-none focus:ring-4 focus:ring-[#f7e2a3] disabled:cursor-not-allowed disabled:bg-[#f3da84]"
+                className="w-full rounded-full bg-[#c79216] py-3 text-sm font-semibold text-white shadow-[0_16px_40px_-22px_rgba(242,183,5,0.8)] hover:bg-[#b07e10] focus:outline-none focus:ring-4 focus:ring-[#f7e2a3] disabled:cursor-not-allowed disabled:bg-[#d6b56a]"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Signing In..." : "Sign In"}
@@ -204,7 +204,7 @@ export default function Admin_login() {
                 id="userId-desktop"
                 type="text"
                 placeholder="Enter your user id"
-                className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#f2b705] focus:ring-4 focus:ring-[#fff2c7]"
+                className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
                 autoComplete="username"
                 value={userId}
                 onChange={(event) => setUserId(event.target.value)}
@@ -220,7 +220,7 @@ export default function Admin_login() {
                 id="password-desktop"
                 type="password"
                 placeholder="Enter your password"
-                className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#f2b705] focus:ring-4 focus:ring-[#fff2c7]"
+                className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
                 autoComplete="current-password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
@@ -236,7 +236,7 @@ export default function Admin_login() {
 
             <button
               type="submit"
-              className="w-full rounded-full bg-[#f2b705] py-3 text-sm font-semibold text-white shadow-[0_16px_40px_-22px_rgba(242,183,5,0.75)] hover:bg-[#d9a300] focus:outline-none focus:ring-4 focus:ring-[#f7e2a3] disabled:cursor-not-allowed disabled:bg-[#f3da84]"
+              className="w-full rounded-full bg-[#c79216] py-3 text-sm font-semibold text-white shadow-[0_16px_40px_-22px_rgba(242,183,5,0.75)] hover:bg-[#b07e10] focus:outline-none focus:ring-4 focus:ring-[#f7e2a3] disabled:cursor-not-allowed disabled:bg-[#d6b56a]"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Signing In..." : "Sign In"}

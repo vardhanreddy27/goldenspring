@@ -12,13 +12,13 @@ export default function Home() {
         <p className="mt-2 text-center text-sm text-slate-500">Choose your portal to continue.</p>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          <Link href="/Admin_login" className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-left transition hover:bg-[#fff8dc]">
+          <Link href="/Admin_login" className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-left transition hover:bg-[#fff4d6]">
             <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-500">Admin</p>
             <p className="mt-2 text-xl font-semibold text-slate-900">Admin login</p>
             <p className="mt-1 text-sm text-slate-600">Principal and administration access.</p>
           </Link>
 
-          <Link href="/Teacher_login" className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-left transition hover:bg-[#fff8dc]">
+          <Link href="/Teacher_login" className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-left transition hover:bg-[#fff4d6]">
             <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-500">Teacher</p>
             <p className="mt-2 text-xl font-semibold text-slate-900">Teacher login</p>
             <p className="mt-1 text-sm text-slate-600">Classes, attendance and academic tools.</p>
