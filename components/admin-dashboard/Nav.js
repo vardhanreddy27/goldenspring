@@ -48,7 +48,7 @@ export function MobileBottomNav({ activeMenu, onMenuChange, items }) {
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-30 bg-white/98 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 shadow-[0_-10px_24px_-20px_rgba(15,23,42,0.4)] backdrop-blur-xl lg:hidden">
-      <div className="grid" style={{ gridTemplateColumns: `repeat(${mobileItems.length}, minmax(0, 1fr))` }}>
+      <div className="grid gap-1 px-2" style={{ gridTemplateColumns: `repeat(${mobileItems.length}, minmax(0, 1fr))` }}>
         {mobileItems.map(({ id, label, icon: Icon }) => {
           const isActive = activeMenu === id;
           return (
@@ -56,8 +56,8 @@ export function MobileBottomNav({ activeMenu, onMenuChange, items }) {
               key={id}
               type="button"
               onClick={() => onMenuChange(id)}
-              className={`flex flex-col items-center gap-0.5 py-1.5 text-[11px] font-medium transition-colors duration-200 active:scale-90 ${
-                isActive ? "text-[#b88600]" : "text-slate-400"
+              className={`flex min-h-14 w-full flex-col items-center justify-center gap-0.5 rounded-xl py-1.5 text-[11px] font-medium transition-colors duration-200 active:scale-95 ${
+                isActive ? "bg-[#fff8dc] text-[#b88600]" : "text-slate-500"
               }`}
             >
               <span

@@ -1,4 +1,6 @@
 import { useMemo, useState } from "react";
+import Image from "next/image";
+import { X } from "lucide-react";
 import { teacherSelfAttendance } from "./data";
 import { dayKey, statusStyles } from "./utils";
 
@@ -237,7 +239,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
           onClick={closeAttendanceSheet}
         >
           <div
-            className={`w-full min-h-[55vh] max-h-[90vh] overflow-y-auto rounded-t-3xl bg-white p-4 shadow-2xl transition-transform duration-200 sm:p-5 ${sheetOpen ? "translate-y-0" : "translate-y-8"}`}
+            className={`flex w-full min-h-[55vh] max-h-[90vh] flex-col rounded-t-3xl bg-white p-4 shadow-2xl transition-transform duration-200 sm:p-5 ${sheetOpen ? "translate-y-0" : "translate-y-8"}`}
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mx-auto h-1.5 w-16 rounded-full bg-slate-200" />
@@ -248,9 +250,10 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
               <button
                 type="button"
                 onClick={closeAttendanceSheet}
-                className="rounded-full border border-slate-300 px-2.5 py-1 text-xs font-semibold text-slate-600"
+                className="rounded-full border border-slate-300 p-2 text-slate-600"
+                aria-label="Close roll call"
               >
-                Close
+                <X className="h-4 w-4" />
               </button>
             </div>
 
@@ -259,23 +262,22 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
             </span>
 
             {!allMarked && activeStudent ? (
-              <div className="mt-3 space-y-3">
+              <div className="mt-3 flex-1 space-y-3">
                 <div
                   onTouchStart={handleTouchStart}
                   onTouchEnd={handleTouchEnd}
                   className="rounded-3xl bg-[linear-gradient(140deg,#ffffff_0%,#f8fafc_100%)] px-5 py-7 text-center shadow-[0_14px_34px_-24px_rgba(15,23,42,0.35)]"
                 >
+                  <div className="mx-auto flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-slate-100 ring-1 ring-slate-200">
+                    <Image src="/logo.png" alt="Student" width={44} height={44} className="object-contain" />
+                  </div>
                   <p className="text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">
                     Roll No {activeStudent.rollNo}
                   </p>
                   <p className="mt-2 text-3xl font-semibold text-slate-900">{activeStudent.name}</p>
-                  <p className="mt-2 text-sm text-slate-600">
-                    Class {attendanceDraft.className} - Section {attendanceDraft.section}
-                  </p>
-                  <p className="mt-3 text-xs text-slate-500">Swipe card: → Present | ← Absent</p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="sticky bottom-0 mt-auto grid grid-cols-2 gap-2 bg-white/95 pt-2 backdrop-blur">
                   <button
                     type="button"
                     onClick={() => markCurrentStudent("Absent")}

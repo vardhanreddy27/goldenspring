@@ -58,7 +58,7 @@ export function TeacherBottomNav({ activeMenu, onMenuChange }) {
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 bg-white/95 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 shadow-[0_-10px_24px_-20px_rgba(15,23,42,0.4)] backdrop-blur-xl lg:hidden">
       <div
-        className="grid"
+        className="grid gap-1 px-2"
         style={{ gridTemplateColumns: `repeat(${menuItems.length}, minmax(0, 1fr))` }}
       >
         {menuItems.map(({ id, label, icon: Icon }) => (
@@ -66,8 +66,8 @@ export function TeacherBottomNav({ activeMenu, onMenuChange }) {
             key={id}
             type="button"
             onClick={() => onMenuChange(id)}
-            className={`flex flex-col items-center gap-0.5 py-1.5 text-[11px] font-medium transition-colors duration-200 active:scale-90 ${
-              activeMenu === id ? "text-[#b88600]" : "text-slate-400"
+            className={`flex min-h-14 w-full flex-col items-center justify-center gap-0.5 rounded-xl py-1.5 text-[11px] font-medium transition-colors duration-200 active:scale-95 ${
+              activeMenu === id ? "bg-[#fff8dc] text-[#b88600]" : "text-slate-500"
             }`}
           >
             <span
