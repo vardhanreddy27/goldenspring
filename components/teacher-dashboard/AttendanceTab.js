@@ -6,18 +6,18 @@ import { dayKey, statusStyles } from "./utils";
 
 const DUMMY_STUDENTS = {
   "class-8a": [
-    { rollNo: "01", name: "Aarav", photo: "/student1.webp" },
+    { rollNo: "01", name: "Aarav", photo: "/student2.png" },
     { rollNo: "02", name: "Diya", photo: "/student2.png" },
     { rollNo: "03", name: "Karthik", photo: "/student4.jpg" },
     { rollNo: "04", name: "Saanvi", photo: "/student5.webp" },
-    { rollNo: "05", name: "Vikram", photo: "/logo.png" },
+    { rollNo: "05", name: "Vikram", photo: "/student4.jpg" },
   ],
   "class-5a": [
-    { rollNo: "11", name: "Moksha", photo: "/student1.webp" },
+    { rollNo: "11", name: "Moksha", photo: "/student5.webp" },
     { rollNo: "12", name: "Aditya", photo: "/student2.png" },
     { rollNo: "13", name: "Nithya", photo: "/student4.jpg" },
     { rollNo: "14", name: "Rahul", photo: "/student5.webp" },
-    { rollNo: "15", name: "Tara", photo: "/logo.png" },
+    { rollNo: "15", name: "Tara", photo: "/student2.png" },
   ],
 };
 
@@ -300,10 +300,16 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
                   style={{ transform: `translateX(${dragOffsetX}px)`, transition: isDragging ? "none" : "transform 160ms ease", touchAction: "pan-y" }}
                   className="rounded-3xl bg-[linear-gradient(140deg,#ffffff_0%,#f8fafc_100%)] px-5 py-7 text-center ring-1 ring-slate-200"
                 >
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-slate-100 ring-1 ring-slate-200">
-                    <Image src={activeStudent.photo || "/logo.png"} alt={activeStudent.name} width={56} height={56} className="h-full w-full object-cover" />
+                  <div className="mx-auto w-full overflow-hidden rounded-xl bg-slate-100">
+                    <Image
+                      src={activeStudent.photo || "/student2.png"}
+                      alt={activeStudent.name}
+                      width={560}
+                      height={360}
+                      className="h-56 w-full object-cover sm:h-64"
+                    />
                   </div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">
+                  <p className="mt-4 text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">
                     Roll No {activeStudent.rollNo}
                   </p>
                   <p className="mt-2 text-3xl font-semibold text-slate-900">{activeStudent.name}</p>
