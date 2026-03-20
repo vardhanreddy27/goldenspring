@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Swal from "sweetalert2";
 
 export default function Admin_login() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -13,6 +14,13 @@ export default function Admin_login() {
   const unauthorizedMessage = router.query.error === "UnauthorizedEmail"
     ? "This email is not authorized for admin access."
     : "";
+
+  useEffect(() => {
+    if (session?.user?.userType === "admin") {
+      router.push("/Admindashboard");
+      return;
+    }
+  }, [session, router]);
 
   useEffect(() => {
     if (!router.isReady) {

@@ -1,13 +1,27 @@
-import React, { useState } from "react";
-import { getSession, signIn } from "next-auth/react";
+import React, { useState, useEffect } from "react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import Image from "next/image";
 import Swal from "sweetalert2";
 
 export default function Teacher_login() {
+  const router = useRouter();
+  const { data: session } = useSession();
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (session?.user?.userType === "teacher") {
+      router.push("/Teacherdashboard");
+      return;
+    }
+    if (session?.user?.userType === "admin") {
+      router.push("/Admindashboard");
+      return;
+    }
+  }, [session, router]);
 
   async function handleTeacherLogin(event) {
     event.preventDefault();
@@ -59,18 +73,7 @@ export default function Teacher_login() {
       return;
     }
 
-    const session = await getSession();
     setIsSubmitting(false);
-
-    if (session?.user?.userType === "teacher") {
-      window.location.href = "/Teacherdashboard";
-      return;
-    }
-
-    if (session?.user?.userType === "admin") {
-      window.location.href = "/Admindashboard";
-      return;
-    }
 
     window.location.href = googleResult?.url || "/Teacherdashboard";
   }

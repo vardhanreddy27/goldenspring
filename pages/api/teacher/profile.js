@@ -12,6 +12,11 @@ function getSqlClient() {
   return neon(databaseUrl);
 }
 
+function handleDatabaseError(error, res) {
+  console.error("Database error:", error);
+  return res.status(500).json({ error: "Database operation failed. Please try again." });
+}
+
 function sanitize(value) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -30,55 +35,59 @@ function mapTeacherRow(row) {
 }
 
 export default async function handler(req, res) {
-  const session = await getServerSession(req, res, authOptions);
+  try {
+    const session = await getServerSession(req, res, authOptions);
 
-  if (!session?.user?.id || session?.user?.userType !== "teacher") {
-    return res.status(401).json({ error: "Unauthorized." });
-  }
-
-  const teacherId = String(session.user.id);
-  const sql = getSqlClient();
-
-  if (req.method === "GET") {
-    const rows = await sql`
-      SELECT id, name, subject, number, doj, gender
-      FROM teachers
-      WHERE CAST(id AS text) = ${teacherId}
-      LIMIT 1
-    `;
-
-    if (!rows[0]) {
-      return res.status(404).json({ error: "Teacher profile not found." });
+    if (!session?.user?.id || session?.user?.userType !== "teacher") {
+      return res.status(401).json({ error: "Unauthorized." });
     }
 
-    return res.status(200).json({ profile: mapTeacherRow(rows[0]) });
-  }
+    const teacherId = String(session.user.id);
+    const sql = getSqlClient();
 
-  if (req.method === "PUT") {
-    const name = sanitize(req.body?.name);
-    const subject = sanitize(req.body?.subject);
-    const number = sanitize(req.body?.number);
+    if (req.method === "GET") {
+      const rows = await sql`
+        SELECT id, name, subject, number, doj, gender
+        FROM teachers
+        WHERE CAST(id AS text) = ${teacherId}
+        LIMIT 1
+      `;
 
-    if (!name) {
-      return res.status(400).json({ error: "Name is required." });
+      if (!rows[0]) {
+        return res.status(404).json({ error: "Teacher profile not found." });
+      }
+
+      return res.status(200).json({ profile: mapTeacherRow(rows[0]) });
     }
 
-    const rows = await sql`
-      UPDATE teachers
-      SET
-        name = ${name},
-        subject = ${subject || null},
-        number = ${number || null}
-      WHERE CAST(id AS text) = ${teacherId}
-      RETURNING id, name, subject, number, doj, gender
-    `;
+    if (req.method === "PUT") {
+      const name = sanitize(req.body?.name);
+      const subject = sanitize(req.body?.subject);
+      const number = sanitize(req.body?.number);
 
-    if (!rows[0]) {
-      return res.status(404).json({ error: "Teacher profile not found." });
+      if (!name) {
+        return res.status(400).json({ error: "Name is required." });
+      }
+
+      const rows = await sql`
+        UPDATE teachers
+        SET
+          name = ${name},
+          subject = ${subject || null},
+          number = ${number || null}
+        WHERE CAST(id AS text) = ${teacherId}
+        RETURNING id, name, subject, number, doj, gender
+      `;
+
+      if (!rows[0]) {
+        return res.status(404).json({ error: "Teacher profile not found." });
+      }
+
+      return res.status(200).json({ profile: mapTeacherRow(rows[0]) });
     }
 
-    return res.status(200).json({ profile: mapTeacherRow(rows[0]) });
+    return res.status(405).json({ error: "Method not allowed." });
+  } catch (error) {
+    return handleDatabaseError(error, res);
   }
-
-  return res.status(405).json({ error: "Method not allowed." });
 }
