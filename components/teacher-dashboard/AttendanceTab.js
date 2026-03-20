@@ -6,18 +6,18 @@ import { dayKey, statusStyles } from "./utils";
 
 const DUMMY_STUDENTS = {
   "class-8a": [
-    { rollNo: "01", name: "Aarav", photo: "/student1.avif" },
-    { rollNo: "02", name: "Diya", photo: "/student2.jpg" },
-    { rollNo: "03", name: "Karthik", photo: "/student4.jpg" },
-    { rollNo: "04", name: "Saanvi", photo: "/student5.avif" },
-    { rollNo: "05", name: "Vikram", photo: "/student3.jpg" },
+    { rollNo: "01", name: "Aarav", photo: "/student1.png" },
+    { rollNo: "02", name: "Diya", photo: "/student2.png" },
+    { rollNo: "03", name: "Karthik", photo: "/student3.png" },
+    { rollNo: "04", name: "Saanvi", photo: "/student4.png" },
+    { rollNo: "05", name: "Vikram", photo: "/student1.png" },
   ],
   "class-5a": [
-    { rollNo: "11", name: "Moksha", photo: "/student3.jpg" },
-    { rollNo: "12", name: "Aditya", photo: "/student4.jpg" },
-    { rollNo: "13", name: "Nithya", photo: "/student5.avif" },
-    { rollNo: "14", name: "Rahul", photo: "/student1.avif" },
-    { rollNo: "15", name: "Tara", photo: "/student2.jpg" },
+    { rollNo: "11", name: "Moksha", photo: "/student2.png" },
+    { rollNo: "12", name: "Aditya", photo: "/student3.png" },
+    { rollNo: "13", name: "Nithya", photo: "/student4.png" },
+    { rollNo: "14", name: "Rahul", photo: "/student1.png" },
+    { rollNo: "15", name: "Tara", photo: "/student2.png" },
   ],
 };
 
@@ -302,7 +302,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
                 >
                   <div className="mx-auto w-full overflow-hidden rounded-xl bg-transparent">
                     <Image
-                      src={activeStudent.photo || "/student2.jpg"}
+                      src={activeStudent.photo || "/student2.png"}
                       alt={activeStudent.name}
                       width={560}
                       height={360}
