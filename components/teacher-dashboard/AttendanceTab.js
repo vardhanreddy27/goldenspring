@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import { Heart, X } from "lucide-react";
+import { X } from "lucide-react";
 import { teacherSelfAttendance } from "./data";
 import { dayKey, statusStyles } from "./utils";
 
@@ -360,22 +360,22 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
                   </div>
                 </div>
 
-                <div className="sticky bottom-0 mt-auto flex items-center justify-center gap-6 bg-white/95 pt-2 backdrop-blur">
+                <div className="sticky bottom-0 mt-auto grid grid-cols-2 gap-2 bg-white/95 pt-2 backdrop-blur">
                   <button
                     type="button"
                     onClick={() => animateMark("Absent", -1)}
-                    className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--app-danger-soft)] text-[var(--app-danger-text)] ring-1 ring-rose-200"
+                    className="rounded-xl bg-[var(--app-danger-soft)] px-4 py-3 text-sm font-semibold text-[var(--app-danger-text)] ring-1 ring-rose-200"
                     aria-label="Mark absent"
                   >
-                    <X className="h-6 w-6" />
+                    ← Absent
                   </button>
                   <button
                     type="button"
                     onClick={() => animateMark("Present", 1)}
-                    className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--app-success-soft)] text-[var(--app-success-text)] ring-1 ring-emerald-200"
+                    className="rounded-xl bg-[var(--app-success-soft)] px-4 py-3 text-sm font-semibold text-[var(--app-success-text)] ring-1 ring-emerald-200"
                     aria-label="Mark present"
                   >
-                    <Heart className="h-6 w-6" />
+                    Present →
                   </button>
                 </div>
               </div>
