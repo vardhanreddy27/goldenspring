@@ -5,7 +5,7 @@ import { moreTools, moreToolDetails } from "./data";
 export function MoreTab({ onOpenToolModal }) {
   return (
     <section className="mt-4">
-      <article className="rounded-4xl bg-white p-4 shadow-[0_14px_34px_-24px_rgba(15,23,42,0.25)] sm:p-5">
+      <article className="bg-white p-4 sm:p-5">
         <p className="text-sm text-slate-500">More tools</p>
         <h2 className="mt-1 text-xl font-semibold">Teacher utility modules</h2>
 

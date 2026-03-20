@@ -61,7 +61,7 @@ export default function TimetableTab({ calendarDate, setCalendarDate, monthGrid,
   return (
     <section className="mt-4 grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
       {/* Left — Monthly calendar with event markers */}
-      <article className="rounded-4xl bg-white p-4 shadow-[0_14px_34px_-24px_rgba(15,23,42,0.25)] sm:p-5">
+      <article className="bg-white p-4 sm:p-5">
         <div className="flex items-center justify-between gap-3">
           <div>
             <h2 className="mt-1 text-xl font-semibold">Quiz and exam markers</h2>
@@ -177,7 +177,7 @@ export default function TimetableTab({ calendarDate, setCalendarDate, monthGrid,
       </article>
 
       {/* Right — Calendar timings and weekly plan */}
-      <article className="rounded-4xl bg-white p-4 shadow-[0_14px_34px_-24px_rgba(15,23,42,0.25)] sm:p-5">
+      <article className="bg-white p-4 sm:p-5">
         <p className="text-sm text-slate-500">Calendar timings</p>
         <h2 className="mt-1 text-xl font-semibold">Upcoming academic flow</h2>
 

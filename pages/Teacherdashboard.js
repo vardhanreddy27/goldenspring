@@ -138,13 +138,13 @@ export default function TeacherDashboard({ user }) {
   }, [activeMenu, activeToolModal]);
 
   return (
-    <div className="min-h-dvh bg-[#f3f6fb] text-slate-950 lg:flex">
+    <div className="min-h-dvh bg-white text-slate-950 lg:flex">
       <TeacherSidebar activeMenu={activeMenu} onMenuChange={setActiveMenu} />
 
       <main className="relative flex-1 pb-28 lg:pb-8">
         <div className="mx-auto flex min-h-dvh max-w-6xl flex-col px-3 pb-8 pt-3 sm:px-5 lg:px-6 lg:pt-6">
           {showTopHeader ? (
-            <section className="rounded-4xl bg-white p-4 shadow-[0_14px_34px_-24px_rgba(15,23,42,0.25)] sm:p-5">
+            <section className="bg-white p-4 sm:p-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-3 lg:hidden">

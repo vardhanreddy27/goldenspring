@@ -33,6 +33,7 @@ function buildDraft(targetClass, session) {
 
 export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }) {
   const [attendanceDraft, setAttendanceDraft] = useState(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [touchStartX, setTouchStartX] = useState(null);
 
   const morningClass = classes[0] || null;
@@ -60,6 +61,12 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
     if (alreadySubmitted) return;
 
     setAttendanceDraft(buildDraft(targetClass, session));
+    setTimeout(() => setSheetOpen(true), 10);
+  }
+
+  function closeAttendanceSheet() {
+    setSheetOpen(false);
+    setTimeout(() => setAttendanceDraft(null), 220);
   }
 
   function markCurrentStudent(status) {
@@ -100,7 +107,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
       studentStatuses: attendanceDraft.students,
     });
 
-    setAttendanceDraft(null);
+    closeAttendanceSheet();
   }
 
   function handleTouchStart(event) {
@@ -124,7 +131,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
 
   return (
     <section className="mt-4 space-y-4">
-      <article className="rounded-4xl bg-white p-4 shadow-[0_14px_34px_-24px_rgba(15,23,42,0.25)] sm:p-5">
+      <article className="bg-white p-4 sm:p-5">
         <p className="text-sm text-slate-500">School attendance</p>
         <h2 className="mt-1 text-xl font-semibold">Swipe attendance for assigned classes</h2>
 
@@ -185,7 +192,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
         </div>
       </article>
 
-      <article className="rounded-4xl bg-white p-4 shadow-[0_14px_34px_-24px_rgba(15,23,42,0.25)] sm:p-5">
+      <article className="bg-white p-4 sm:p-5">
         <p className="text-sm text-slate-500">My attendance</p>
         <h2 className="mt-1 text-xl font-semibold">Check in for today</h2>
         <div className="mt-4 space-y-3">
@@ -225,9 +232,12 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
       </article>
 
       {attendanceDraft ? (
-        <div className="fixed inset-0 z-50 flex items-end bg-slate-950/40" onClick={() => setAttendanceDraft(null)}>
+        <div
+          className={`fixed inset-0 z-50 flex items-end bg-slate-950/40 transition-opacity duration-200 ${sheetOpen ? "opacity-100" : "opacity-0"}`}
+          onClick={closeAttendanceSheet}
+        >
           <div
-            className="w-full rounded-t-3xl bg-white p-4 shadow-2xl sm:p-5"
+            className={`w-full min-h-[55vh] max-h-[90vh] overflow-y-auto rounded-t-3xl bg-white p-4 shadow-2xl transition-transform duration-200 sm:p-5 ${sheetOpen ? "translate-y-0" : "translate-y-8"}`}
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mx-auto h-1.5 w-16 rounded-full bg-slate-200" />
@@ -237,7 +247,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
               </p>
               <button
                 type="button"
-                onClick={() => setAttendanceDraft(null)}
+                onClick={closeAttendanceSheet}
                 className="rounded-full border border-slate-300 px-2.5 py-1 text-xs font-semibold text-slate-600"
               >
                 Close
@@ -253,7 +263,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
                 <div
                   onTouchStart={handleTouchStart}
                   onTouchEnd={handleTouchEnd}
-                  className="rounded-3xl bg-[linear-gradient(140deg,#ffffff_0%,#f8fafc_100%)] px-5 py-6 text-center shadow-[0_14px_34px_-24px_rgba(15,23,42,0.35)]"
+                  className="rounded-3xl bg-[linear-gradient(140deg,#ffffff_0%,#f8fafc_100%)] px-5 py-7 text-center shadow-[0_14px_34px_-24px_rgba(15,23,42,0.35)]"
                 >
                   <p className="text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">
                     Roll No {activeStudent.rollNo}
@@ -262,7 +272,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
                   <p className="mt-2 text-sm text-slate-600">
                     Class {attendanceDraft.className} - Section {attendanceDraft.section}
                   </p>
-                  <p className="mt-3 text-xs text-slate-500">Swipe right for Present, swipe left for Absent</p>
+                  <p className="mt-3 text-xs text-slate-500">Swipe card: → Present | ← Absent</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
@@ -271,14 +281,14 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
                     onClick={() => markCurrentStudent("Absent")}
                     className="rounded-xl bg-rose-100 px-4 py-2.5 text-sm font-semibold text-rose-700"
                   >
-                    Left: Absent
+                    ← Absent
                   </button>
                   <button
                     type="button"
                     onClick={() => markCurrentStudent("Present")}
                     className="rounded-xl bg-emerald-100 px-4 py-2.5 text-sm font-semibold text-emerald-700"
                   >
-                    Right: Present
+                    Present →
                   </button>
                 </div>
               </div>
