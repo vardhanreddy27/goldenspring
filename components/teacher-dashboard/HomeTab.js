@@ -323,7 +323,7 @@ export default function HomeTab({ weekDays, today }) {
                       }}
                       type="file"
                       accept="image/*"
-                      capture="environment"
+                      capture
                       onChange={(e) => handleCameraCapture(key, e)}
                       className="hidden"
                     />
