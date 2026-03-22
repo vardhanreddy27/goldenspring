@@ -1,5 +1,5 @@
-import { X } from "lucide-react";
-import { useState } from "react";
+import { X, Paperclip } from "lucide-react";
+import { useState, useRef } from "react";
 import { moreTools, moreToolDetails } from "./data";
 
 export function MoreTab({ onOpenToolModal }) {
@@ -167,13 +167,16 @@ export function ToolModal({ activeTool, onClose }) {
   const [selectedEnrollClass, setSelectedEnrollClass] = useState("8th A");
   const [enrollStudentName, setEnrollStudentName] = useState("");
   const [enrollStudentRoll, setEnrollStudentRoll] = useState("");
-  const [selectedQuizResultId, setSelectedQuizResultId] = useState(null);
+  const [selectedQuizName, setSelectedQuizName] = useState(null);
+  const [selectedQuizSection, setSelectedQuizSection] = useState(null);
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [leaveReason, setLeaveReason] = useState("");
   const [quizTitle, setQuizTitle] = useState("");
   const [noteText, setNoteText] = useState("");
+  const [noteAttachments, setNoteAttachments] = useState({});
   const [announcementText, setAnnouncementText] = useState("");
+  const noteFileInputRef = useRef({});
   const [leaveRequests, setLeaveRequests] = useState([
     { id: 1, fromDate: "2026-03-22", toDate: "2026-03-23", days: 2, reason: "Medical appointment", status: "Pending" },
   ]);
@@ -182,7 +185,7 @@ export function ToolModal({ activeTool, onClose }) {
     { id: 2, classRef: "8th A", title: "Vocabulary Quiz - Synonyms" },
   ]);
   const [notes, setNotes] = useState([
-    { id: 1, classRef: "9th B", text: "Complete chapter 4 discussion and recap worksheet." },
+    { id: 1, classRef: "9th B", text: "Complete chapter 4 discussion and recap worksheet.", attachments: [] },
   ]);
   const [announcements, setAnnouncements] = useState([
     { id: 1, classRef: "General", text: "Parents meeting on Friday at 3:30 PM." },
@@ -244,36 +247,28 @@ export function ToolModal({ activeTool, onClose }) {
   const quizResultItems = [
     {
       id: 1,
-      classRef: "9th B",
-      title: "Quiz-1",
-      topic: "Tenses",
-      attempted: 29,
-      avgScore: 74,
-      topper: "Diya - 95",
-      pass: 24,
-      fail: 5,
+      quizName: "Grammar Quiz - Tenses",
+      sectionResults: [
+        { classRef: "9th B", attempted: 29, avgScore: 74, topper: "Diya - 95", pass: 24, fail: 5 },
+        { classRef: "8th A", attempted: 31, avgScore: 76, topper: "Aarav - 96", pass: 28, fail: 3 },
+        { classRef: "10th A", attempted: 33, avgScore: 83, topper: "Saanvi - 98", pass: 31, fail: 2 },
+      ],
     },
     {
       id: 2,
-      classRef: "8th A",
-      title: "Quiz-2",
-      topic: "Synonyms",
-      attempted: 31,
-      avgScore: 76,
-      topper: "Aarav - 96",
-      pass: 28,
-      fail: 3,
+      quizName: "Vocabulary Quiz - Synonyms",
+      sectionResults: [
+        { classRef: "8th A", attempted: 35, avgScore: 73, topper: "Moksha - 94", pass: 30, fail: 5 },
+        { classRef: "9th B", attempted: 32, avgScore: 75, topper: "Karthik - 96", pass: 28, fail: 4 },
+      ],
     },
     {
       id: 3,
-      classRef: "10th A",
-      title: "Quiz-1",
-      topic: "Comprehension",
-      attempted: 33,
-      avgScore: 83,
-      topper: "Saanvi - 98",
-      pass: 31,
-      fail: 2,
+      quizName: "Comprehension",
+      sectionResults: [
+        { classRef: "10th A", attempted: 40, avgScore: 81, topper: "Saanvi - 97", pass: 37, fail: 3 },
+        { classRef: "9th B", attempted: 28, avgScore: 78, topper: "Diya - 93", pass: 25, fail: 3 },
+      ],
     },
   ];
 
@@ -296,7 +291,33 @@ export function ToolModal({ activeTool, onClose }) {
     Telugu: "#06b6d4",
   };
   const enrolledStudents = enrolledByClass[selectedEnrollClass] || [];
-  const selectedQuizResult = quizResultItems.find((item) => item.id === selectedQuizResultId) || null;
+  const selectedQuiz = quizResultItems.find((item) => item.id === selectedQuizName) || null;
+
+  function handleNoteFileUpload(noteId, event) {
+    const files = Array.from(event.target.files || []);
+    files.forEach((file) => {
+      setNoteAttachments((prev) => ({
+        ...prev,
+        [noteId]: [
+          ...(prev[noteId] || []),
+          {
+            id: Date.now() + Math.random(),
+            name: file.name,
+            type: file.type,
+            size: file.size,
+          },
+        ],
+      }));
+    });
+    event.target.value = "";
+  }
+
+  function removeNoteAttachment(noteId, attachId) {
+    setNoteAttachments((prev) => ({
+      ...prev,
+      [noteId]: (prev[noteId] || []).filter((att) => att.id !== attachId),
+    }));
+  }
 
   function addQuiz() {
     if (!quizTitle.trim()) return;
@@ -326,8 +347,9 @@ export function ToolModal({ activeTool, onClose }) {
 
   function addNote() {
     if (!noteText.trim()) return;
-    setNotes((prev) => [{ id: Date.now(), classRef: selectedClass, text: noteText.trim() }, ...prev]);
+    setNotes((prev) => [{ id: Date.now() + Math.random(), classRef: selectedClass, text: noteText.trim(), attachments: noteAttachments["temp"] || [] }, ...prev]);
     setNoteText("");
+    setNoteAttachments((prev) => ({ ...prev, temp: [] }));
   }
 
   function addAnnouncement() {
@@ -565,23 +587,6 @@ export function ToolModal({ activeTool, onClose }) {
               </div>
             ))}
           </div>
-
-          <div className="mt-4 rounded-xl border border-slate-200 bg-white p-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.09em] text-slate-500">Quiz leaderboard by section</p>
-            <div className="mt-2 space-y-2">
-              {sectionLeaderboard.map((row, index) => (
-                <div key={row.classRef} className="rounded-xl bg-slate-50 px-3 py-2.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm font-semibold text-slate-900">#{index + 1} {row.classRef}</p>
-                    <span className="rounded-full bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">
-                      Avg: {row.avgScore}%
-                    </span>
-                  </div>
-                  <p className="mt-1 text-xs text-slate-600">Attempts: {row.attempts} | Topper: {row.topper}</p>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       );
     }
@@ -589,34 +594,92 @@ export function ToolModal({ activeTool, onClose }) {
     if (activeTool === "quizResults") {
       return (
         <div className="mt-4 space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.09em] text-slate-500">Tap a quiz to view results</p>
-          <div className="space-y-2">
-            {quizResultItems.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setSelectedQuizResultId(item.id)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-left"
-              >
-                <p className="text-sm font-semibold text-slate-900">{item.classRef} - {item.title}</p>
-                <p className="text-xs text-slate-600">Topic: {item.topic}</p>
-              </button>
-            ))}
-          </div>
-
-          {selectedQuizResult ? (
-            <div className="rounded-xl border border-slate-200 bg-white p-3">
-              <p className="text-sm font-semibold text-slate-900">{selectedQuizResult.classRef} - {selectedQuizResult.title}</p>
-              <p className="mt-1 text-xs text-slate-600">Topic: {selectedQuizResult.topic}</p>
-              <div className="mt-2 grid grid-cols-2 gap-2 text-sm">
-                <p className="rounded-lg bg-slate-50 px-3 py-2 text-slate-700">Attempted: {selectedQuizResult.attempted}</p>
-                <p className="rounded-lg bg-slate-50 px-3 py-2 text-slate-700">Average: {selectedQuizResult.avgScore}%</p>
-                <p className="rounded-lg bg-emerald-50 px-3 py-2 text-emerald-700">Pass: {selectedQuizResult.pass}</p>
-                <p className="rounded-lg bg-rose-50 px-3 py-2 text-rose-700">Fail: {selectedQuizResult.fail}</p>
+          {!selectedQuizName ? (
+            <>
+              <p className="text-xs font-semibold uppercase tracking-[0.09em] text-slate-500">Select a quiz to view section-wise results</p>
+              <div className="space-y-2">
+                {quizResultItems.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedQuizName(item.id);
+                      setSelectedQuizSection(null);
+                    }}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-left hover:bg-[var(--app-accent-soft)]"
+                  >
+                    <p className="text-sm font-semibold text-slate-900">{item.quizName}</p>
+                    <p className="text-xs text-slate-600 mt-1">{item.sectionResults.length} section(s) attempted</p>
+                  </button>
+                ))}
               </div>
-              <p className="mt-2 text-sm text-slate-700">Topper: <span className="font-semibold">{selectedQuizResult.topper}</span></p>
-            </div>
-          ) : null}
+            </>
+          ) : selectedQuizSection ? (
+            <>
+              <button
+                type="button"
+                onClick={() => setSelectedQuizSection(null)}
+                className="flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900 mb-2"
+              >
+                ← Back to sections
+              </button>
+              <div className="rounded-xl border border-slate-200 bg-white p-3">
+                <p className="text-sm font-semibold text-slate-900">{selectedQuiz.quizName}</p>
+                <p className="mt-2 text-xs font-semibold uppercase tracking-[0.09em] text-slate-500">Results for {selectedQuizSection.classRef}</p>
+                <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
+                  <p className="rounded-lg bg-slate-50 px-3 py-2 text-slate-700">
+                    <span className="text-xs text-slate-600">Attempted:</span>{" "}
+                    <span className="font-semibold">{selectedQuizSection.attempted}</span>
+                  </p>
+                  <p className="rounded-lg bg-slate-50 px-3 py-2 text-slate-700">
+                    <span className="text-xs text-slate-600">Average:</span>{" "}
+                    <span className="font-semibold">{selectedQuizSection.avgScore}%</span>
+                  </p>
+                  <p className="rounded-lg bg-emerald-50 px-3 py-2 text-emerald-700">
+                    <span className="text-xs text-emerald-600">Pass:</span>{" "}
+                    <span className="font-semibold">{selectedQuizSection.pass}</span>
+                  </p>
+                  <p className="rounded-lg bg-rose-50 px-3 py-2 text-rose-700">
+                    <span className="text-xs text-rose-600">Fail:</span>{" "}
+                    <span className="font-semibold">{selectedQuizSection.fail}</span>
+                  </p>
+                </div>
+                <p className="mt-2 text-sm text-slate-700">
+                  Topper: <span className="font-semibold">{selectedQuizSection.topper}</span>
+                </p>
+              </div>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => setSelectedQuizName(null)}
+                className="flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900 mb-2"
+              >
+                ← Back to quizzes
+              </button>
+              <p className="text-sm font-semibold text-slate-900">{selectedQuiz.quizName}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.09em] text-slate-500 mt-2">Results by section</p>
+              <div className="space-y-2">
+                {selectedQuiz.sectionResults.map((section) => (
+                  <button
+                    key={section.classRef}
+                    type="button"
+                    onClick={() => setSelectedQuizSection(section)}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-left hover:bg-[var(--app-accent-soft)]"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm font-semibold text-slate-900">{section.classRef}</p>
+                      <span className="rounded-full bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">
+                        Avg: {section.avgScore}%
+                      </span>
+                    </div>
+                    <p className="mt-1 text-xs text-slate-600">Attempted: {section.attempted} | Topper: {section.topper}</p>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       );
     }
@@ -645,11 +708,71 @@ export function ToolModal({ activeTool, onClose }) {
               Add
             </button>
           </div>
+
+          {noteText && (
+            <div className="mt-2">
+              <button
+                type="button"
+                onClick={() => noteFileInputRef.current["temp"]?.click()}
+                className="flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+              >
+                <Paperclip className="h-3.5 w-3.5" />
+                Attach file
+              </button>
+              <input
+                ref={(el) => {
+                  if (el) noteFileInputRef.current["temp"] = el;
+                }}
+                type="file"
+                multiple
+                onChange={(e) => handleNoteFileUpload("temp", e)}
+                className="hidden"
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png"
+              />
+              {(noteAttachments["temp"] || []).length > 0 && (
+                <div className="mt-2 space-y-1">
+                  {(noteAttachments["temp"] || []).map((att) => (
+                    <div key={att.id} className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 text-xs text-slate-700">
+                        <Paperclip className="h-3.5 w-3.5" />
+                        {att.name}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeNoteAttachment("temp", att.id)}
+                        className="text-xs font-semibold text-rose-600 hover:text-rose-700"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="mt-3 space-y-2">
             {notes.map((note) => (
-              <div key={note.id} className="flex items-center justify-between gap-3 rounded-xl bg-slate-50 px-3 py-2.5 ring-1 ring-slate-200">
-                <p className="text-sm text-slate-800">{note.classRef}: {note.text}</p>
-                <button type="button" onClick={() => removeItem(setNotes, note.id)} className="text-xs font-semibold text-rose-600">Remove</button>
+              <div key={note.id} className="rounded-xl bg-slate-50 px-3 py-2.5 ring-1 ring-slate-200">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-slate-900">{note.classRef}</p>
+                    <p className="text-sm text-slate-800 mt-1">{note.text}</p>
+                    {note.attachments && note.attachments.length > 0 && (
+                      <div className="mt-2 space-y-1">
+                        {note.attachments.map((att) => (
+                          <div key={att.id} className="flex items-center gap-2 text-xs text-slate-600">
+                            <Paperclip className="h-3.5 w-3.5" />
+                            {att.name}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <button type="button" onClick={() => removeItem(setNotes, note.id)} className="text-xs font-semibold text-rose-600">
+                    Remove
+                  </button>
+                </div>
               </div>
             ))}
           </div>
