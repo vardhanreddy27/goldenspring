@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
-import { UserCircle2 } from "lucide-react";
+import { UserCircle2, X } from "lucide-react";
 import HomeTab from "@/components/student-dashboard/HomeTab";
 import AttendanceTab from "@/components/student-dashboard/AttendanceTab";
 import TimetableTab from "@/components/student-dashboard/TimetableTab";
 import AcademicsTab from "@/components/student-dashboard/AcademicsTab";
-import MoreTab, { getInitialStudentProfile } from "@/components/student-dashboard/MoreTab";
+import MoreTab, { getInitialStudentProfile, StudentProfileBottomSheet } from "@/components/student-dashboard/MoreTab";
 import { studentMenuItems } from "@/components/student-dashboard/data";
 import ParentHomeTab from "@/components/parent-dashboard/ParentHomeTab";
 import ParentHomeworkTab from "@/components/parent-dashboard/ParentHomeworkTab";
@@ -156,6 +156,8 @@ export default function FamilyDashboard({ initialRole = "student" }) {
   const router = useRouter();
   const [activeRole, setActiveRole] = useState(() => getInitialRole(initialRole));
   const [activeMenu, setActiveMenu] = useState(() => roleConfig[getInitialRole(initialRole)]?.defaultMenu || "home");
+  const [studentProfileSheetOpen, setStudentProfileSheetOpen] = useState(false);
+  const [parentProfileSheetOpen, setParentProfileSheetOpen] = useState(false);
   const [profileSaving, setProfileSaving] = useState(false);
   const [studentProfileForm, setStudentProfileForm] = useState(getInitialStudentProfile());
   const [parentProfileForm, setParentProfileForm] = useState(getInitialParentProfile());
@@ -187,6 +189,12 @@ export default function FamilyDashboard({ initialRole = "student" }) {
   function handleRoleChange(nextRole) {
     setActiveRole(nextRole);
     setActiveMenu(roleConfig[nextRole].defaultMenu);
+    setStudentProfileSheetOpen(false);
+    setParentProfileSheetOpen(false);
+  }
+
+  function handleMenuChange(nextMenu) {
+    setActiveMenu(nextMenu);
   }
 
   function handleStudentProfileChange(event) {
@@ -199,6 +207,23 @@ export default function FamilyDashboard({ initialRole = "student" }) {
 
     if (typeof window !== "undefined") {
       window.localStorage.setItem("studentProfile", JSON.stringify(studentProfileForm));
+    }
+
+    setTimeout(() => {
+      setProfileSaving(false);
+    }, 500);
+  }
+
+  function handleParentProfileChange(event) {
+    const { name, value } = event.target;
+    setParentProfileForm((prev) => ({ ...prev, [name]: value }));
+  }
+
+  function handleParentProfileSave() {
+    setProfileSaving(true);
+
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("parentProfile", JSON.stringify(parentProfileForm));
     }
 
     setTimeout(() => {
@@ -220,7 +245,7 @@ export default function FamilyDashboard({ initialRole = "student" }) {
         activeRole={activeRole}
         activeMenu={activeMenu}
         onRoleChange={handleRoleChange}
-        onMenuChange={setActiveMenu}
+        onMenuChange={handleMenuChange}
         onLogout={handleLogout}
       />
 
@@ -285,11 +310,11 @@ export default function FamilyDashboard({ initialRole = "student" }) {
                     type="button"
                     onClick={() => {
                       if (isStudent) {
-                        setActiveMenu("more");
+                        setStudentProfileSheetOpen(true);
                         return;
                       }
 
-                      handleRoleChange("student");
+                      setParentProfileSheetOpen(true);
                     }}
                     className="p-1 text-slate-500 transition-all duration-150 hover:text-slate-800 active:scale-90 lg:hidden"
                     aria-label="Open profile"
@@ -329,8 +354,152 @@ export default function FamilyDashboard({ initialRole = "student" }) {
           </div>
         </div>
 
-        <FamilyBottomNav activeRole={activeRole} activeMenu={activeMenu} onMenuChange={setActiveMenu} />
+        <FamilyBottomNav activeRole={activeRole} activeMenu={activeMenu} onMenuChange={handleMenuChange} />
       </main>
+
+      <StudentProfileBottomSheet
+        open={studentProfileSheetOpen}
+        onClose={() => setStudentProfileSheetOpen(false)}
+        profile={studentProfileForm}
+        onProfileChange={handleStudentProfileChange}
+        onProfileSave={handleStudentProfileSave}
+        profileSaving={profileSaving}
+        onLogout={handleLogout}
+      />
+
+      <ParentProfileBottomSheet
+        open={parentProfileSheetOpen}
+        onClose={() => setParentProfileSheetOpen(false)}
+        profile={parentProfileForm}
+        onProfileChange={handleParentProfileChange}
+        onProfileSave={handleParentProfileSave}
+        profileSaving={profileSaving}
+        onLogout={handleLogout}
+      />
+    </div>
+  );
+}
+
+function ParentProfileBottomSheet({
+  open,
+  onClose,
+  profile,
+  onProfileChange,
+  onProfileSave,
+  profileSaving,
+  onLogout,
+}) {
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end bg-slate-950/40" onClick={onClose}>
+      <div className="w-full rounded-t-3xl bg-white p-5 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+        <div className="mx-auto mb-3 h-1.5 w-16 rounded-full bg-slate-200" />
+
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="text-lg font-semibold text-slate-900">Parent profile details</h3>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full border border-slate-300 p-2 text-slate-600 hover:bg-slate-50"
+            aria-label="Close profile popup"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <form
+          className="mt-4 grid gap-3"
+          onSubmit={(event) => {
+            event.preventDefault();
+            onProfileSave();
+          }}
+        >
+          <div>
+            <label htmlFor="parent-profile-name" className="text-sm font-medium text-slate-600">Parent name</label>
+            <input
+              id="parent-profile-name"
+              name="parentName"
+              value={profile.parentName}
+              onChange={onProfileChange}
+              className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="parent-profile-contact" className="text-sm font-medium text-slate-600">Contact</label>
+            <input
+              id="parent-profile-contact"
+              name="contact"
+              value={profile.contact}
+              onChange={onProfileChange}
+              className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="parent-profile-child" className="text-sm font-medium text-slate-600">Child name</label>
+            <input
+              id="parent-profile-child"
+              name="childName"
+              value={profile.childName}
+              onChange={onProfileChange}
+              className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
+            />
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div>
+              <label htmlFor="parent-profile-class" className="text-sm font-medium text-slate-600">Child class</label>
+              <input
+                id="parent-profile-class"
+                name="childClass"
+                value={profile.childClass}
+                onChange={onProfileChange}
+                className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
+              />
+            </div>
+            <div>
+              <label htmlFor="parent-profile-section" className="text-sm font-medium text-slate-600">Child section</label>
+              <input
+                id="parent-profile-section"
+                name="childSection"
+                value={profile.childSection}
+                onChange={onProfileChange}
+                className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="parent-profile-roll" className="text-sm font-medium text-slate-600">Child roll number</label>
+            <input
+              id="parent-profile-roll"
+              name="childRollNumber"
+              value={profile.childRollNumber}
+              onChange={onProfileChange}
+              className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
+            />
+          </div>
+
+          <div className="grid gap-2 sm:grid-cols-2">
+            <button
+              type="submit"
+              disabled={profileSaving}
+              className="w-full rounded-2xl bg-[#c79216] px-4 py-3 text-sm font-semibold text-white hover:bg-[#b07e10] disabled:cursor-not-allowed disabled:bg-[#e6cc8a]"
+            >
+              {profileSaving ? "Saving..." : "Update profile"}
+            </button>
+            <button
+              type="button"
+              onClick={onLogout}
+              className="w-full rounded-2xl bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-200"
+            >
+              Logout
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
