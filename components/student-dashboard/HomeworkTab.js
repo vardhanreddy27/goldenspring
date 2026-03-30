@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import { CalendarDays, CheckCircle2, ChevronLeft, ChevronRight, CircleAlert, ClipboardList } from "lucide-react";
+import { CalendarDays, CheckCircle2, ChevronLeft, ChevronRight, CircleAlert } from "lucide-react";
 import { studentAssignments } from "./data";
 
 function startOfDay(date) {
@@ -66,7 +66,6 @@ export default function HomeworkTab() {
         dueKey: keyOf(due),
         imageSrc: subjectImageMap[normalized] || "/logo.png",
         isComplete,
-        marks: "10 marks",
         daysLeft,
       };
     });
@@ -84,20 +83,25 @@ export default function HomeworkTab() {
 
   const assignmentCards =
     activeSegment === "homework"
-      ? withMeta.sort((a, b) => a.due - b.due)
+      ? tasksForSelectedDate.sort((a, b) => a.due - b.due)
       : [...pendingAssignments, ...completedAssignments].sort((a, b) => a.subject.localeCompare(b.subject));
   const homeworkCards = useMemo(() => {
-    const primary = [...assignmentCards];
+    const sortHomeworkCards = (a, b) => {
+      if (a.isComplete !== b.isComplete) return a.isComplete ? 1 : -1;
+      return a.due - b.due;
+    };
+
+    const primary = [...tasksForSelectedDate].sort(sortHomeworkCards);
 
     if (primary.length >= 3) return primary.slice(0, 3);
 
     const existing = new Set(primary.map((item) => item.id));
-    const fallback = withMeta
-      .sort((a, b) => a.due - b.due)
+    const fallback = [...withMeta]
+      .sort(sortHomeworkCards)
       .filter((item) => !existing.has(item.id));
 
     return [...primary, ...fallback].slice(0, 3);
-  }, [assignmentCards, withMeta]);
+  }, [tasksForSelectedDate, withMeta]);
 
   const groupedAssignments = useMemo(() => {
     const grouped = {};
@@ -158,10 +162,10 @@ export default function HomeworkTab() {
 
   const getCardTone = (isComplete) => {
     if (isComplete) {
-      return "border-emerald-300 bg-emerald-50/70";
+      return "border border-emerald-300 bg-white";
     }
 
-    return "border-amber-300 bg-white";
+    return "bg-white";
   };
 
   return (
@@ -223,13 +227,13 @@ export default function HomeworkTab() {
         </div>
       </section>
 
-      <section className="rounded-3xl bg-slate-100 p-1">
+      <section className="rounded-3xl border border-white bg-slate-100 p-1">
         <div className="grid grid-cols-2 gap-1">
           <button
             type="button"
             onClick={() => setActiveSegment("homework")}
             className={`rounded-2xl py-3 text-lg font-semibold transition-all ${
-              activeSegment === "homework" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"
+              activeSegment === "homework" ? "border border-white bg-white text-slate-900 shadow-sm" : "border border-transparent text-slate-500"
             }`}
           >
             Home Work
@@ -238,7 +242,7 @@ export default function HomeworkTab() {
             type="button"
             onClick={() => setActiveSegment("assignments")}
             className={`rounded-2xl py-3 text-lg font-semibold transition-all ${
-              activeSegment === "assignments" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"
+              activeSegment === "assignments" ? "border border-white bg-white text-slate-900 shadow-sm" : "border border-transparent text-slate-500"
             }`}
           >
             Assignments
@@ -257,7 +261,7 @@ export default function HomeworkTab() {
         <div className="space-y-4">
           {activeSegment === "homework" && homeworkCards.map((hw) => {
             return (
-              <article key={`${activeSegment}-${hw.id}`} className={`rounded-3xl border p-4 ${getCardTone(hw.isComplete)}`}>
+              <article key={`${activeSegment}-${hw.id}`} className={`rounded-3xl p-4 ${getCardTone(hw.isComplete)}`}>
                 <div className="mb-3 flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <span className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden">
@@ -284,11 +288,7 @@ export default function HomeworkTab() {
                   <div className="flex flex-wrap items-center gap-2 text-sm text-slate-600">
                     <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1">
                       <CalendarDays className="h-4 w-4" />
-                      {hw.due.toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}
-                    </span>
-                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1">
-                      <ClipboardList className="h-4 w-4" />
-                      {hw.marks}
+                      {selectedDate.toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}
                     </span>
                   </div>
 
@@ -343,7 +343,9 @@ export default function HomeworkTab() {
           )}
 
           {activeSegment === "homework" && homeworkCards.length === 0 && (
-            <p className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">No homework available.</p>
+            <p className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
+              No homework available for {selectedDate.toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}.
+            </p>
           )}
         </div>
       </section>

@@ -33,7 +33,7 @@ export const studentTodaySchedule = [
 export const studentAssignments = [
   { id: 1, subject: "English", title: "Essay writing", dueDate: "2026-03-28", status: "Pending" },
   { id: 2, subject: "Maths", title: "Algebra worksheet", dueDate: "2026-03-29", status: "Pending" },
-  { id: 3, subject: "Science", title: "Digestive system diagram", dueDate: "2026-03-30", status: "Pending" },
+  { id: 3, subject: "Hindi", title: "Reading comprehension", dueDate: "2026-03-30", status: "Submitted" },
   { id: 4, subject: "Telugu", title: "Poem reading", dueDate: "2026-03-27", status: "Submitted" },
 ];
 

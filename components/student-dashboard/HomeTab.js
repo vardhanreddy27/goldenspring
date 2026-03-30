@@ -383,21 +383,21 @@ export default function HomeTab() {
 
                   <article className={`min-w-0 overflow-hidden rounded-3xl ${slot.cardTone}`}>
                     <div className="flex min-h-20.5 items-stretch">
-                      <div className={`relative flex shrink-0 items-center justify-center bg-white/30 ${slot.imageSrc ? "w-20" : "w-14"}`}>
+                      <div className={`relative flex shrink-0 items-center justify-end bg-white/30 ${slot.imageSrc ? "w-16 sm:w-20" : "w-14"}`}>
                         {slot.imageSrc ? (
                           <Image
                             src={slot.imageSrc}
                             alt={`${slot.subject} icon`}
                             fill
                             sizes="80px"
-                            className="object-contain p-0.5"
+                            className="object-contain object-right"
                           />
                         ) : (
                           <Icon className="h-7 w-7 text-slate-700" />
                         )}
                       </div>
-                      <div className="flex min-w-0 flex-1 items-center justify-center px-4">
-                        <p className="truncate text-center text-xl font-semibold leading-tight text-slate-900 sm:text-2xl">
+                      <div className="flex min-w-0 flex-1 items-center justify-start px-1 sm:px-2">
+                        <p className="truncate text-left text-xl font-semibold leading-tight text-slate-900 sm:text-2xl">
                           {slot.subject}
                         </p>
                       </div>
