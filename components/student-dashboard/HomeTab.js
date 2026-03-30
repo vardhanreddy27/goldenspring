@@ -1,5 +1,41 @@
 import { studentAssignments, studentAnnouncements, studentTodaySchedule, subjectProgress } from "@/components/student-dashboard/data";
 
+function HalfProgressGauge({ value }) {
+  const clamped = Math.max(0, Math.min(100, value));
+
+  return (
+    <div className="mx-auto mt-1 w-full max-w-36 sm:max-w-40">
+      <svg viewBox="0 0 120 80" className="h-auto w-full" aria-hidden="true">
+        <path
+          d="M 10 70 A 50 50 0 0 1 110 70"
+          fill="none"
+          stroke="#e2e8f0"
+          strokeWidth="10"
+          strokeLinecap="round"
+        />
+        <path
+          d="M 10 70 A 50 50 0 0 1 110 70"
+          fill="none"
+          stroke="#0ea5e9"
+          strokeWidth="10"
+          strokeLinecap="round"
+          pathLength="100"
+          strokeDasharray={`${clamped} 100`}
+        />
+        <text
+          x="60"
+          y="62"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          className="fill-slate-950 text-[20px] font-semibold sm:text-[24px]"
+        >
+          {clamped}%
+        </text>
+      </svg>
+    </div>
+  );
+}
+
 export default function HomeTab() {
   const pendingHomework = studentAssignments.filter((item) => item.status !== "Submitted");
   const averageScore = Math.round(
@@ -69,34 +105,42 @@ export default function HomeTab() {
       <section className="mt-4">
         <h2 className="text-xl font-semibold text-slate-900">Key Metrics</h2>
         <div className="mt-3 grid grid-cols-2 gap-3">
-          <article className="rounded-3xl bg-white p-4 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.35)]">
+          <article className="grid min-h-52 grid-rows-[auto_1fr_auto] overflow-hidden rounded-3xl bg-white p-4 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.35)]">
             <p className="text-sm text-slate-500">Quiz Performance</p>
-            <p className="mt-2 text-3xl font-semibold text-slate-950">{averageScore}%</p>
-            <p className="mt-2 inline-flex rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
+            <div className="flex items-center justify-center">
+              <HalfProgressGauge value={averageScore} />
+            </div>
+            <p className="inline-flex self-start rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
               Average quiz score
             </p>
           </article>
 
-          <article className="rounded-3xl bg-white p-4 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.35)]">
+          <article className="grid min-h-52 grid-rows-[auto_1fr_auto] overflow-hidden rounded-3xl bg-white p-4 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.35)]">
             <p className="text-sm text-slate-500">Homework Due</p>
-            <p className="mt-2 text-3xl font-semibold text-slate-950">{pendingHomework.length}</p>
-            <p className="mt-2 inline-flex rounded-full bg-[#fff4d6] px-3 py-1 text-xs font-semibold text-[#8b6400]">
-              Tasks pending submission
+            <div className="flex items-center">
+              <p className="text-4xl font-semibold leading-none text-slate-950 sm:text-5xl">{pendingHomework.length}</p>
+            </div>
+            <p className="inline-flex self-start rounded-full bg-[#fff4d6] px-3 py-1 text-xs font-semibold text-[#8b6400]">
+              Pending Tasks 
             </p>
           </article>
 
-          <article className="rounded-3xl bg-white p-4 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.35)]">
+          <article className="grid min-h-52 grid-rows-[auto_1fr_auto] overflow-hidden rounded-3xl bg-white p-4 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.35)]">
             <p className="text-sm text-slate-500">Announcements</p>
-            <p className="mt-2 text-3xl font-semibold text-slate-950">{studentAnnouncements.length}</p>
-            <p className="mt-2 inline-flex rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">
+            <div className="flex items-center">
+              <p className="text-4xl font-semibold leading-none text-slate-950 sm:text-5xl">{studentAnnouncements.length}</p>
+            </div>
+            <p className="inline-flex self-start rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">
               Latest school updates
             </p>
           </article>
 
-          <article className="rounded-3xl bg-white p-4 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.35)]">
+          <article className="grid min-h-52 grid-rows-[auto_1fr_auto] overflow-hidden rounded-3xl bg-white p-4 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.35)]">
             <p className="text-sm text-slate-500">Weak Subjects</p>
-            <p className="mt-2 text-xl font-semibold text-slate-950">{weakSubjects || "None"}</p>
-            <p className="mt-2 inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+            <div className="flex items-center">
+              <p className="text-lg font-semibold leading-tight text-slate-950 sm:text-xl">{weakSubjects || "None"}</p>
+            </div>
+            <p className="inline-flex self-start rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
               Need extra focus
             </p>
           </article>
