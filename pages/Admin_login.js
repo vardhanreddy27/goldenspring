@@ -211,7 +211,7 @@ export default function Admin_login() {
           <form className="w-full space-y-4" onSubmit={handleCredentialsLogin}>
             <div className="mb-1">
               <h2 className="text-2xl font-semibold text-slate-900">Sign In</h2>
-              <p className="mt-1 text-sm text-slate-500">Welcome back, admin.</p>
+              <p className="mt-1 text-sm text-slate-500">Welcome back, Shiva.</p>
             </div>
 
             <div>

@@ -1,23 +1,106 @@
-import { studentAssignments, studentAnnouncements, studentSummary, studentTodaySchedule } from "@/components/student-dashboard/data";
-
-function toneClasses(tone) {
-  if (tone === "emerald") return "bg-emerald-50 text-emerald-700";
-  if (tone === "blue") return "bg-sky-50 text-sky-700";
-  if (tone === "rose") return "bg-rose-50 text-rose-700";
-  return "bg-[#fff4d6] text-[#8b6400]";
-}
+import { studentAssignments, studentAnnouncements, studentTodaySchedule, subjectProgress } from "@/components/student-dashboard/data";
 
 export default function HomeTab() {
+  const pendingHomework = studentAssignments.filter((item) => item.status !== "Submitted");
+  const averageScore = Math.round(
+    subjectProgress.reduce((sum, item) => sum + item.score, 0) / Math.max(subjectProgress.length, 1)
+  );
+  const orderedSubjects = ["Telugu", "Hindi", "English", "Mathematics", "Science", "Social"];
+  const subjectScoreMap = subjectProgress.reduce((map, item) => {
+    map[item.subject] = item.score;
+    return map;
+  }, {});
+  const subjectBars = orderedSubjects.map((subject) => ({
+    subject,
+    score: subjectScoreMap[subject] ?? 0,
+  }));
+  const chartBarColors = [
+    "bg-amber-500",
+    "bg-violet-500",
+    "bg-sky-500",
+    "bg-cyan-500",
+    "bg-emerald-500",
+    "bg-rose-500",
+  ];
+  const weakSubjects = [...subjectProgress]
+    .sort((a, b) => a.score - b.score)
+    .slice(0, 2)
+    .map((item) => item.subject)
+    .join(", ");
+
   return (
     <>
-      <section className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {studentSummary.map((item, index) => (
-          <article key={item.title} className="stagger-item rounded-3xl bg-white p-4 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.35)]" style={{ "--stagger-delay": `${50 + index * 40}ms` }}>
-            <p className="text-sm text-slate-500">{item.title}</p>
-            <p className="mt-2 text-3xl font-semibold text-slate-950">{item.value}</p>
-            <p className={`mt-2 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toneClasses(item.tone)}`}>{item.note}</p>
+      <section className="mt-4 rounded-4xl bg-white p-4 shadow-[0_14px_34px_-24px_rgba(15,23,42,0.25)] sm:p-5">
+        <h2 className="mt-1 text-2xl font-semibold">Subject Performance</h2>
+
+        <div className="mt-4 rounded-3xl py-3 pe-3">
+          <div className="grid grid-cols-[2.8rem_1fr]">
+            <div className="flex h-52 items-center justify-center text-[11px] font-semibold text-slate-500">
+              <span style={{ writingMode: "vertical-rl" }} className="-rotate-180 text-center">
+                Percentage (%) of marks scored
+              </span>
+            </div>
+
+            <div>
+              <div className="relative h-52">
+                <div className="relative z-10 grid h-full grid-cols-6 items-end gap-2">
+                  {subjectBars.map((item, index) => (
+                    <div key={item.subject} className="flex h-full flex-col items-center justify-end gap-1">
+                      <span className="text-[11px] font-semibold text-slate-700">{item.score}%</span>
+                      <div
+                        className={`w-full rounded-t-lg border border-slate-300/70 transition-all duration-300 ${chartBarColors[index % chartBarColors.length]}`}
+                        style={{ height: `${Math.max(item.score, 10)}%` }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-2 grid grid-cols-6 gap-2 text-center text-[11px] font-semibold text-slate-600">
+                {subjectBars.map((item) => (
+                  <span key={item.subject}>{item.subject.slice(0, 3)}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mt-4">
+        <h2 className="text-xl font-semibold text-slate-900">Key Metrics</h2>
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          <article className="rounded-3xl bg-white p-4 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.35)]">
+            <p className="text-sm text-slate-500">Quiz Performance</p>
+            <p className="mt-2 text-3xl font-semibold text-slate-950">{averageScore}%</p>
+            <p className="mt-2 inline-flex rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
+              Average quiz score
+            </p>
           </article>
-        ))}
+
+          <article className="rounded-3xl bg-white p-4 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.35)]">
+            <p className="text-sm text-slate-500">Homework Due</p>
+            <p className="mt-2 text-3xl font-semibold text-slate-950">{pendingHomework.length}</p>
+            <p className="mt-2 inline-flex rounded-full bg-[#fff4d6] px-3 py-1 text-xs font-semibold text-[#8b6400]">
+              Tasks pending submission
+            </p>
+          </article>
+
+          <article className="rounded-3xl bg-white p-4 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.35)]">
+            <p className="text-sm text-slate-500">Announcements</p>
+            <p className="mt-2 text-3xl font-semibold text-slate-950">{studentAnnouncements.length}</p>
+            <p className="mt-2 inline-flex rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">
+              Latest school updates
+            </p>
+          </article>
+
+          <article className="rounded-3xl bg-white p-4 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.35)]">
+            <p className="text-sm text-slate-500">Weak Subjects</p>
+            <p className="mt-2 text-xl font-semibold text-slate-950">{weakSubjects || "None"}</p>
+            <p className="mt-2 inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+              Need extra focus
+            </p>
+          </article>
+        </div>
       </section>
 
       <section className="mt-4 grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">

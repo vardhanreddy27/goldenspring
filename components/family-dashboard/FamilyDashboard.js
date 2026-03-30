@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
-import { UserCircle2, X } from "lucide-react";
+import { X } from "lucide-react";
 import Image from "next/image";
 import HomeTab from "@/components/student-dashboard/HomeTab";
+import HomeworkTab from "@/components/student-dashboard/HomeworkTab";
 import AttendanceTab from "@/components/student-dashboard/AttendanceTab";
 import TimetableTab from "@/components/student-dashboard/TimetableTab";
 import AcademicsTab from "@/components/student-dashboard/AcademicsTab";
 import MoreTab, { getInitialStudentProfile, StudentProfileBottomSheet } from "@/components/student-dashboard/MoreTab";
-import { studentMenuItems } from "@/components/student-dashboard/data";
+import { attendanceLog, studentMenuItems } from "@/components/student-dashboard/data";
 import ParentHomeTab from "@/components/parent-dashboard/ParentHomeTab";
 import ParentHomeworkTab from "@/components/parent-dashboard/ParentHomeworkTab";
 import ParentAttendanceTab from "@/components/parent-dashboard/ParentAttendanceTab";
@@ -177,6 +178,8 @@ export default function FamilyDashboard({ initialRole = "student" }) {
     return `${parentProfileForm.childClass || "-"} Std • Section ${parentProfileForm.childSection || "-"}`;
   }, [isStudent, studentProfileForm.className, studentProfileForm.section, parentProfileForm.childClass, parentProfileForm.childSection]);
 
+  const attendancePercentage = 75;
+
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
@@ -270,7 +273,7 @@ export default function FamilyDashboard({ initialRole = "student" }) {
 
                   <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
                     {isStudent
-                      ? `Welcome, ${studentProfileForm.name || "Student"}`
+                      ? `Welcome Shiva`
                       : `Welcome, ${parentProfileForm.parentName || "Parent"}`}
                   </h1>
 
@@ -291,6 +294,7 @@ export default function FamilyDashboard({ initialRole = "student" }) {
                       </>
                     )}
                   </div>
+
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -324,10 +328,33 @@ export default function FamilyDashboard({ initialRole = "student" }) {
                     className="p-1 text-slate-500 transition-all duration-150 hover:text-slate-800 active:scale-90 lg:hidden"
                     aria-label="Open profile"
                   >
-                    <UserCircle2 className="h-7 w-7" />
+                    <span className="block h-12 w-12 overflow-hidden rounded-full border border-slate-200 bg-white p-0.5 shadow-sm">
+                      <Image
+                        src={isStudent ? "/student.webp" : "/student2.png"}
+                        alt={isStudent ? "Student profile" : "Parent profile"}
+                        width={48}
+                        height={48}
+                        className="h-full w-full object-cover"
+                      />
+                    </span>
                   </button>
                 </div>
               </div>
+
+              {isStudent ? (
+                <div className="mt-5">
+                  <div className="mb-2 flex items-center justify-between text-sm">
+                    <p className="font-semibold text-slate-800">Attendance</p>
+                    <p className="font-bold text-emerald-700">{attendancePercentage}%</p>
+                  </div>
+                  <div className="h-2.5 w-full overflow-hidden rounded-full bg-emerald-200/70">
+                    <div
+                      className="h-full rounded-full bg-emerald-500 transition-all duration-300"
+                      style={{ width: `${attendancePercentage}%` }}
+                    />
+                  </div>
+                </div>
+              ) : null}
             </section>
           ) : null}
 
@@ -335,7 +362,7 @@ export default function FamilyDashboard({ initialRole = "student" }) {
             {isStudent ? (
               <>
                 {activeMenu === "home" ? <HomeTab /> : null}
-                {activeMenu === "attendance" ? <AttendanceTab /> : null}
+                {activeMenu === "homework" ? <HomeworkTab /> : null}
                 {activeMenu === "timetable" ? <TimetableTab /> : null}
                 {activeMenu === "academics" ? <AcademicsTab /> : null}
                 {activeMenu === "more" ? (

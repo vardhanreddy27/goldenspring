@@ -1,9 +1,81 @@
-import { studentProfileDefaults, studentResources } from "@/components/student-dashboard/data";
+import { studentProfileDefaults, studentResources, attendanceMonthly, attendanceLog } from "@/components/student-dashboard/data";
 import { X } from "lucide-react";
 
 export default function MoreTab({ profile, onProfileChange, onProfileSave, profileSaving }) {
+  const currentMonth = new Date().toLocaleString("en-US", { month: "long", year: "numeric" });
+  const totalDays = attendanceLog.length;
+  const presentDays = attendanceLog.filter((log) => log.status === "Present").length;
+  const attendancePercentage = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 0;
+
   return (
     <section className="mt-4 grid gap-4">
+      {/* Attendance Section */}
+      <article className="rounded-4xl bg-white p-6 shadow-[0_14px_34px_-24px_rgba(15,23,42,0.25)]">
+        <p className="text-sm text-slate-500">School records</p>
+        <h2 className="mt-1 text-2xl font-semibold">Attendance</h2>
+
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          <div className="rounded-2xl bg-emerald-50 p-4">
+            <p className="text-sm text-slate-600">Overall attendance</p>
+            <p className="mt-2 text-4xl font-bold text-emerald-700">{attendancePercentage}%</p>
+            <p className="mt-2 text-sm text-slate-600">Present {presentDays} / {totalDays} days</p>
+          </div>
+
+          <div className="rounded-2xl bg-slate-50 p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-slate-600">Present:</span>
+              <span className="font-semibold text-emerald-700">{presentDays}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-slate-600">Absent:</span>
+              <span className="font-semibold text-rose-700">{totalDays - presentDays}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-slate-600">Target:</span>
+              <span className="font-semibold text-[#c79216]">95%</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <h3 className="text-sm font-semibold text-slate-600 mb-3">MONTHLY BREAKDOWN</h3>
+          <div className="grid gap-2">
+            {attendanceMonthly.map((month, idx) => (
+              <div key={idx} className="flex items-center justify-between rounded-lg bg-slate-50 p-3">
+                <span className="font-medium text-slate-900">{month.label}</span>
+                <span className="text-xs text-slate-600">
+                  Present: {month.present} | Absent: {month.absent}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <h3 className="text-sm font-semibold text-slate-600 mb-3">RECENT RECORDS</h3>
+          <div className="space-y-2 max-h-40 overflow-y-auto">
+            {attendanceLog.slice(0, 7).map((log, idx) => (
+              <div key={idx} className="flex items-center justify-between rounded-lg bg-slate-50 p-3 text-sm">
+                <div>
+                  <p className="font-medium text-slate-900">{new Date(log.date).toLocaleDateString("en-IN", { month: "short", day: "numeric" })}</p>
+                  <p className="text-xs text-slate-500">{log.note}</p>
+                </div>
+                <span
+                  className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                    log.status === "Present"
+                      ? "bg-emerald-100 text-emerald-700"
+                      : "bg-rose-100 text-rose-700"
+                  }`}
+                >
+                  {log.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </article>
+
+      {/* Resources Section */}
       <article className="rounded-4xl bg-white p-6 shadow-[0_14px_34px_-24px_rgba(15,23,42,0.25)]">
         <p className="text-sm text-slate-500">Notes and resources</p>
         <h2 className="mt-1 text-2xl font-semibold">Notes and files</h2>

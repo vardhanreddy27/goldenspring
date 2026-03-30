@@ -10,7 +10,7 @@ import {
 
 export const studentMenuItems = [
   { id: "home", label: "Home", icon: LayoutGrid },
-  { id: "attendance", label: "Attendance", icon: ClipboardCheck },
+  { id: "homework", label: "Homework", icon: BookOpen },
   { id: "timetable", label: "Timetable", icon: CalendarDays },
   { id: "academics", label: "Academics", icon: GraduationCap },
   { id: "more", label: "More", icon: UserCircle2 },
