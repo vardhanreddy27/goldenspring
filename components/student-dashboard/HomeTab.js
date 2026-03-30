@@ -1,4 +1,5 @@
 import { studentAssignments, studentAnnouncements, studentTodaySchedule, subjectProgress } from "@/components/student-dashboard/data";
+import { PiLightbulbFilamentBold } from "react-icons/pi";
 
 function HalfProgressGauge({ value }) {
   const clamped = Math.max(0, Math.min(100, value));
@@ -64,11 +65,10 @@ export default function HomeTab() {
     "bg-emerald-500",
     "bg-rose-500",
   ];
-  const weakSubjects = [...subjectProgress]
-    .sort((a, b) => a.score - b.score)
-    .slice(0, 2)
-    .map((item) => item.subject)
-    .join(", ");
+  const weakSubjectItems = [
+    { subject: "Maths", score: 52, tip: "Revise formulas and solve 5 mixed problems daily." },
+    { subject: "Science", score: 48, tip: "Read one concept summary and practice one diagram." },
+  ];
 
   return (
     <>
@@ -157,14 +157,34 @@ export default function HomeTab() {
               </ul>
             </div>
             <p className="inline-flex self-start rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">
-              Latest school updates
+               School updates
             </p>
           </article>
 
           <article className="grid min-h-52 grid-rows-[auto_1fr_auto] overflow-hidden rounded-3xl bg-white p-4 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.35)]">
             <p className="text-sm text-slate-500">Weak Subjects</p>
-            <div className="flex items-center">
-              <p className="text-lg font-semibold leading-tight text-slate-950 sm:text-xl">{weakSubjects || "None"}</p>
+            <div className="min-w-0 space-y-3 self-center">
+              {weakSubjectItems.map((item) => (
+                <div key={item.subject} className="min-w-0 space-y-1.5">
+                  <p className="text-base font-semibold text-slate-900">{item.subject}</p>
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="h-2.5 flex-1 overflow-hidden rounded-full border border-slate-300/80 bg-slate-100"
+                      style={{
+                        backgroundImage:
+                          "repeating-linear-gradient(135deg, rgba(148,163,184,0.3) 0, rgba(148,163,184,0.3) 4px, rgba(241,245,249,0.95) 4px, rgba(241,245,249,0.95) 8px)",
+                      }}
+                    >
+                      <div className="h-full rounded-full bg-emerald-500" style={{ width: `${item.score}%` }} />
+                    </div>
+                    <span className="text-xs font-semibold text-slate-700">{item.score}%</span>
+                  </div>
+                  <p className="flex min-w-0 items-center gap-1.5 text-[11px] text-slate-600">
+                    <PiLightbulbFilamentBold className="h-3.5 w-3.5 shrink-0 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.7)]" />
+                    <span className="block min-w-0 flex-1 truncate whitespace-nowrap" title={item.tip}>{item.tip}</span>
+                  </p>
+                </div>
+              ))}
             </div>
             <p className="inline-flex self-start rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
               Need extra focus

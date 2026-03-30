@@ -77,7 +77,7 @@ export const upcomingTests = [
 
 export const subjectProgress = [
   { subject: "English", completion: 82, score: 78 },
-  { subject: "Mathematics", completion: 76, score: 74 },
+  { subject: "Maths", completion: 76, score: 74 },
   { subject: "Science", completion: 80, score: 81 },
   { subject: "Social", completion: 73, score: 77 },
   { subject: "Hindi", completion: 84, score: 80 },
