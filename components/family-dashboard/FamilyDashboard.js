@@ -1,3 +1,17 @@
+import { studentProfileDefaults } from "@/components/student-dashboard/data";
+function getInitialStudentProfile() {
+  if (typeof window !== "undefined") {
+    const saved = window.localStorage.getItem("studentProfile");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return studentProfileDefaults;
+      }
+    }
+  }
+  return studentProfileDefaults;
+}
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { X } from "lucide-react";
@@ -7,7 +21,7 @@ import HomeworkTab from "@/components/student-dashboard/HomeworkTab";
 import AttendanceTab from "@/components/student-dashboard/AttendanceTab";
 import TimetableTab from "@/components/student-dashboard/TimetableTab";
 import AcademicsTab from "@/components/student-dashboard/AcademicsTab";
-import MoreTab, { getInitialStudentProfile, StudentProfileBottomSheet } from "@/components/student-dashboard/MoreTab";
+import MoreTab from "@/components/student-dashboard/MoreTab";
 import { attendanceLog, studentMenuItems } from "@/components/student-dashboard/data";
 import ParentHomeTab from "@/components/parent-dashboard/ParentHomeTab";
 import ParentHomeworkTab from "@/components/parent-dashboard/ParentHomeworkTab";
@@ -389,7 +403,7 @@ export default function FamilyDashboard({ initialRole = "student" }) {
         <FamilyBottomNav activeRole={activeRole} activeMenu={activeMenu} onMenuChange={handleMenuChange} />
       </main>
 
-      <StudentProfileBottomSheet
+      <ProfileBottomSheet
         open={studentProfileSheetOpen}
         onClose={() => setStudentProfileSheetOpen(false)}
         profile={studentProfileForm}
@@ -397,9 +411,18 @@ export default function FamilyDashboard({ initialRole = "student" }) {
         onProfileSave={handleStudentProfileSave}
         profileSaving={profileSaving}
         onLogout={handleLogout}
+        title="Student profile details"
+        nameLabel="Student name"
+        nameField="studentName"
+        classLabel="Class"
+        classField="className"
+        sectionLabel="Section"
+        sectionField="section"
+        rollLabel="Roll number"
+        rollField="rollNumber"
       />
 
-      <ParentProfileBottomSheet
+      <ProfileBottomSheet
         open={parentProfileSheetOpen}
         onClose={() => setParentProfileSheetOpen(false)}
         profile={parentProfileForm}
@@ -407,12 +430,24 @@ export default function FamilyDashboard({ initialRole = "student" }) {
         onProfileSave={handleParentProfileSave}
         profileSaving={profileSaving}
         onLogout={handleLogout}
+        title="Parent profile details"
+        nameLabel="Parent name"
+        nameField="parentName"
+        classLabel="Child class"
+        classField="childClass"
+        sectionLabel="Child section"
+        sectionField="childSection"
+        rollLabel="Child roll number"
+        rollField="childRollNumber"
+        childNameLabel="Child name"
+        childNameField="childName"
       />
     </div>
   );
 }
 
-function ParentProfileBottomSheet({
+
+function ProfileBottomSheet({
   open,
   onClose,
   profile,
@@ -420,6 +455,17 @@ function ParentProfileBottomSheet({
   onProfileSave,
   profileSaving,
   onLogout,
+  title = "Profile details",
+  nameLabel = "Name",
+  nameField = "name",
+  classLabel = "Class",
+  classField = "className",
+  sectionLabel = "Section",
+  sectionField = "section",
+  rollLabel = "Roll number",
+  rollField = "rollNumber",
+  childNameLabel,
+  childNameField
 }) {
   if (!open) return null;
 
@@ -429,7 +475,7 @@ function ParentProfileBottomSheet({
         <div className="mx-auto mb-3 h-1.5 w-16 rounded-full bg-slate-200" />
 
         <div className="flex items-center justify-between gap-3">
-          <h3 className="text-lg font-semibold text-slate-900">Parent profile details</h3>
+          <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
           <button
             type="button"
             onClick={onClose}
@@ -448,55 +494,57 @@ function ParentProfileBottomSheet({
           }}
         >
           <div>
-            <label htmlFor="parent-profile-name" className="text-sm font-medium text-slate-600">Parent name</label>
+            <label htmlFor="profile-name" className="text-sm font-medium text-slate-600">{nameLabel}</label>
             <input
-              id="parent-profile-name"
-              name="parentName"
-              value={profile.parentName}
+              id="profile-name"
+              name={nameField}
+              value={profile[nameField] || ""}
               onChange={onProfileChange}
               className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
             />
           </div>
 
           <div>
-            <label htmlFor="parent-profile-contact" className="text-sm font-medium text-slate-600">Contact</label>
+            <label htmlFor="profile-contact" className="text-sm font-medium text-slate-600">Contact</label>
             <input
-              id="parent-profile-contact"
+              id="profile-contact"
               name="contact"
-              value={profile.contact}
+              value={profile.contact || ""}
               onChange={onProfileChange}
               className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
             />
           </div>
 
-          <div>
-            <label htmlFor="parent-profile-child" className="text-sm font-medium text-slate-600">Child name</label>
-            <input
-              id="parent-profile-child"
-              name="childName"
-              value={profile.childName}
-              onChange={onProfileChange}
-              className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
-            />
-          </div>
+          {childNameLabel && childNameField && (
+            <div>
+              <label htmlFor="profile-child" className="text-sm font-medium text-slate-600">{childNameLabel}</label>
+              <input
+                id="profile-child"
+                name={childNameField}
+                value={profile[childNameField] || ""}
+                onChange={onProfileChange}
+                className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
+              />
+            </div>
+          )}
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label htmlFor="parent-profile-class" className="text-sm font-medium text-slate-600">Child class</label>
+              <label htmlFor="profile-class" className="text-sm font-medium text-slate-600">{classLabel}</label>
               <input
-                id="parent-profile-class"
-                name="childClass"
-                value={profile.childClass}
+                id="profile-class"
+                name={classField}
+                value={profile[classField] || ""}
                 onChange={onProfileChange}
                 className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
               />
             </div>
             <div>
-              <label htmlFor="parent-profile-section" className="text-sm font-medium text-slate-600">Child section</label>
+              <label htmlFor="profile-section" className="text-sm font-medium text-slate-600">{sectionLabel}</label>
               <input
-                id="parent-profile-section"
-                name="childSection"
-                value={profile.childSection}
+                id="profile-section"
+                name={sectionField}
+                value={profile[sectionField] || ""}
                 onChange={onProfileChange}
                 className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
               />
@@ -504,11 +552,11 @@ function ParentProfileBottomSheet({
           </div>
 
           <div>
-            <label htmlFor="parent-profile-roll" className="text-sm font-medium text-slate-600">Child roll number</label>
+            <label htmlFor="profile-roll" className="text-sm font-medium text-slate-600">{rollLabel}</label>
             <input
-              id="parent-profile-roll"
-              name="childRollNumber"
-              value={profile.childRollNumber}
+              id="profile-roll"
+              name={rollField}
+              value={profile[rollField] || ""}
               onChange={onProfileChange}
               className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
             />
