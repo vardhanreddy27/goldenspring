@@ -330,7 +330,7 @@ export default function FamilyDashboard({ initialRole = "student" }) {
                   >
                     <span className="block h-12 w-12 overflow-hidden rounded-full border border-slate-200 bg-white p-0.5 shadow-sm">
                       <Image
-                        src={isStudent ? "/student.webp" : "/student2.png"}
+                        src="/student.jpeg"
                         alt={isStudent ? "Student profile" : "Parent profile"}
                         width={48}
                         height={48}
