@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { studentAssignments, subjectProgress, upcomingTests } from "@/components/student-dashboard/data";
 
-const quizSubjects = ["Math", "Telugu", "English", "Science", "Social"];
+const quizSubjects = ["Math", "Telugu", "English", "Science","Biology", "Social"];
 
 function openQuizApp(subject) {
   const quizShellUrl = new URL("/Student_quiz", window.location.origin);
@@ -18,37 +18,17 @@ export default function AcademicsTab() {
         <p className="text-sm text-slate-500">Practice quizzes</p>
         <h2 className="mt-1 text-2xl font-semibold">Select subject and start quiz</h2>
 
-        <div className="mt-4 grid gap-2 sm:grid-cols-3 lg:grid-cols-6">
-          {quizSubjects.map((subject) => {
-            const active = selectedQuizSubject === subject;
-            return (
-              <button
-                key={subject}
-                type="button"
-                onClick={() => setSelectedQuizSubject(subject)}
-                className={`rounded-2xl border px-3 py-3 text-sm font-semibold transition-all duration-200 active:scale-[0.98] ${
-                  active
-                    ? "border-[#c79216] bg-[#fff4d6] text-[#8b6400]"
-                    : "border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 hover:bg-white"
-                }`}
-              >
-                {subject}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-slate-50 p-3">
-          <p className="text-sm text-slate-700">
-            Selected: <span className="font-semibold text-slate-950">{selectedQuizSubject}</span>
-          </p>
-          <button
-            type="button"
-            onClick={() => openQuizApp(selectedQuizSubject)}
-            className="rounded-full px-5 py-2.5 text-sm font-semibold text-white shadow-[0_12px_28px_-18px_rgba(199,146,22,0.8)] transition-all duration-200 hover:bg-[#b07e10] active:scale-[0.98]"
-          >
-            Start {selectedQuizSubject} Quiz
-          </button>
+        <div className="mt-4 grid gap-4 grid-cols-2">
+          {quizSubjects.map((subject) => (
+            <button
+              key={subject}
+              type="button"
+              onClick={() => openQuizApp(subject)}
+              className="rounded-2xl border-2 border-slate-200 bg-slate-50 text-slate-800 text-lg font-bold flex items-center justify-center aspect-square min-h-[100px] sm:min-h-[120px] transition-all duration-200 hover:border-[#c79216] hover:bg-[#fff4d6] active:scale-95 shadow-sm"
+            >
+              {subject}
+            </button>
+          ))}
         </div>
       </article>
 
@@ -75,9 +55,9 @@ export default function AcademicsTab() {
             return (
               <div
                 key={test.id}
-                className="flex items-center gap-4 rounded-3xl bg-white  p-4 "
+                className="flex items-center gap-4 rounded-3xl bg-white p-4"
               >
-                <div className="flex-shrink-0 w-16 h-16 rounded-2xl overflow-hidden bg-white  flex items-center justify-center">
+                <div className="flex-shrink-0 w-16 h-16 rounded-2xl overflow-hidden bg-white flex items-center justify-center">
                   <img src={imgSrc} alt={test.subject} className="object-contain w-12 h-12" />
                 </div>
                
