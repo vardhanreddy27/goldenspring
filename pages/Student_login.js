@@ -52,17 +52,17 @@ export default function FamilyLogin() {
     setIsSubmitting(true);
 
     const studentProfile = {
-      name: `Student ${userId.trim().slice(-2) || "01"}`,
+      name: 'Shiva',
       className: "8th",
       section: "A",
       rollNumber: userId.trim(),
       parentName: "Parent",
-      contact: "+91 9XXXXXXXXX",
+      contact: "+91 9346362201",
     };
 
     const parentProfile = {
       parentName: `Parent ${userId.trim().slice(-2) || "01"}`,
-      contact: "+91 9XXXXXXXXX",
+      contact: "+91 9346362201",
       childName: "Arjun Kumar",
       childClass: "8th",
       childSection: "A",

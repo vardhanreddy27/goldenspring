@@ -249,7 +249,7 @@ export const monthlyProgressTrend = [
 
 export const parentProfileDefaults = {
   parentName: "Parent",
-  contact: "+91 9XXXXXXXXX",
+  contact: "+91 9346362201",
   childName: "Arjun Kumar",
   childClass: "8th",
   childSection: "A",

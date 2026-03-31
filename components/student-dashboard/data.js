@@ -172,10 +172,10 @@ export const studentResources = [
 ];
 
 export const studentProfileDefaults = {
-  name: "Student",
+  studentName: "Shiva",
+  contact: "9866531011",
   className: "8th",
   section: "A",
-  rollNumber: "23",
-  parentName: "Suresh Kumar",
-  contact: "+91 9XXXXXXXXX",
+  rollNumber: "1",
+  profilePic: ""
 };

@@ -420,6 +420,8 @@ export default function FamilyDashboard({ initialRole = "student" }) {
         sectionField="section"
         rollLabel="Roll number"
         rollField="rollNumber"
+         showProfilePicUpload={true}
+         profilePicField="profilePic"
       />
 
       <ProfileBottomSheet
@@ -465,7 +467,9 @@ function ProfileBottomSheet({
   rollLabel = "Roll number",
   rollField = "rollNumber",
   childNameLabel,
-  childNameField
+  childNameField,
+  showProfilePicUpload,
+  profilePicField
 }) {
   if (!open) return null;
 
@@ -493,12 +497,13 @@ function ProfileBottomSheet({
             onProfileSave();
           }}
         >
+
           <div>
             <label htmlFor="profile-name" className="text-sm font-medium text-slate-600">{nameLabel}</label>
             <input
               id="profile-name"
               name={nameField}
-              value={profile[nameField] || ""}
+              value={profile[nameField] || "Shiva"}
               onChange={onProfileChange}
               className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
             />
@@ -509,11 +514,43 @@ function ProfileBottomSheet({
             <input
               id="profile-contact"
               name="contact"
-              value={profile.contact || ""}
+              value="9866531011"
               onChange={onProfileChange}
               className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
             />
           </div>
+
+          {/* Roll number separate, Class/Section combined for students */}
+          {nameField === "studentName" && (
+            <>
+              <div>
+                <label htmlFor="profile-roll" className="text-sm font-medium text-slate-600">Roll Number</label>
+                <input
+                  id="profile-roll"
+                  name="rollNumber"
+                  value={profile.rollNumber || ""}
+                  onChange={onProfileChange}
+                  placeholder="23"
+                  className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
+                />
+              </div>
+              <div>
+                <label htmlFor="profile-classsection" className="text-sm font-medium text-slate-600">Class/Section</label>
+                <input
+                  id="profile-classsection"
+                  name="classSection"
+                  value={`${profile.className || ""}/${profile.section || ""}`}
+                  onChange={e => {
+                    const [cls, sec] = e.target.value.split("/");
+                    onProfileChange({ target: { name: "className", value: cls || "" } });
+                    onProfileChange({ target: { name: "section", value: sec || "" } });
+                  }}
+                  placeholder="10/A"
+                  className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
+                />
+              </div>
+            </>
+          )}
 
           {childNameLabel && childNameField && (
             <div>
@@ -528,40 +565,54 @@ function ProfileBottomSheet({
             </div>
           )}
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div>
-              <label htmlFor="profile-class" className="text-sm font-medium text-slate-600">{classLabel}</label>
-              <input
-                id="profile-class"
-                name={classField}
-                value={profile[classField] || ""}
-                onChange={onProfileChange}
-                className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
-              />
+          {showProfilePicUpload && (
+            <div className="flex flex-col gap-2 mb-2">
+              <label className="text-sm font-medium text-slate-600 mb-1">Profile Picture</label>
+              <div
+                className="w-full border-2 border-dashed border-slate-300 rounded-2xl flex flex-col items-center justify-center bg-slate-50 relative cursor-pointer hover:border-[#c79216] transition-all"
+                style={{ height: '150px' }}
+                onClick={() => document.getElementById('profile-pic-upload')?.click()}
+              >
+                <input
+                  id="profile-pic-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={e => {
+                    const file = e.target.files && e.target.files[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = (ev) => {
+                        onProfileChange({ target: { name: profilePicField, value: ev.target.result } });
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                />
+                {profile[profilePicField] ? (
+                  <Image
+                    src={profile[profilePicField]}
+                    alt="Profile Preview"
+                    fill
+                    className="object-cover rounded-xl"
+                    style={{ position: 'absolute', inset: 0 }}
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full w-full">
+                    <button
+                      type="button"
+                      className="mb-2 px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-700 font-medium shadow-sm hover:bg-slate-100 flex items-center gap-2"
+                      tabIndex={-1}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="#c79216" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0-4 4m4-4 4 4"/><rect width="20" height="12" x="2" y="8" stroke="#c79216" strokeWidth="2" rx="2"/></svg>
+                      <span>Upload</span>
+                    </button>
+                    <span className="text-slate-500 text-sm">Choose a file or drag & drop it here</span>
+                  </div>
+                )}
+              </div>
             </div>
-            <div>
-              <label htmlFor="profile-section" className="text-sm font-medium text-slate-600">{sectionLabel}</label>
-              <input
-                id="profile-section"
-                name={sectionField}
-                value={profile[sectionField] || ""}
-                onChange={onProfileChange}
-                className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="profile-roll" className="text-sm font-medium text-slate-600">{rollLabel}</label>
-            <input
-              id="profile-roll"
-              name={rollField}
-              value={profile[rollField] || ""}
-              onChange={onProfileChange}
-              className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
-            />
-          </div>
-
+          )}
           <div className="grid gap-2 sm:grid-cols-2">
             <button
               type="submit"
