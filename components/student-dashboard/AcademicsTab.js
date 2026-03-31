@@ -166,9 +166,9 @@ export default function AcademicsTab() {
       </article>
 
       {/* ASSIGNMENTS TABLE */}
-      <article className="xl:col-span-2 rounded-4xl bg-white p-4 shadow-[0_14px_34px_-24px_rgba(15,23,42,0.25)] sm:p-5 w-full overflow-x-hidden">
-        <h2 className="text-2xl font-semibold text-slate-900">Assignments</h2>
-        <div className="mt-4 overflow-x-auto rounded-2xl border border-slate-200 w-full">
+      <article className="xl:col-span-2 rounded-4xl bg-white shadow-[0_14px_34px_-24px_rgba(15,23,42,0.25)] sm:p-5 w-full overflow-x-hidden">
+        <h2 className="text-2xl font-semibold text-slate-900 pt-4 ps-4">Assignments</h2>
+        <div className="mt-4 overflow-x-auto  w-full">
           <table className="min-w-full text-sm w-full">
             <thead className="bg-slate-50 text-left text-slate-500">
               <tr>
