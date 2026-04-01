@@ -153,7 +153,7 @@ export default function FamilyLogin() {
                 id="family-id"
                 type="text"
                 placeholder={activeRole === "student" ? "Enter student ID" : "Enter parent ID"}
-                className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#16c7bd] focus:ring-4 focus:ring-[#fff4d6]"
+                className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none"
                 autoComplete="username"
                 value={userId}
                 onChange={(event) => setUserId(event.target.value)}
@@ -168,7 +168,7 @@ export default function FamilyLogin() {
                   id="family-password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter password"
-                  className="w-full rounded-xl border border-slate-300 px-4 py-3 pr-11 text-sm text-slate-900 outline-none focus:border-[#16c7bd] focus:ring-4 focus:ring-[#fff4d6]"
+                  className="w-full rounded-xl border border-slate-300 px-4 py-3 pr-11 text-sm text-slate-900 outline-none  "
                   autoComplete="current-password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
@@ -187,7 +187,7 @@ export default function FamilyLogin() {
 
             <button
               type="submit"
-              className="w-full rounded-full bg-[#16c7bd] py-3 text-sm font-semibold text-white shadow-[0_16px_40px_-22px_rgba(242,183,5,0.75)] hover:bg-[#b07e10] focus:outline-none focus:ring-4 focus:ring-[#f7e2a3] disabled:cursor-not-allowed disabled:bg-[#d6b56a]"
+              className="w-full rounded-full bg-[#16c7bd] py-3 text-sm font-semibold text-white shadow-[0_16px_40px_-22px_rgba(242,183,5,0.75)]  focus:outline-none  disabled:cursor-not-allowed "
               disabled={isSubmitting}
             >
               {isSubmitting ? "Signing In..." : "Sign In"}
@@ -202,7 +202,7 @@ export default function FamilyLogin() {
             <button
               type="button"
               onClick={handleGoogleLogin}
-              className="w-full flex items-center justify-center gap-3 rounded-full border border-gray-300 bg-white py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full flex items-center justify-center gap-3 rounded-full border border-gray-300 bg-white py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
               disabled={isSubmitting}
             >
               <svg width="20" height="20" viewBox="0 0 48 48">
@@ -256,7 +256,7 @@ export default function FamilyLogin() {
                   id="family-id-mobile"
                   type="text"
                   placeholder={activeRole === "student" ? "Enter student ID" : "Enter parent ID"}
-                  className="mt-1.5 w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#16c7bd] focus:ring-4 focus:ring-[#fff4d6]"
+                  className="mt-1.5 w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#16c7bd]"
                   autoComplete="username"
                   value={userId}
                   onChange={(event) => setUserId(event.target.value)}
@@ -271,7 +271,7 @@ export default function FamilyLogin() {
                     id="family-password-mobile"
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter password"
-                    className="w-full rounded-2xl border border-slate-300 px-4 py-3 pr-11 text-sm text-slate-900 outline-none focus:border-[#16c7bd] focus:ring-4 focus:ring-[#fff4d6]"
+                    className="w-full rounded-2xl border border-slate-300 px-4 py-3 pr-11 text-sm text-slate-900 outline-none focus:border-[#16c7bd] "
                     autoComplete="current-password"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
@@ -290,7 +290,7 @@ export default function FamilyLogin() {
 
               <button
                 type="submit"
-                className="w-full rounded-full bg-[#16c7bd] py-3 text-sm font-semibold text-white shadow-[0_16px_40px_-22px_rgba(242,183,5,0.8)] hover:bg-[#b07e10] focus:outline-none focus:ring-4 focus:ring-[#f7e2a3] disabled:cursor-not-allowed disabled:bg-[#d6b56a]"
+                className="w-full rounded-full bg-[#16c7bd] py-3 text-sm font-semibold text-white shadow-[0_16px_40px_-22px_rgba(242,183,5,0.8)] focus:outline-none  disabled:cursor-not-allowed"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Signing In..." : "Sign In"}
@@ -305,7 +305,7 @@ export default function FamilyLogin() {
               <button
                 type="button"
                 onClick={handleGoogleLogin}
-                className="w-full flex items-center justify-center gap-3 rounded-full border border-gray-300 bg-white py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200 disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full flex items-center justify-center gap-3 rounded-full border border-gray-300 bg-white py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50 focus:outline-none  disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={isSubmitting}
               >
                 <svg width="20" height="20" viewBox="0 0 48 48">

@@ -1,81 +1,88 @@
 import { childTimetable } from "./data";
 
 export default function ParentTimetableTab() {
+  // Taking the first day's schedule from childTimetable to match the student view logic
+  const sampleDay = childTimetable[0];
+  
+  const morningPeriods = [
+    { label: "P1", time: "09:00 AM - 10:00 AM", subject: sampleDay?.periods?.[0] || "-" },
+    { label: "P2", time: "10:00 AM - 11:00 AM", subject: sampleDay?.periods?.[1] || "-" },
+    { label: "P3", time: "11:00 AM - 12:00 PM", subject: sampleDay?.periods?.[2] || "-" },
+  ];
+  
+  const afternoonPeriods = [
+    { label: "P4", time: "12:45 PM - 01:45 PM", subject: sampleDay?.periods?.[3] || "-" },
+    { label: "P5", time: "01:45 PM - 02:45 PM", subject: sampleDay?.periods?.[4] || "-" },
+    { label: "P6", time: "02:45 PM - 03:45 PM", subject: sampleDay?.periods?.[4] || "-" },
+    { label: "P7", time: "03:45 PM - 04:30 PM", subject: sampleDay?.periods?.[2] || "-" },
+  ];
+
   return (
-    <div className="space-y-6 py-6">
-      <section>
-        <h3 className="text-sm font-semibold text-slate-600 mb-3">DAILY CLASS SCHEDULE</h3>
-        <div className="space-y-4">
-          {childTimetable.map((daySchedule, idx) => (
-            <div key={idx} className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
-              <div className="bg-[#fff4d6] px-4 py-3 border-b border-slate-200">
-                <h4 className="font-semibold text-slate-950">{daySchedule.day}day</h4>
-              </div>
-              <div className="divide-y divide-slate-100">
-                {daySchedule.periods.map((period, pIdx) => (
-                  <div key={pIdx} className="flex items-center justify-between p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#16c7bd] text-sm font-bold text-white">
-                        P{pIdx + 1}
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-slate-900">{period}</p>
-                        <p className="text-xs text-slate-500">Period {pIdx + 1}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+    <section className="mt-4 font-sans">
+      <article className="rounded-4xl bg-white p-4 shadow-[0_14px_34px_-24px_rgba(15,23,42,0.25)] sm:p-5">
+        <p className="text-sm text-slate-500">Weekly timetable</p>
+        <h2 className="mt-1 text-2xl font-semibold">Morning and afternoon plan</h2>
 
-      {/* School Timings */}
-      <section className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl border border-blue-200 p-6">
-        <h3 className="font-semibold text-slate-950 mb-4">SCHOOL TIMINGS</h3>
-        <div className="space-y-3 text-sm">
-          <div className="flex justify-between items-center">
-            <span className="text-slate-700">School Opening</span>
-            <span className="font-semibold text-slate-900">08:40 AM</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-slate-700">Lunch Break</span>
-            <span className="font-semibold text-slate-900">11:30 AM - 12:15 PM</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-slate-700">School Closure</span>
-            <span className="font-semibold text-slate-900">04:00 PM</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-slate-700">Each Period</span>
-            <span className="font-semibold text-slate-900">45 minutes</span>
-          </div>
+        {/* Morning Prayer Notification */}
+        <div className="mt-4 rounded-2xl border border-slate-200 bg-[#eef7ff] px-4 py-3 text-sm text-slate-700">
+          Morning prayer: 08:45 AM to 09:00 AM (Everyday)
         </div>
-      </section>
 
-      {/* Tips for Parents */}
-      <section className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border border-amber-200 p-6">
-        <h3 className="font-semibold text-slate-950 mb-3">Parent Tips</h3>
-        <ul className="space-y-2 text-sm text-slate-700">
-          <li className="flex gap-2">
-            <span className="text-amber-600 font-bold">→</span>
-            Ensure child arrives at school by 8:30 AM
-          </li>
-          <li className="flex gap-2">
-            <span className="text-amber-600 font-bold">→</span>
-            Pack lunch & water bottle daily (especially for gap between P3 & P5)
-          </li>
-          <li className="flex gap-2">
-            <span className="text-amber-600 font-bold">→</span>
-            Check the timetable weekly for any class changes
-          </li>
-          <li className="flex gap-2">
-            <span className="text-amber-600 font-bold">→</span>
-            Arrange transport for 4:00 PM school closure time
-          </li>
-        </ul>
-      </section>
-    </div>
+        {/* Morning Table */}
+        <div className="mt-4 rounded-2xl border border-slate-200 bg-white overflow-hidden">
+          <p className="border-b border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-slate-500">
+            Morning
+          </p>
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 text-left text-slate-500">
+              <tr>
+                <th className="px-3 py-2 font-medium">Period</th>
+                <th className="px-3 py-2 font-medium">Subject</th>
+                <th className="px-3 py-2 font-medium">Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {morningPeriods.map((period) => (
+                <tr key={`morning-${period.label}`} className="border-t border-slate-100 text-slate-700 hover:bg-[#fff4d6]/40 transition-colors">
+                  <td className="px-3 py-3 font-semibold text-slate-900">{period.label}</td>
+                  <td className="px-3 py-3">{period.subject}</td>
+                  <td className="px-3 py-3 text-slate-600">{period.time}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Lunch Break Notification */}
+        <div className="mt-4 rounded-2xl border border-slate-200 bg-[#f8fafc] px-4 py-3 text-sm text-slate-700">
+          Lunch break: 12:00 PM to 12:45 PM
+        </div>
+
+        {/* Afternoon Table */}
+        <div className="mt-4 rounded-2xl border border-slate-200 bg-white overflow-hidden">
+          <p className="border-b border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-slate-500">
+            Afternoon
+          </p>
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 text-left text-slate-500">
+              <tr>
+                <th className="px-3 py-2 font-medium">Period</th>
+                <th className="px-3 py-2 font-medium">Subject</th>
+                <th className="px-3 py-2 font-medium">Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {afternoonPeriods.map((period) => (
+                <tr key={`afternoon-${period.label}`} className="border-t border-slate-100 text-slate-700 hover:bg-[#fff4d6]/40 transition-colors">
+                  <td className="px-3 py-3 font-semibold text-slate-900">{period.label}</td>
+                  <td className="px-3 py-3">{period.subject}</td>
+                  <td className="px-3 py-3 text-slate-600">{period.time}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
   );
 }

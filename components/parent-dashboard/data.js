@@ -42,6 +42,14 @@ export const pendingHomework = [
   { id: 4, subject: "Social", title: "Chapter notes - Climate", dueDate: "2026-03-31", priority: "medium", description: "Complete chapter 12 handwritten notes" },
 ];
 
+// Assignments - shown separately in assignments tab
+export const studentAssignments = [
+  { id: 1, subject: "English", title: "Essay writing", dueDate: "2026-03-28", status: "Pending", description: "Write 500 words essay" },
+  { id: 2, subject: "Maths", title: "Algebra worksheet", dueDate: "2026-03-29", status: "Pending", description: "Complete exercises 5.1 to 5.3" },
+  { id: 3, subject: "Science", title: "Digestive system diagram", dueDate: "2026-03-30", status: "Submitted", description: "Labeled diagram with explanation" },
+  { id: 4, subject: "Social", title: "Chapter notes - Climate", dueDate: "2026-03-31", status: "Pending", description: "Complete chapter 12 handwritten notes" },
+];
+
 // Subject performance - SHOWS WHERE CHILD IS LACKING
 export const subjectPerformance = [
   { subject: "English", score: 78, target: 85, completion: 82, trend: "up", status: "good" },
