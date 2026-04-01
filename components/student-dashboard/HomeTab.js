@@ -2,7 +2,7 @@ import { studentAssignments, studentAnnouncements, subjectProgress } from "@/com
 import Image from "next/image";
 import { PiLightbulbFilamentBold } from "react-icons/pi";
 import { useMemo, useState } from "react";
-import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, Cell, LabelList, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Bell, ChevronLeft, ChevronRight, Trophy, School, UserRound, Bus } from "lucide-react";
 
 function HalfProgressGauge({ value }) {
@@ -282,7 +282,7 @@ export default function HomeTab() {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={activeChartData} barGap={10}>
               <CartesianGrid strokeDasharray="4 4" stroke="#e2e8f0" vertical={false} />
-              <XAxis dataKey="label" tick={{ fill: "#64748b", fontSize: 12 }} tickLine={false} axisLine={false} />
+              <XAxis dataKey="label" tick={{ fill: "#64748b", fontSize: 11 }} tickLine={false} axisLine={false} />
               <YAxis domain={[0, 100]} ticks={[0, 20, 40, 60, 80, 100]} tick={{ fill: "#64748b", fontSize: 12 }} tickLine={false} axisLine={false} />
               <Tooltip
                 contentStyle={{
@@ -293,6 +293,12 @@ export default function HomeTab() {
                 }}
               />
               <Bar dataKey="score" radius={[12, 12, 0, 0]} maxBarSize={40}>
+                <LabelList
+                  dataKey="score"
+                  position="top"
+                  formatter={(value) => `${value}%`}
+                  style={{ fill: "#64748b", fontSize: 11, fontWeight: 700 }}
+                />
                 {activeChartData.map((entry, index) => (
                   <Cell key={`bar-${entry.label}`} fill={[
                     "#f59e0b",

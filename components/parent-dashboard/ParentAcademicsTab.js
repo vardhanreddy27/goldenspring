@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AlertTriangle, CheckCircle2, ChevronDown } from "lucide-react";
-import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, Cell, LabelList, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { subjectPerformance } from "./data";
 
 const progressOptions = [
@@ -137,6 +137,12 @@ export default function ParentAcademicsTab() {
                 }}
               />
               <Bar dataKey="score" radius={[12, 12, 0, 0]} maxBarSize={40}>
+                <LabelList
+                  dataKey="score"
+                  position="top"
+                  formatter={(value) => `${value}%`}
+                  style={{ fill: "#64748b", fontSize: 12, fontWeight: 700 }}
+                />
                 {activeChartData.map((entry, index) => (
                   <Cell key={`bar-${entry.label}`} fill={CHART_BAR_COLORS[index % CHART_BAR_COLORS.length]} />
                 ))}

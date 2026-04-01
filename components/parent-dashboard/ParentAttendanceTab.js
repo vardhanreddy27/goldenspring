@@ -1,4 +1,4 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, PieChart, Pie, Cell, Legend } from "recharts";
+import { BarChart, Bar, LabelList, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, PieChart, Pie, Cell, Legend } from "recharts";
 import { AlertTriangle } from "lucide-react";
 import { attendanceMonthly, attendanceLog } from "./data";
 import { useMemo } from "react";
@@ -141,7 +141,14 @@ export default function ParentAttendanceTab() {
                 <YAxis domain={[0, 7]} ticks={[0, 2, 4, 6, 7]} tickLine={false} axisLine={false} tick={{ fill: "#475569", fontSize: 12 }} />
                 <ReferenceLine y={5} stroke="#94a3b8" strokeDasharray="4 4" />
                 <Tooltip content={<WeeklyTooltip />} cursor={{ fill: "rgba(148, 163, 184, 0.12)" }} />
-                <Bar dataKey="present" fill="url(#presentBarFill)" radius={[12, 12, 8, 8]} maxBarSize={46} />
+                <Bar dataKey="present" fill="url(#presentBarFill)" radius={[12, 12, 8, 8]} maxBarSize={46}>
+                  <LabelList
+                    dataKey="attendancePct"
+                    position="top"
+                    formatter={(value) => `${value}%`}
+                    style={{ fill: "#64748b", fontSize: 12, fontWeight: 700 }}
+                  />
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>

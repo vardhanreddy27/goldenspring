@@ -3,6 +3,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  LabelList,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -30,6 +31,16 @@ export default function AttendanceView() {
     });
   }, [query]);
 
+  const attendanceChartData = useMemo(
+    () =>
+      attendanceWindows.map((item) => ({
+        ...item,
+        studentsPresentPct: Math.round((item.studentsPresent / Math.max(1, item.studentsTotal)) * 100),
+        teachersPresentPct: Math.round((item.teachersPresent / Math.max(1, item.teachersTotal)) * 100),
+      })),
+    []
+  );
+
   const totalPages = Math.max(Math.ceil(filteredSections.length / pageSize), 1);
   const safePage = Math.min(page, totalPages);
   const pagedSections = useMemo(() => {
@@ -47,13 +58,27 @@ export default function AttendanceView() {
 
         <div className="mt-5 min-w-0 min-h-64 h-64 rounded-3xl bg-slate-50 p-4 sm:h-72">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={attendanceWindows} barGap={14}>
+            <BarChart data={attendanceChartData} barGap={14}>
               <CartesianGrid vertical={false} stroke="#e2e8f0" strokeDasharray="4 4" />
               <XAxis dataKey="period" tickLine={false} axisLine={false} tick={{ fill: "#64748b", fontSize: 12 }} />
               <YAxis tickLine={false} axisLine={false} tick={{ fill: "#64748b", fontSize: 12 }} />
               <Tooltip />
-              <Bar dataKey="studentsPresent" name="Students Present" fill="#16c7bd" radius={[8, 8, 0, 0]} />
-              <Bar dataKey="teachersPresent" name="Teachers Present" fill="#0f172a" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="studentsPresent" name="Students Present" fill="#16c7bd" radius={[8, 8, 0, 0]}>
+                <LabelList
+                  dataKey="studentsPresentPct"
+                  position="top"
+                  formatter={(value) => `${value}%`}
+                  style={{ fill: "#64748b", fontSize: 12, fontWeight: 700 }}
+                />
+              </Bar>
+              <Bar dataKey="teachersPresent" name="Teachers Present" fill="#0f172a" radius={[8, 8, 0, 0]}>
+                <LabelList
+                  dataKey="teachersPresentPct"
+                  position="top"
+                  formatter={(value) => `${value}%`}
+                  style={{ fill: "#64748b", fontSize: 12, fontWeight: 700 }}
+                />
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
