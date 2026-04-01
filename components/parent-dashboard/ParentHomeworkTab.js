@@ -102,7 +102,7 @@ export default function ParentHomeworkTab() {
             return (
               <div key={subject} className="flex items-center justify-between rounded-lg bg-slate-50 p-3">
                 <span className="font-medium text-slate-900">{subject}</span>
-                <span className="rounded-full bg-[#c79216] px-3 py-1 text-xs font-semibold text-white">
+                <span className="rounded-full bg-[#16c7bd] px-3 py-1 text-xs font-semibold text-white">
                   {count} {count === 1 ? "task" : "tasks"}
                 </span>
               </div>

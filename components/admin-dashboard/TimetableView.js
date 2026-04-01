@@ -127,7 +127,7 @@ export default function TimetableView({ assignments, onReassign }) {
                   <button
                     type="button"
                     onClick={() => onReassign(row.id, pendingSelection[row.id] ?? row.replacementTeacher)}
-                    className="mt-2 w-full rounded-lg bg-[#c79216] px-3 py-2 text-xs font-semibold text-white hover:bg-[#b07e10]"
+                    className="mt-2 w-full rounded-lg bg-[#16c7bd] px-3 py-2 text-xs font-semibold text-white hover:bg-[#b07e10]"
                   >
                     Save change
                   </button>

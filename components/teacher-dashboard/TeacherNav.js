@@ -33,8 +33,8 @@ export function TeacherSidebar({ activeMenu, onMenuChange }) {
             onClick={() => onMenuChange(id)}
             className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-medium transition-all duration-200 active:scale-[0.97] ${
               activeMenu === id
-                ? "bg-(--app-accent) text-white"
-                : "text-slate-300 hover:bg-slate-900 hover:text-white"
+                ? "text-white"
+                : "text-slate-300 hover:text-white"
             }`}
           >
             <Icon className="h-5 w-5" />
@@ -47,7 +47,7 @@ export function TeacherSidebar({ activeMenu, onMenuChange }) {
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: "/Teacher_login" })}
-          className="w-full rounded-2xl bg-slate-800 px-4 py-3 text-sm font-semibold text-slate-100 transition-all duration-200 hover:bg-slate-700"
+          className="w-full rounded-2xl bg-rose-600 px-4 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-rose-500"
         >
           Logout
         </button>
@@ -69,16 +69,11 @@ export function TeacherBottomNav({ activeMenu, onMenuChange }) {
             type="button"
             onClick={() => onMenuChange(id)}
             className={`flex min-h-14 w-full flex-col items-center justify-center gap-0.5 rounded-xl py-1.5 text-[11px] font-medium transition-colors duration-200 active:scale-95 ${
-              activeMenu === id ? "bg-(--app-accent-soft) text-[#8b6400]" : "text-slate-500"
+              activeMenu === id ? "text-slate-800" : "text-slate-500"
             }`}
           >
-            <span
-              className={`mb-0.5 block h-0.75 w-5 rounded-full bg-(--app-accent) transition-all duration-250 ${
-                activeMenu === id ? "opacity-100" : "opacity-0"
-              }`}
-            />
             <Icon className="h-5 w-5" />
-            <span>{label}</span>
+            <p>{label}</p>
           </button>
         ))}
       </div>

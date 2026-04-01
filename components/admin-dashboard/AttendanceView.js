@@ -52,14 +52,14 @@ export default function AttendanceView() {
               <XAxis dataKey="period" tickLine={false} axisLine={false} tick={{ fill: "#64748b", fontSize: 12 }} />
               <YAxis tickLine={false} axisLine={false} tick={{ fill: "#64748b", fontSize: 12 }} />
               <Tooltip />
-              <Bar dataKey="studentsPresent" name="Students Present" fill="#c79216" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="studentsPresent" name="Students Present" fill="#16c7bd" radius={[8, 8, 0, 0]} />
               <Bar dataKey="teachersPresent" name="Teachers Present" fill="#0f172a" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-slate-600">
           <span className="inline-flex items-center gap-2 rounded-full bg-[#fff4d6] px-3 py-1 text-[#8b6400]">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#c79216]" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#16c7bd]" />
             Students
           </span>
           <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-slate-700">

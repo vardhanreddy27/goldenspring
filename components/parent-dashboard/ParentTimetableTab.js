@@ -15,7 +15,7 @@ export default function ParentTimetableTab() {
                 {daySchedule.periods.map((period, pIdx) => (
                   <div key={pIdx} className="flex items-center justify-between p-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#c79216] text-sm font-bold text-white">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#16c7bd] text-sm font-bold text-white">
                         P{pIdx + 1}
                       </div>
                       <div>

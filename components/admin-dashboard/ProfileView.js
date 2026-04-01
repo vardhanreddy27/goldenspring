@@ -14,15 +14,15 @@ export default function ProfileView({ profileForm, onProfileChange, onProfileSav
         >
           <div>
             <label className="text-sm font-medium text-slate-600" htmlFor="profile-name">Name</label>
-            <input id="profile-name" name="name" value={profileForm.name} onChange={onProfileChange} className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]" />
+            <input id="profile-name" name="name" value={profileForm.name} onChange={onProfileChange} className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#16c7bd] focus:ring-4 focus:ring-[#fff4d6]" />
           </div>
           <div>
             <label className="text-sm font-medium text-slate-600" htmlFor="profile-email">Email</label>
-            <input id="profile-email" name="email" type="email" value={profileForm.email} onChange={onProfileChange} className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]" />
+            <input id="profile-email" name="email" type="email" value={profileForm.email} onChange={onProfileChange} className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#16c7bd] focus:ring-4 focus:ring-[#fff4d6]" />
           </div>
           <div>
             <label className="text-sm font-medium text-slate-600" htmlFor="profile-number">Number</label>
-            <input id="profile-number" name="number" value={profileForm.number} onChange={onProfileChange} className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]" />
+            <input id="profile-number" name="number" value={profileForm.number} onChange={onProfileChange} className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#16c7bd] focus:ring-4 focus:ring-[#fff4d6]" />
           </div>
           <div>
             <label className="text-sm font-medium text-slate-600" htmlFor="profile-role">Role</label>
@@ -34,7 +34,7 @@ export default function ProfileView({ profileForm, onProfileChange, onProfileSav
           ) : null}
 
           <div className="grid gap-3 sm:grid-cols-2">
-            <button type="submit" disabled={profileSaving} className="w-full rounded-2xl bg-[#c79216] px-4 py-3 text-sm font-semibold text-white hover:bg-[#b07e10] disabled:cursor-not-allowed disabled:bg-[#d6b56a]">
+            <button type="submit" disabled={profileSaving} className="w-full rounded-2xl bg-[#16c7bd] px-4 py-3 text-sm font-semibold text-white hover:bg-[#b07e10] disabled:cursor-not-allowed disabled:bg-[#d6b56a]">
               {profileSaving ? "Saving..." : "Update profile"}
             </button>
             <button

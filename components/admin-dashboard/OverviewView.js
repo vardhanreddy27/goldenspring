@@ -192,22 +192,22 @@ export default function OverviewView({ activeTrend, onTrendChange, leaveRequests
             <AreaChart data={trend}>
               <defs>
                 <linearGradient id="studentsFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#c79216" stopOpacity={0.25} />
-                  <stop offset="95%" stopColor="#c79216" stopOpacity={0.03} />
+                  <stop offset="5%" stopColor="#16c7bd" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="#16c7bd" stopOpacity={0.03} />
                 </linearGradient>
               </defs>
               <CartesianGrid vertical={false} stroke="#dbe3f0" strokeDasharray="4 4" />
               <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fill: "#64748b", fontSize: 12 }} />
               <YAxis tickLine={false} axisLine={false} tick={{ fill: "#64748b", fontSize: 12 }} />
               <Tooltip />
-              <AreaShape type="monotone" dataKey="students" stroke="#c79216" fill="url(#studentsFill)" strokeWidth={3} />
+              <AreaShape type="monotone" dataKey="students" stroke="#16c7bd" fill="url(#studentsFill)" strokeWidth={3} />
               <AreaShape type="monotone" dataKey="teachers" stroke="#0f172a" fillOpacity={0} strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-slate-600">
           <span className="inline-flex items-center gap-2 rounded-full bg-[#fff4d6] px-3 py-1 text-[#8b6400]">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#c79216]" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#16c7bd]" />
             Students line
           </span>
           <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-slate-700">

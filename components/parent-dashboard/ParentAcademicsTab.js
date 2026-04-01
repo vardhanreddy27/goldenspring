@@ -26,7 +26,7 @@ export default function ParentAcademicsTab() {
                 }}
               />
               <Legend />
-              <Bar dataKey="score" fill="#c79216" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="score" fill="#16c7bd" radius={[8, 8, 0, 0]} />
               <Bar dataKey="target" fill="#cbd5e1" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
@@ -50,7 +50,7 @@ export default function ParentAcademicsTab() {
                   color: "#fff",
                 }}
               />
-              <Line type="monotone" dataKey="avg" stroke="#c79216" dot={{ fill: "#c79216", r: 6 }} strokeWidth={3} />
+              <Line type="monotone" dataKey="avg" stroke="#16c7bd" dot={{ fill: "#16c7bd", r: 6 }} strokeWidth={3} />
             </LineChart>
           </ResponsiveContainer>
         </div>

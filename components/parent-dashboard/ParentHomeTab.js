@@ -91,7 +91,7 @@ export default function ParentHomeTab() {
               Class {childInfo.className} • Section {childInfo.section} • Roll {childInfo.rollNumber}
             </p>
           </div>
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#c79216] text-2xl font-bold text-white">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#16c7bd] text-2xl font-bold text-white">
             {childInfo.name.charAt(0)}
           </div>
         </div>
@@ -137,7 +137,7 @@ export default function ParentHomeTab() {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-              <Bell className="h-4 w-4 text-[#c79216]" />
+              <Bell className="h-4 w-4 text-[#16c7bd]" />
               ANNOUNCEMENTS & NOTIFICATIONS
             </h3>
             <p className="mt-1 text-xs text-slate-500">Important updates from principal, teachers, PET, transport and school teams</p>
@@ -158,7 +158,7 @@ export default function ParentHomeTab() {
             <select
               value={categoryFilter}
               onChange={(e) => updateFilter(setCategoryFilter, e.target.value)}
-              className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#c79216] focus:outline-none"
+              className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#16c7bd] focus:outline-none"
             >
               {categories.map((category) => (
                 <option key={category} value={category}>
@@ -173,7 +173,7 @@ export default function ParentHomeTab() {
             <select
               value={sourceFilter}
               onChange={(e) => updateFilter(setSourceFilter, e.target.value)}
-              className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#c79216] focus:outline-none"
+              className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#16c7bd] focus:outline-none"
             >
               {sources.map((source) => (
                 <option key={source} value={source}>
@@ -188,7 +188,7 @@ export default function ParentHomeTab() {
             <select
               value={priorityFilter}
               onChange={(e) => updateFilter(setPriorityFilter, e.target.value)}
-              className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#c79216] focus:outline-none"
+              className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#16c7bd] focus:outline-none"
             >
               <option value="all">All priorities</option>
               <option value="high">High</option>
@@ -213,7 +213,7 @@ export default function ParentHomeTab() {
               <article
                 key={notification.id}
                 className={`rounded-2xl border p-4 transition-all ${
-                  isRead ? "border-slate-200 bg-slate-50" : "border-[#f0d9a2] bg-[#fffaf0]"
+                  isRead ? "border-slate-200 bg-slate-50" : "border-[#c7d2fe] bg-[#f5f8ff]"
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -244,7 +244,7 @@ export default function ParentHomeTab() {
                     </p>
                   </div>
                   <div className="flex flex-col items-end gap-2">
-                    {!isRead && <span className="h-2.5 w-2.5 rounded-full bg-[#c79216]" />}
+                    {!isRead && <span className="h-2.5 w-2.5 rounded-full bg-[#16c7bd]" />}
                     <button
                       type="button"
                       onClick={() => markAsRead(notification.id)}
@@ -255,7 +255,7 @@ export default function ParentHomeTab() {
                     </button>
                     <button
                       type="button"
-                      className="rounded-lg bg-[#c79216] px-2 py-1 text-xs font-semibold text-white hover:bg-[#b68514]"
+                      className="rounded-lg bg-[#16c7bd] px-2 py-1 text-xs font-semibold text-white hover:bg-[#b68514]"
                     >
                       {notification.actionLabel}
                     </button>
@@ -383,19 +383,19 @@ export default function ParentHomeTab() {
         <h3 className="text-sm font-semibold text-slate-600 mb-3">QUICK ACTIONS</h3>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <button className="rounded-xl border border-slate-200 bg-white p-4 text-center hover:bg-slate-50 transition-all">
-            <BookOpen className="h-6 w-6 mx-auto mb-2 text-[#c79216]" />
+            <BookOpen className="h-6 w-6 mx-auto mb-2 text-[#16c7bd]" />
             <p className="text-xs font-semibold text-slate-900">View Homework</p>
           </button>
           <button className="rounded-xl border border-slate-200 bg-white p-4 text-center hover:bg-slate-50 transition-all">
-            <TrendingDown className="h-6 w-6 mx-auto mb-2 text-[#c79216]" />
+            <TrendingDown className="h-6 w-6 mx-auto mb-2 text-[#16c7bd]" />
             <p className="text-xs font-semibold text-slate-900">View Reports</p>
           </button>
           <button className="rounded-xl border border-slate-200 bg-white p-4 text-center hover:bg-slate-50 transition-all">
-            <Award className="h-6 w-6 mx-auto mb-2 text-[#c79216]" />
+            <Award className="h-6 w-6 mx-auto mb-2 text-[#16c7bd]" />
             <p className="text-xs font-semibold text-slate-900">Academics</p>
           </button>
           <button className="rounded-xl border border-slate-200 bg-white p-4 text-center hover:bg-slate-50 transition-all">
-            <AlertTriangle className="h-6 w-6 mx-auto mb-2 text-[#c79216]" />
+            <AlertTriangle className="h-6 w-6 mx-auto mb-2 text-[#16c7bd]" />
             <p className="text-xs font-semibold text-slate-900">Attendance</p>
           </button>
         </div>

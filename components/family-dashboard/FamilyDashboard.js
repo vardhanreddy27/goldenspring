@@ -153,16 +153,11 @@ function FamilyBottomNav({ activeRole, activeMenu, onMenuChange }) {
             type="button"
             onClick={() => onMenuChange(id)}
             className={`flex min-h-14 w-full flex-col items-center justify-center gap-0.5 rounded-xl py-1.5 text-[11px] font-medium transition-colors duration-200 active:scale-95 ${
-              activeMenu === id ? "bg-(--app-accent-soft) text-[#8b6400]" : "text-slate-500"
+              activeMenu === id ? "text-slate-900" : "text-slate-500"
             }`}
           >
-            <span
-              className={`mb-0.5 block h-0.75 w-5 rounded-full bg-(--app-accent) transition-all duration-250 ${
-                activeMenu === id ? "opacity-100" : "opacity-0"
-              }`}
-            />
             <Icon className="h-5 w-5" />
-            <span>{label}</span>
+            <p>{label}</p>
           </button>
         ))}
       </div>
@@ -505,7 +500,7 @@ function ProfileBottomSheet({
               name={nameField}
               value={profile[nameField] || "Shiva"}
               onChange={onProfileChange}
-              className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
+              className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#16c7bd] focus:ring-4 focus:ring-[#fff4d6]"
             />
           </div>
 
@@ -516,7 +511,7 @@ function ProfileBottomSheet({
               name="contact"
               value="9866531011"
               onChange={onProfileChange}
-              className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
+              className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#16c7bd] focus:ring-4 focus:ring-[#fff4d6]"
             />
           </div>
 
@@ -531,7 +526,7 @@ function ProfileBottomSheet({
                   value={profile.rollNumber || ""}
                   onChange={onProfileChange}
                   placeholder="23"
-                  className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
+                  className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#16c7bd] focus:ring-4 focus:ring-[#fff4d6]"
                 />
               </div>
               <div>
@@ -546,7 +541,7 @@ function ProfileBottomSheet({
                     onProfileChange({ target: { name: "section", value: sec || "" } });
                   }}
                   placeholder="10/A"
-                  className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
+                  className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#16c7bd] focus:ring-4 focus:ring-[#fff4d6]"
                 />
               </div>
             </>
@@ -560,7 +555,7 @@ function ProfileBottomSheet({
                 name={childNameField}
                 value={profile[childNameField] || ""}
                 onChange={onProfileChange}
-                className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#c79216] focus:ring-4 focus:ring-[#fff4d6]"
+                className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#16c7bd] focus:ring-4 focus:ring-[#fff4d6]"
               />
             </div>
           )}
@@ -569,7 +564,7 @@ function ProfileBottomSheet({
             <div className="flex flex-col gap-2 mb-2">
               <label className="text-sm font-medium text-slate-600 mb-1">Profile Picture</label>
               <div
-                className="w-full border-2 border-dashed border-slate-300 rounded-2xl flex flex-col items-center justify-center bg-slate-50 relative cursor-pointer hover:border-[#c79216] transition-all"
+                className="w-full border-2 border-dashed border-slate-300 rounded-2xl flex flex-col items-center justify-center bg-slate-50 relative cursor-pointer hover:border-[#16c7bd] transition-all"
                 style={{ height: '150px' }}
                 onClick={() => document.getElementById('profile-pic-upload')?.click()}
               >
@@ -604,7 +599,7 @@ function ProfileBottomSheet({
                       className="mb-2 px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-700 font-medium shadow-sm hover:bg-slate-100 flex items-center gap-2"
                       tabIndex={-1}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="#c79216" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0-4 4m4-4 4 4"/><rect width="20" height="12" x="2" y="8" stroke="#c79216" strokeWidth="2" rx="2"/></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="#16c7bd" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0-4 4m4-4 4 4"/><rect width="20" height="12" x="2" y="8" stroke="#16c7bd" strokeWidth="2" rx="2"/></svg>
                       <span>Upload</span>
                     </button>
                     <span className="text-slate-500 text-sm">Choose a file or drag & drop it here</span>
@@ -617,14 +612,14 @@ function ProfileBottomSheet({
             <button
               type="submit"
               disabled={profileSaving}
-              className="w-full rounded-2xl bg-[#c79216] px-4 py-3 text-sm font-semibold text-white hover:bg-[#b07e10] disabled:cursor-not-allowed disabled:bg-[#e6cc8a]"
+              className="w-full rounded-2xl bg-[#16c7bd] px-4 py-3 text-sm font-semibold text-white hover:bg-[#12a79f] disabled:cursor-not-allowed disabled:bg-[#8fded8]"
             >
               {profileSaving ? "Saving..." : "Update profile"}
             </button>
             <button
               type="button"
               onClick={onLogout}
-              className="w-full rounded-2xl bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-200"
+              className="w-full rounded-2xl bg-rose-600 px-4 py-3 text-sm font-semibold text-white hover:bg-rose-500"
             >
               Logout
             </button>

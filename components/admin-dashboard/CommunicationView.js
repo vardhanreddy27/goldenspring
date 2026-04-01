@@ -102,7 +102,7 @@ const CALENDAR_EVENTS = [
   { date: "2026-04-03", title: "Sports meet", detail: "Inter-house athletics events." },
 ];
 
-function ProgressBar({ label, value, color = "#c79216" }) {
+function ProgressBar({ label, value, color = "#16c7bd" }) {
   return (
     <div className="rounded-xl bg-white px-3 py-2">
       <div className="mb-1 flex items-center justify-between text-xs font-medium text-slate-700">
@@ -308,7 +308,7 @@ export default function CommunicationView({
                 rows={4}
                 className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm"
               />
-              <button type="submit" className="w-full rounded-xl bg-[#c79216] px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-[#b07e10] active:scale-[0.98]">Send alert</button>
+              <button type="submit" className="w-full rounded-xl bg-[#16c7bd] px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-[#b07e10] active:scale-[0.98]">Send alert</button>
             </form>
 
             <div className="rounded-2xl bg-white p-3">
@@ -363,7 +363,7 @@ export default function CommunicationView({
                   </span>
                 </div>
                 <div className="mt-4 space-y-3">
-                  <ProgressBar label="Syllabus completion" value={parseInt(row.syllabus, 10)} color="#c79216" />
+                  <ProgressBar label="Syllabus completion" value={parseInt(row.syllabus, 10)} color="#16c7bd" />
                   <ProgressBar label="Activity participation" value={parseInt(row.activityParticipation, 10)} color="#16a34a" />
                 </div>
               </div>
@@ -500,7 +500,7 @@ export default function CommunicationView({
                   <div
                     key={date.toISOString()}
                     className={`flex h-12 items-center justify-center rounded-xl text-sm font-medium ${
-                      isToday ? "bg-[#c79216] text-white" : hasEvent ? "bg-[#fff4d6] text-[#8b6400]" : "bg-white text-slate-700"
+                      isToday ? "bg-[#16c7bd] text-white" : hasEvent ? "bg-[#fff4d6] text-[#8b6400]" : "bg-white text-slate-700"
                     }`}
                   >
                     {date.getDate()}

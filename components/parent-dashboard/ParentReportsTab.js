@@ -87,11 +87,11 @@ export default function ParentReportsTab() {
       </section>
 
       {/* Action Plan */}
-      <section className="rounded-2xl border-2 border-[#c79216] bg-[#fff4d6] p-6">
+      <section className="rounded-2xl border-2 border-[#16c7bd] bg-[#fff4d6] p-6">
         <h3 className="font-semibold text-slate-950 mb-3">Action Plan for Parents</h3>
         <div className="space-y-3">
           <div className="flex gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#c79216] text-sm font-bold text-white shrink-0">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#16c7bd] text-sm font-bold text-white shrink-0">
               1
             </div>
             <div>
@@ -100,7 +100,7 @@ export default function ParentReportsTab() {
             </div>
           </div>
           <div className="flex gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#c79216] text-sm font-bold text-white shrink-0">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#16c7bd] text-sm font-bold text-white shrink-0">
               2
             </div>
             <div>
@@ -109,7 +109,7 @@ export default function ParentReportsTab() {
             </div>
           </div>
           <div className="flex gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#c79216] text-sm font-bold text-white shrink-0">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#16c7bd] text-sm font-bold text-white shrink-0">
               3
             </div>
             <div>
@@ -118,7 +118,7 @@ export default function ParentReportsTab() {
             </div>
           </div>
           <div className="flex gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#c79216] text-sm font-bold text-white shrink-0">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#16c7bd] text-sm font-bold text-white shrink-0">
               4
             </div>
             <div>
@@ -134,19 +134,19 @@ export default function ParentReportsTab() {
         <h3 className="font-semibold text-slate-950 mb-3">Resources & Support</h3>
         <ul className="space-y-2 text-sm text-slate-700">
           <li className="flex gap-2">
-            <span className="text-[#c79216] font-bold">→</span>
+            <span className="text-[#16c7bd] font-bold">→</span>
             School will provide extra practice materials on request
           </li>
           <li className="flex gap-2">
-            <span className="text-[#c79216] font-bold">→</span>
+            <span className="text-[#16c7bd] font-bold">→</span>
             Attend parent-teacher meetings to discuss progress
           </li>
           <li className="flex gap-2">
-            <span className="text-[#c79216] font-bold">→</span>
+            <span className="text-[#16c7bd] font-bold">→</span>
             Access to school library for additional study resources
           </li>
           <li className="flex gap-2">
-            <span className="text-[#c79216] font-bold">→</span>
+            <span className="text-[#16c7bd] font-bold">→</span>
             Teachers available for doubt clearing sessions
           </li>
         </ul>
@@ -154,10 +154,10 @@ export default function ParentReportsTab() {
 
       {/* Download Report */}
       <div className="flex gap-3">
-        <button className="flex-1 rounded-full bg-[#c79216] px-4 py-3 text-sm font-semibold text-white hover:bg-[#b07e10] transition-all">
+        <button className="flex-1 rounded-full bg-[#16c7bd] px-4 py-3 text-sm font-semibold text-white hover:bg-[#b07e10] transition-all">
           📥 Download PDF Report
         </button>
-        <button className="flex-1 rounded-full border-2 border-[#c79216] px-4 py-3 text-sm font-semibold text-[#c79216] hover:bg-[#fff4d6] transition-all">
+        <button className="flex-1 rounded-full border-2 border-[#16c7bd] px-4 py-3 text-sm font-semibold text-[#16c7bd] hover:bg-[#fff4d6] transition-all">
           📧 Email to Parent
         </button>
       </div>

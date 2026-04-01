@@ -137,7 +137,7 @@ export default function AcademicsTab() {
         <h2 className="mt-1 text-2xl font-semibold text-slate-900">Syllabus and score</h2>
         <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-6 w-full">
           {subjectProgress.slice(0, 6).map((item, idx) => {
-            const ringColors = ['#c79216', '#1e90ff', '#43a047', '#e53935', '#8e24aa', '#ff9800'];
+            const ringColors = ['#16c7bd', '#1e90ff', '#43a047', '#e53935', '#8e24aa', '#ff9800'];
             const color = ringColors[idx % ringColors.length];
             const radius = 38;
             const stroke = 7;

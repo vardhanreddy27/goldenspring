@@ -353,7 +353,7 @@ export default function HomeTab() {
                 type="button"
                 onClick={() => setScheduleWindow("morning")}
                 className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                  scheduleWindow === "morning" ? "bg-[#c79216] text-white shadow-sm" : "text-slate-600"
+                  scheduleWindow === "morning" ? "bg-[#16c7bd] text-white shadow-sm" : "text-slate-600"
                 }`}
               >
                 Morning
@@ -362,7 +362,7 @@ export default function HomeTab() {
                 type="button"
                 onClick={() => setScheduleWindow("afternoon")}
                 className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                  scheduleWindow === "afternoon" ? "bg-[#c79216] text-white shadow-sm" : "text-slate-600"
+                  scheduleWindow === "afternoon" ? "bg-[#16c7bd] text-white shadow-sm" : "text-slate-600"
                 }`}
               >
                 Afternoon
@@ -423,7 +423,7 @@ export default function HomeTab() {
         <h2 className="mt-1 text-2xl font-semibold">Latest updates</h2>
         <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
           <span className="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-700">Total: {studentAnnouncements.length}</span>
-          <span className="rounded-full bg-[#fff4d6] px-3 py-1 font-semibold text-[#8b6400]">High priority: {studentAnnouncements.filter((item) => item.priority === "high").length}</span>
+          <span className="rounded-full bg-[#16c7bd] px-3 py-1 font-semibold text-white">High priority: {studentAnnouncements.filter((item) => item.priority === "high").length}</span>
         </div>
 
         <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
@@ -441,7 +441,7 @@ export default function HomeTab() {
                 }}
                 className={`inline-flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold transition ${
                   active
-                    ? "border-[#c79216] bg-[#fff4d6] text-[#8b6400]"
+                    ? "border-[#16c7bd] bg-[#16c7bd] text-white"
                     : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
                 }`}
               >
@@ -457,7 +457,7 @@ export default function HomeTab() {
             const Icon = item.icon;
 
             return (
-              <article key={item.id} className="rounded-2xl border border-[#efd5a0] bg-[#fffaf0] p-4">
+              <article key={item.id} className="rounded-2xl border border-[#bfc8ff] bg-[#f5f7ff] p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
@@ -484,13 +484,10 @@ export default function HomeTab() {
                     </p>
                   </div>
 
-                  <div className="flex flex-col items-end gap-2">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#fff4d6] text-[#8b6400]">
-                      <Icon className="h-4 w-4" />
-                    </div>
+                  <div className="flex shrink-0 flex-col items-end gap-2">
                     <button
                       type="button"
-                      className="rounded-lg bg-[#c79216] px-2 py-1 text-xs font-semibold text-white hover:bg-[#b68514]"
+                      className="rounded-lg bg-[#16c7bd] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#12a79f]"
                     >
                       {item.actionLabel}
                     </button>

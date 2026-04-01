@@ -22,7 +22,7 @@ export default function ApprovalsView({ leaveRequests, onDecision }) {
     return Object.entries(counts).map(([name, value]) => ({
       name,
       value,
-      color: name === "Approved" ? "#16a34a" : name === "Pending" ? "#c79216" : "#ef4444",
+      color: name === "Approved" ? "#16a34a" : name === "Pending" ? "#16c7bd" : "#ef4444",
     }));
   }, [leaveRequests]);
 
