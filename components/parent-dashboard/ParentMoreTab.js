@@ -67,7 +67,7 @@ const teacherContactCards = [
   {
     id: "text",
     title: "Text ",
-    teacherName: "Kavya Ma'am",
+    teacherName: "Sri Ma'am",
     section: "9th B",
     imageSrc: "/message.png",
     tone: "from-rose-50 to-pink-50",
