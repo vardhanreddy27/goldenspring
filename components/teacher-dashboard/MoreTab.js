@@ -1,7 +1,18 @@
-
+import Image from "next/image";
 import { X, Paperclip, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useRef } from "react";
 import { moreTools, moreToolDetails } from "./data";
+
+const teacherMoreCardAssets = {
+  sectionPerformance: { imageSrc: "/performance.png", tone: "from-sky-100 to-cyan-100" },
+  enrollStudents: { imageSrc: "/classenrollment.webp", tone: "from-amber-100 to-orange-100" },
+  leaveRequests: { imageSrc: "/leaveicon.webp", tone: "from-amber-100 to-orange-100" },
+  quizResults: { imageSrc: "/examicon.webp", tone: "from-indigo-100 to-violet-100" },
+  notesCenter: { imageSrc: "/notes.webp", tone: "from-emerald-100 to-teal-100" },
+  announcements: { imageSrc: "/announcementsicon.png", tone: "from-amber-100 to-yellow-100" },
+  learningResources: { imageSrc: "/syllbusicon.webp", tone: "from-rose-100 to-pink-100" },
+  academicCalendar: { imageSrc: "/calendericon.webp", tone: "from-blue-100 to-indigo-100" },
+};
 
 // Academic Calendar Tool as a separate component
 function AcademicCalendarTool() {
@@ -204,67 +215,44 @@ function AcademicCalendarTool() {
 
 
 export function MoreTab({ onOpenToolModal }) {
-  const toolCardStyles = [
-    "from-green-400 to-emerald-600 text-white",
-    "from-yellow-400 to-amber-500 text-white",
-    "from-blue-500 to-indigo-700 text-white",
-    "from-pink-500 to-rose-500 text-white",
-    "from-purple-500 to-violet-700 text-white",
-    "from-cyan-500 to-sky-600 text-white",
-    "from-orange-500 to-red-500 text-white",
-    "from-teal-500 to-emerald-500 text-white",
-    "from-fuchsia-500 to-purple-600 text-white",
-  ];
-
-  function getTeacherActionLabel(toolKey) {
-    const labels = {
-      sectionPerformance: "View Performance",
-      enrollStudents: "Manage Enrollment",
-      leaveRequests: "Apply Leave",
-      quizCenter: "Create Quiz",
-      quizResults: "View Results",
-      notesCenter: "Open Notes",
-      announcements: "Post Update",
-      learningResources: "Share Resource",
-      academicCalendar: "View Calendar",
-    };
-
-    return labels[toolKey] || "Open Tool";
-  }
-
   return (
-    <section className="mt-4">
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        {moreTools.map((tool, index) => {
-          const colorTone = toolCardStyles[index % toolCardStyles.length];
-          return (
-            <article
-              key={tool.key}
-              className={`rounded-3xl bg-linear-to-br p-6 shadow-lg ${colorTone}`}
-            >
-              <div className="flex items-start gap-3">
-                <div className="rounded-xl bg-white/20 p-2.5">
-                  <tool.icon className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-base font-semibold">{tool.title}</p>
-                  <p className="mt-1 text-xs opacity-90">{tool.subtitle}</p>
-                </div>
-              </div>
+    <section className="-mx-3 mt-6 min-h-[calc(100vh-10rem)] space-y-0 bg-white mb-9">
+      <article className="bg-white p-5">
+        <p className="text-sm text-slate-500">Teacher control</p>
+        <h2 className="mt-1 text-2xl font-semibold text-slate-900">Quick actions</h2>
 
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {moreTools.map((tool) => {
+            const cardAsset = teacherMoreCardAssets[tool.key] || { imageSrc: "/logo.png", tone: "from-slate-100 to-slate-200" };
+
+            return (
               <button
+                key={tool.key}
                 type="button"
                 onClick={() => onOpenToolModal(tool.key)}
-                className="mt-4 rounded-xl bg-white/90 px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition-colors hover:bg-white"
+                className={`group rounded-2xl bg-linear-to-br ${cardAsset.tone} p-4 text-left text-slate-900 shadow-sm ring-1 ring-slate-200/70 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md active:scale-[0.98]`}
               >
-                {getTeacherActionLabel(tool.key)}
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-base font-semibold">{tool.title}</p>
+                    <p className="mt-1 text-xs text-slate-600">{tool.subtitle}</p>
+                    <p className="mt-3 text-[11px] font-medium text-slate-500">Open tool</p>
+                  </div>
+                  <span className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl">
+                    <Image
+                      src={cardAsset.imageSrc}
+                      alt={`${tool.title} icon`}
+                      width={72}
+                      height={72}
+                      className="h-14 w-14 object-contain"
+                    />
+                  </span>
+                </div>
               </button>
-            </article>
-          );
-        })}
-      </div>
-
-    
+            );
+          })}
+        </div>
+      </article>
     </section>
   );
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { ChevronLeft, Search } from "lucide-react";
 import { teacherSections } from "@/components/teacher-dashboard/data";
 import { menuItems } from "@/components/teacher-dashboard/TeacherNav";
 
@@ -16,6 +17,7 @@ export default function TeacherSectionDetailsPage() {
   const { sectionId } = router.query;
   const [page, setPage] = useState(1);
   const [actionMessage, setActionMessage] = useState("");
+  const [studentSearch, setStudentSearch] = useState("");
 
   const section = teacherSections.find((item) => item.id === sectionId);
   const studentPerformance = section?.studentPerformance || [];
@@ -24,6 +26,14 @@ export default function TeacherSectionDetailsPage() {
     rollNo: `${section?.className || ""}${section?.section || ""}${String(index + 1).padStart(2, "0")}`,
     avatar: avatarPool[index % avatarPool.length],
   }));
+  const normalizedSearch = studentSearch.trim().toLowerCase();
+  const filteredStudents = normalizedSearch
+    ? studentsWithMeta.filter(
+        (student) =>
+          student.name.toLowerCase().includes(normalizedSearch) ||
+          student.rollNo.toLowerCase().includes(normalizedSearch)
+      )
+    : studentsWithMeta;
 
   if (!section) {
     return (
@@ -33,7 +43,7 @@ export default function TeacherSectionDetailsPage() {
           <h1 className="mt-2 text-2xl font-bold">Unable to load section details</h1>
           <Link
             href="/Teacherdashboard"
-            className="mt-4 inline-block rounded-xl bg-[var(--app-accent)] px-4 py-2 text-sm font-semibold text-white"
+            className="mt-4 inline-block rounded-xl bg-(--app-accent) px-4 py-2 text-sm font-semibold text-white"
           >
             Back to Dashboard
           </Link>
@@ -43,9 +53,9 @@ export default function TeacherSectionDetailsPage() {
   }
 
   const pageSize = 10;
-  const totalPages = Math.max(1, Math.ceil(studentsWithMeta.length / pageSize));
+  const totalPages = Math.max(1, Math.ceil(filteredStudents.length / pageSize));
   const currentPage = Math.min(page, totalPages);
-  const pagedStudents = studentsWithMeta.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const pagedStudents = filteredStudents.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const ranked = getRankedStudents(studentsWithMeta);
   const topPerformers = ranked.slice(0, 3);
   const weakPerformers = ranked.filter((student) => student.subjectPerformance < 60);
@@ -56,6 +66,11 @@ export default function TeacherSectionDetailsPage() {
     { day: "02", month: "May" },
     { day: "05", month: "May" },
   ];
+  const maxStudentsAcrossSections = Math.max(...teacherSections.map((item) => item.totalStudents));
+  const studentsGraphPercent = Math.round((section.totalStudents / maxStudentsAcrossSections) * 100);
+  const quizPerformancePercent = Math.round(
+    studentsWithMeta.reduce((sum, student) => sum + student.subjectPerformance, 0) / Math.max(1, studentsWithMeta.length)
+  );
 
   function getDashboardHref(menuId) {
     return `/Teacherdashboard?tab=${menuId}`;
@@ -78,7 +93,10 @@ export default function TeacherSectionDetailsPage() {
               href="/Teacherdashboard"
               className="text-xs font-semibold uppercase tracking-[0.09em] text-slate-500 hover:text-slate-700"
             >
-              Back
+              <span className="inline-flex items-center gap-1">
+                <ChevronLeft className="h-4 w-4" />
+                <span className="sr-only">Back</span>
+              </span>
             </Link>
             <h1 className="text-lg font-bold sm:text-xl">Section Details</h1>
             <span className="text-[11px] font-semibold text-slate-500">Teacher View</span>
@@ -101,29 +119,90 @@ export default function TeacherSectionDetailsPage() {
             ) : null}
           </div>
 
-          <div className="mt-4 grid gap-2 sm:grid-cols-3">
-            <div className="rounded-2xl bg-slate-50 px-3 py-2.5 ring-1 ring-slate-200">
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <div className="rounded-2xl bg-slate-50 px-4 py-4 ring-1 ring-slate-200">
               <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">Total Students</p>
-              <p className="mt-1 text-lg font-bold text-slate-800">{section.totalStudents}</p>
+              <div className="mt-3 flex items-center justify-center">
+                <div
+                  className="grid h-20 w-20 place-items-center rounded-full"
+                  style={{ background: `conic-gradient(#334155 ${Math.max(0, Math.min(100, studentsGraphPercent)) * 3.6}deg, #cbd5e1 0deg)` }}
+                >
+                  <div className="grid h-14 w-14 place-items-center rounded-full bg-white text-xs font-bold text-slate-700">
+                    {section.totalStudents}
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="rounded-2xl bg-amber-50 px-3 py-2.5 ring-1 ring-amber-200">
+
+            <div className="rounded-2xl bg-amber-50 px-4 py-4 ring-1 ring-amber-200">
               <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-amber-700">Class Attendance</p>
-              <p className="mt-1 text-lg font-bold text-amber-800">{section.attendancePercent}%</p>
+              <div className="mt-3 flex items-center justify-center">
+                <div
+                  className="grid h-20 w-20 place-items-center rounded-full"
+                  style={{ background: `conic-gradient(#f59e0b ${Math.max(0, Math.min(100, section.attendancePercent)) * 3.6}deg, #fde68a 0deg)` }}
+                >
+                  <div className="grid h-14 w-14 place-items-center rounded-full bg-white text-xs font-bold text-amber-700">
+                    {section.attendancePercent}%
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="rounded-2xl bg-emerald-50 px-3 py-2.5 ring-1 ring-emerald-200">
+
+            <div className="rounded-2xl bg-emerald-50 px-4 py-4 ring-1 ring-emerald-200">
               <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-emerald-700">Performance</p>
-              <p className="mt-1 text-lg font-bold text-emerald-800">{section.performancePercent}%</p>
+              <div className="mt-3 flex items-center justify-center">
+                <div
+                  className="grid h-20 w-20 place-items-center rounded-full"
+                  style={{ background: `conic-gradient(#10b981 ${Math.max(0, Math.min(100, section.performancePercent)) * 3.6}deg, #a7f3d0 0deg)` }}
+                >
+                  <div className="grid h-14 w-14 place-items-center rounded-full bg-white text-xs font-bold text-emerald-700">
+                    {section.performancePercent}%
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-2xl bg-sky-50 px-4 py-4 ring-1 ring-sky-200">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-sky-700">Quiz Performance</p>
+              <div className="mt-3 flex items-center justify-center">
+                <div
+                  className="grid h-20 w-20 place-items-center rounded-full"
+                  style={{ background: `conic-gradient(#0ea5e9 ${Math.max(0, Math.min(100, quizPerformancePercent)) * 3.6}deg, #bae6fd 0deg)` }}
+                >
+                  <div className="grid h-14 w-14 place-items-center rounded-full bg-white text-xs font-bold text-sky-700">
+                    {quizPerformancePercent}%
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
         </section>
 
         <section className="stagger-item grid gap-4 lg:grid-cols-[1.45fr_0.55fr]" style={{ "--stagger-delay": "70ms" }}>
-          <article className="rounded-3xl bg-[var(--app-surface)] p-4 sm:p-5">
+          <article className="rounded-3xl bg-(--app-surface) p-4 sm:p-5">
             <div className="flex items-end justify-between gap-3">
               <div>
                 <p className="text-sm text-slate-500 whitespace-nowrap">Student performance and attendance</p>
                 <h2 className="mt-1 text-xl font-semibold">Section student list</h2>
+              </div>
+            </div>
+
+            <div className="mt-3">
+              <label htmlFor="section-student-search" className="sr-only">Search student</label>
+              <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+                <Search className="h-4 w-4 text-slate-500" />
+                <input
+                  id="section-student-search"
+                  type="text"
+                  value={studentSearch}
+                  onChange={(event) => {
+                    setStudentSearch(event.target.value);
+                    setPage(1);
+                  }}
+                  placeholder="Search by student name or roll no"
+                  className="w-full bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400"
+                />
               </div>
             </div>
 
@@ -160,6 +239,11 @@ export default function TeacherSectionDetailsPage() {
                   <p className="mt-1 text-xs font-medium text-slate-600">{student.subjectPerformance}%</p>
                 </div>
               ))}
+              {pagedStudents.length === 0 ? (
+                <p className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm text-slate-600">
+                  No students found for "{studentSearch}".
+                </p>
+              ) : null}
             </div>
 
             <div className="mt-4 hidden md:block">
@@ -201,6 +285,13 @@ export default function TeacherSectionDetailsPage() {
                       <td className="px-3 py-3 text-right text-sm font-semibold text-slate-700">{student.attendance}%</td>
                     </tr>
                   ))}
+                  {pagedStudents.length === 0 ? (
+                    <tr>
+                      <td colSpan={3} className="px-3 py-4 text-sm text-slate-600">
+                        No students found for "{studentSearch}".
+                      </td>
+                    </tr>
+                  ) : null}
                 </tbody>
               </table>
             </div>
@@ -231,7 +322,7 @@ export default function TeacherSectionDetailsPage() {
           </article>
 
           <div className="space-y-4">
-            <article className="rounded-3xl bg-[var(--app-surface)] p-4 sm:p-5">
+            <article className="rounded-3xl bg-(--app-surface) p-4 sm:p-5">
             <p className="text-sm text-slate-500">Section tasks</p>
             <h2 className="mt-1 text-xl font-semibold">Upcoming work</h2>
             <ul className="mt-4 space-y-2">
@@ -259,7 +350,7 @@ export default function TeacherSectionDetailsPage() {
         </section>
 
         <section className="stagger-item grid gap-4 lg:grid-cols-3" style={{ "--stagger-delay": "110ms" }}>
-          <article className="rounded-3xl bg-[var(--app-surface)] p-4 sm:p-5">
+          <article className="rounded-3xl bg-(--app-surface) p-4 sm:p-5">
             <p className="text-sm text-slate-500">Top performers</p>
             <div className="mt-3 space-y-2">
               {topPerformers.map((student, index) => (
@@ -296,7 +387,7 @@ export default function TeacherSectionDetailsPage() {
             </div>
           </article>
 
-          <article className="rounded-3xl bg-[var(--app-surface)] p-4 sm:p-5">
+          <article className="rounded-3xl bg-(--app-surface) p-4 sm:p-5">
             <p className="text-sm text-slate-500">Weak performers</p>
             <div className="mt-3 space-y-2">
               {weakPerformers.length === 0 ? (
@@ -333,7 +424,7 @@ export default function TeacherSectionDetailsPage() {
             </div>
           </article>
 
-          <article className="rounded-3xl bg-[var(--app-surface)] p-4 sm:p-5">
+          <article className="rounded-3xl bg-(--app-surface) p-4 sm:p-5">
             <p className="text-sm text-slate-500">Low attendance</p>
             <div className="mt-3 space-y-2">
               {lowAttendance.length === 0 ? (
@@ -374,7 +465,7 @@ export default function TeacherSectionDetailsPage() {
       </div>
 
       <div className="fixed inset-x-0 bottom-0 z-40 bg-white/95 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 shadow-[0_-10px_24px_-20px_rgba(15,23,42,0.4)] backdrop-blur-xl lg:hidden">
-        <div className="grid grid-cols-4 gap-1 px-2">
+        <div className="grid grid-cols-5 gap-1 px-2">
           {menuItems.map(({ id, label, icon: Icon }) => (
             <Link
               key={id}

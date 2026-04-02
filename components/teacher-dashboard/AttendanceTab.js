@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import { X } from "lucide-react";
 import { teacherSelfAttendance } from "./data";
@@ -29,20 +29,15 @@ function buildDraft(targetClass, session) {
     section: targetClass.section,
     session,
     currentIndex: 0,
-    students: classStudents.map((student) => ({ ...student, status: null })),
+    students: classStudents.map((student) => ({ ...student, status: "Present" })),
   };
 }
 
 export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }) {
   const [attendanceDraft, setAttendanceDraft] = useState(null);
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [dragStartX, setDragStartX] = useState(null);
-  const [dragOffsetX, setDragOffsetX] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const [cardScale, setCardScale] = useState(1);
-  const [cardTransition, setCardTransition] = useState("transform 220ms cubic-bezier(0.22, 1, 0.36, 1), opacity 220ms ease");
-  const activePointerIdRef = useRef(null);
-  const swipeLockRef = useRef(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const studentsPerPage = 4;
 
   const morningClass = classes[0] || null;
   const eveningClass = classes[1] || classes[0] || null;
@@ -56,11 +51,12 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
   const morningSubmitted = todaysRecords.some((entry) => entry.session === "Morning");
   const eveningSubmitted = todaysRecords.some((entry) => entry.session === "Evening");
 
-  const activeStudent = attendanceDraft ? attendanceDraft.students[attendanceDraft.currentIndex] : null;
-  const nextStudent = attendanceDraft ? attendanceDraft.students[attendanceDraft.currentIndex + 1] : null;
-  const allMarked = attendanceDraft
-    ? attendanceDraft.students.every((student) => student.status === "Present" || student.status === "Absent")
-    : false;
+  const totalPages = attendanceDraft ? Math.max(1, Math.ceil(attendanceDraft.students.length / studentsPerPage)) : 1;
+  const paginatedStudents = attendanceDraft
+    ? attendanceDraft.students.slice((currentPage - 1) * studentsPerPage, currentPage * studentsPerPage)
+    : [];
+  const absentCount = attendanceDraft ? attendanceDraft.students.filter((student) => student.status === "Absent").length : 0;
+  const presentCount = attendanceDraft ? attendanceDraft.students.filter((student) => student.status === "Present").length : 0;
 
   function startAttendance(session) {
     const targetClass = session === "Morning" ? morningClass : eveningClass;
@@ -70,6 +66,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
     if (alreadySubmitted) return;
 
     setAttendanceDraft(buildDraft(targetClass, session));
+    setCurrentPage(1);
     setTimeout(() => setSheetOpen(true), 10);
   }
 
@@ -78,54 +75,26 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
     setTimeout(() => setAttendanceDraft(null), 220);
   }
 
-  function markCurrentStudent(status) {
-    if (!attendanceDraft || allMarked) return;
+  function toggleStudent(index) {
+    if (!attendanceDraft) return;
 
     setAttendanceDraft((prev) => {
       if (!prev) return prev;
       const nextStudents = [...prev.students];
-      nextStudents[prev.currentIndex] = {
-        ...nextStudents[prev.currentIndex],
-        status,
+      nextStudents[index] = {
+        ...nextStudents[index],
+        status: nextStudents[index].status === "Present" ? "Absent" : "Present",
       };
-
-      const nextIndex = Math.min(prev.currentIndex + 1, nextStudents.length - 1);
 
       return {
         ...prev,
         students: nextStudents,
-        currentIndex: nextIndex,
       };
     });
   }
 
-  function animateMark(status, direction) {
-    if (!attendanceDraft || allMarked || swipeLockRef.current) return;
-    swipeLockRef.current = true;
-    setIsDragging(false);
-    setDragStartX(null);
-    setCardScale(1);
-    setCardTransition("transform 190ms cubic-bezier(0.2, 0.9, 0.2, 1), opacity 190ms ease");
-    setDragOffsetX(direction * 340);
-
-    setTimeout(() => {
-      markCurrentStudent(status);
-      setDragOffsetX(0);
-      setCardTransition("transform 220ms cubic-bezier(0.22, 1, 0.36, 1), opacity 220ms ease");
-      swipeLockRef.current = false;
-    }, 210);
-  }
-
-  function resolveSwipe(deltaX) {
-    if (deltaX > 70) {
-      animateMark("Present", 1);
-    } else if (deltaX < -70) {
-      animateMark("Absent", -1);
-    }
-  }
-
   function submitAttendance() {
-    if (!attendanceDraft || !allMarked) return;
+    if (!attendanceDraft) return;
 
     const presentCount = attendanceDraft.students.filter((student) => student.status === "Present").length;
 
@@ -144,48 +113,18 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
     closeAttendanceSheet();
   }
 
-  function handlePointerDown(event) {
-    if (!attendanceDraft || allMarked || swipeLockRef.current) return;
-    activePointerIdRef.current = event.pointerId;
-    if (event.currentTarget.setPointerCapture) {
-      event.currentTarget.setPointerCapture(event.pointerId);
-    }
-    setIsDragging(true);
-    setDragStartX(event.clientX);
-    setCardScale(1.01);
-    setCardTransition("none");
-  }
-
-  function handlePointerMove(event) {
-    if (activePointerIdRef.current !== event.pointerId) return;
-    if (!isDragging || dragStartX === null) return;
-    const deltaX = event.clientX - dragStartX;
-    setDragOffsetX(Math.max(-220, Math.min(220, deltaX * 0.94)));
-  }
-
-  function handlePointerUp(event) {
-    if (activePointerIdRef.current !== event.pointerId) return;
-    if (!isDragging) return;
-    setCardScale(1);
-    if (Math.abs(dragOffsetX) < 70) {
-      setCardTransition("transform 260ms cubic-bezier(0.16, 1, 0.3, 1), opacity 220ms ease");
-      setDragOffsetX(0);
-    } else {
-      resolveSwipe(dragOffsetX);
-    }
-    setIsDragging(false);
-    setDragStartX(null);
-    activePointerIdRef.current = null;
+  function goToPage(page) {
+    setCurrentPage(Math.max(1, Math.min(totalPages, page)));
   }
 
   return (
     <section className="mt-4 space-y-4">
-      <article className="bg-[var(--app-surface)] p-4 sm:p-5">
+      <article className="bg-(--app-surface) p-4 sm:p-5">
         <p className="text-sm text-slate-500">School attendance</p>
-        <h2 className="mt-1 text-xl font-semibold">Swipe attendance for assigned classes</h2>
+        <h2 className="mt-1 text-xl font-semibold">Mark attendance for assigned classes</h2>
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-muted)] p-3">
+          <div className="rounded-2xl border border-(--app-border) bg-(--app-surface-muted) p-3">
             <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Assigned morning class</p>
             <p className="mt-1 text-sm font-semibold text-slate-900">
               {morningClass ? `Class ${morningClass.className} - Section ${morningClass.section}` : "Not set"}
@@ -194,13 +133,13 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
               type="button"
               onClick={() => startAttendance("Morning")}
               disabled={morningSubmitted || !morningClass}
-              className="mt-2.5 w-full rounded-xl bg-[var(--app-accent)] px-3 py-2 text-sm font-semibold text-white hover:bg-[#b07e10] disabled:cursor-not-allowed disabled:opacity-50"
+              className="mt-2.5 w-full rounded-xl bg-[#16c7bd] px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#13b4ab] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {morningSubmitted ? "Morning attendance submitted" : "Start Morning Roll Call"}
             </button>
           </div>
 
-          <div className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-muted)] p-3">
+          <div className="rounded-2xl border border-(--app-border) bg-(--app-surface-muted) p-3">
             <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Assigned evening class</p>
             <p className="mt-1 text-sm font-semibold text-slate-900">
               {eveningClass ? `Class ${eveningClass.className} - Section ${eveningClass.section}` : "Not set"}
@@ -209,7 +148,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
               type="button"
               onClick={() => startAttendance("Evening")}
               disabled={eveningSubmitted || !eveningClass}
-              className="mt-2.5 w-full rounded-xl bg-[var(--app-accent)] px-3 py-2 text-sm font-semibold text-white hover:bg-[#b07e10] disabled:cursor-not-allowed disabled:opacity-50"
+              className="mt-2.5 w-full rounded-xl bg-[#16c7bd] px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#13b4ab] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {eveningSubmitted ? "Evening attendance submitted" : "Start Evening Roll Call"}
             </button>
@@ -232,7 +171,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
                     submitted
                   </span>
                 </div>
-                <p className="mt-1 break-words text-xs text-slate-600">
+                <p className="mt-1 wrap-break-word text-xs text-slate-600">
                   Present: {entry.present}/{entry.total} | By: {entry.submittedBy} | {entry.time}
                 </p>
               </div>
@@ -241,16 +180,16 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
         </div>
       </article>
 
-      <article className="bg-[var(--app-surface)] p-4 sm:p-5">
+      <article className="bg-(--app-surface) p-4 sm:p-5">
         <p className="text-sm text-slate-500">My attendance</p>
         <h2 className="mt-1 text-xl font-semibold">Check in for today</h2>
         <div className="mt-4 space-y-3">
-          <div className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-muted)] p-4">
+          <div className="rounded-2xl border border-(--app-border) bg-(--app-surface-muted) p-4">
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-xl bg-white px-3 py-3 ring-1 ring-slate-200">
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Morning</p>
-                  <span className="rounded-full bg-[var(--app-success-soft)] px-2 py-1 text-xs font-semibold text-[var(--app-success-text)] ring-1 ring-emerald-200">
+                  <span className="rounded-full bg-(--app-success-soft) px-2 py-1 text-xs font-semibold text-(--app-success-text) ring-1 ring-emerald-200">
                     {teacherSelfAttendance.morning.status}
                   </span>
                 </div>
@@ -260,7 +199,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
               <div className="rounded-xl bg-white px-3 py-3 ring-1 ring-slate-200">
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Afternoon</p>
-                  <span className="rounded-full bg-[var(--app-accent-soft)] px-2 py-1 text-xs font-semibold text-[#8b6400] ring-1 ring-amber-200">
+                  <span className="rounded-full bg-(--app-accent-soft) px-2 py-1 text-xs font-semibold text-[#8b6400] ring-1 ring-amber-200">
                     {teacherSelfAttendance.afternoon.status}
                   </span>
                 </div>
@@ -273,7 +212,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
 
           <button
             type="button"
-            className="w-full rounded-2xl bg-[var(--app-accent)] px-4 py-3 text-sm font-semibold text-white hover:bg-[#b07e10]"
+            className="w-full rounded-2xl bg-[#16c7bd] px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#13b4ab]"
           >
             Check In
           </button>
@@ -305,130 +244,110 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
             </div>
 
             <span className="mt-2 inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">
-              {attendanceDraft.students.filter((student) => student.status).length}/{attendanceDraft.students.length}
+              Present {presentCount} • Absent {absentCount}
             </span>
 
-            {!allMarked && activeStudent ? (
-              <div className="mt-3 flex-1 space-y-3">
-                <div className="relative pt-2">
-                  {nextStudent ? (
-                    <div className="pointer-events-none absolute inset-x-2 top-6 rounded-3xl bg-white px-5 py-7 opacity-70 ring-1 ring-slate-200 [transform:scale(0.96)]">
-                      <div className="mx-auto w-full overflow-hidden rounded-xl bg-transparent">
-                        <Image
-                          src={nextStudent.photo || "/student2.png"}
-                          alt={nextStudent.name}
-                          width={560}
-                          height={360}
-                          className="h-52 w-full bg-transparent object-contain object-top"
-                        />
-                      </div>
-                    </div>
-                  ) : null}
-
-                  <div
-                    onPointerDown={handlePointerDown}
-                    onPointerMove={handlePointerMove}
-                    onPointerUp={handlePointerUp}
-                    onPointerCancel={handlePointerUp}
-                    style={{
-                      transform: `translateX(${dragOffsetX}px) rotate(${Math.max(-12, Math.min(12, dragOffsetX / 14))}deg) scale(${cardScale})`,
-                      transition: cardTransition,
-                      touchAction: "pan-y",
-                      opacity: 1 - Math.min(Math.abs(dragOffsetX) / 700, 0.3),
-                      willChange: "transform, opacity",
-                    }}
-                    className="relative rounded-3xl bg-[linear-gradient(140deg,#ffffff_0%,#f8fafc_100%)] px-5 py-7 text-center ring-1 ring-slate-200"
-                  >
-                    <div
-                      className="pointer-events-none absolute left-4 top-4 rounded-full border-2 border-rose-500 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-rose-600"
-                      style={{ opacity: dragOffsetX < 0 ? Math.min(Math.abs(dragOffsetX) / 120, 1) : 0 }}
-                    >
-                      Absent
-                    </div>
-                    <div
-                      className="pointer-events-none absolute right-4 top-4 rounded-full border-2 border-emerald-500 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-emerald-600"
-                      style={{ opacity: dragOffsetX > 0 ? Math.min(Math.abs(dragOffsetX) / 120, 1) : 0 }}
-                    >
-                      Present
-                    </div>
-
-                    <div className="mx-auto w-full overflow-hidden rounded-xl bg-transparent">
-                      <Image
-                        src={activeStudent.photo || "/student2.png"}
-                        alt={activeStudent.name}
-                        width={560}
-                        height={360}
-                        className="h-56 w-full bg-transparent object-contain object-top sm:h-64"
-                      />
-                    </div>
-                    <p className="mt-4 text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">
-                      Roll No {activeStudent.rollNo}
+            <div className="mt-3 flex-1 space-y-3">
+              <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white">
+                <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">Roll call table</p>
+                    <p className="text-xs text-slate-500">
+                      Page {currentPage} of {totalPages} • {attendanceDraft.students.length} students
                     </p>
-                    <p className="mt-2 text-3xl font-semibold text-slate-900">{activeStudent.name}</p>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
+                    <button
+                      type="button"
+                      onClick={() => goToPage(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="rounded-lg bg-slate-100 px-3 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      Prev
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => goToPage(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="rounded-lg bg-slate-100 px-3 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      Next
+                    </button>
                   </div>
                 </div>
 
-                <div className="sticky bottom-0 mt-auto grid grid-cols-2 gap-2 bg-white/95 pt-2 backdrop-blur">
-                  <button
-                    type="button"
-                    onClick={() => animateMark("Absent", -1)}
-                    className="rounded-xl bg-[var(--app-danger-soft)] px-4 py-3 text-sm font-semibold text-[var(--app-danger-text)] ring-1 ring-rose-200"
-                    aria-label="Mark absent"
-                  >
-                    <span className="text-sm">&lt;</span> Absent
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => animateMark("Present", 1)}
-                    className="rounded-xl bg-[var(--app-success-soft)] px-4 py-3 text-sm font-semibold text-[var(--app-success-text)] ring-1 ring-emerald-200"
-                    aria-label="Mark present"
-                  >
-                    Present <span className="text-sm">&gt;</span>
-                  </button>
-                </div>
+                <table className="w-full table-fixed border-collapse text-left">
+                  <thead className="bg-slate-50 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+                    <tr>
+                      <th className="w-16 px-2.5 py-2">Roll</th>
+                      <th className="w-12 px-2.5 py-2">Img</th>
+                      <th className="px-2.5 py-2">Name</th>
+                      <th className="w-28 px-2.5 py-2 text-center">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedStudents.map((student, pageIndex) => {
+                      const studentIndex = (currentPage - 1) * studentsPerPage + pageIndex;
+                      const isPresent = student.status === "Present";
+
+                      return (
+                        <tr key={student.rollNo} className="border-t border-slate-100">
+                          <td className="px-2.5 py-2 text-xs font-semibold text-slate-900">{student.rollNo}</td>
+                          <td className="px-2.5 py-2">
+                            <div className="h-8 w-8 overflow-hidden rounded-full bg-slate-100 ring-1 ring-slate-200">
+                              <Image
+                                src={student.photo || "/student2.png"}
+                                alt={student.name}
+                                width={32}
+                                height={32}
+                                className="h-8 w-8 object-cover object-top"
+                              />
+                            </div>
+                          </td>
+                          <td className="px-2.5 py-2 text-xs text-slate-800">{student.name}</td>
+                          <td className="px-2.5 py-2">
+                            <button
+                              type="button"
+                              role="switch"
+                              aria-checked={isPresent}
+                              aria-label={`${student.name} attendance`}
+                              onClick={() => toggleStudent(studentIndex)}
+                              className={`mx-auto flex h-8 w-16 items-center rounded-full p-1 transition-colors ${
+                                isPresent ? " bg-rose-400" : "bg-[#16c7bd]"
+                              }`}
+                            >
+                              <span
+                                className={`h-6 w-6 rounded-full bg-white shadow-sm transition-transform ${
+                                  isPresent ? "translate-x-0" : "translate-x-8"
+                                }`}
+                              />
+                            </button>
+                            <p className={`mt-1 text-center text-[10px] font-semibold ${isPresent ? " text-rose-600" : "text-[#0d8f86]"}`}>
+                              {isPresent ? " Absent" : "Present"}
+                            </p>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
-            ) : null}
 
-            {allMarked ? (
-              <div className="mt-3 rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200">
-                <p className="text-sm font-semibold text-slate-900">Attendance overview</p>
-                <div className="mt-2 space-y-2">
-                  {attendanceDraft.students.map((student) => (
-                    <div key={student.rollNo} className="flex items-center justify-between rounded-lg bg-white px-3 py-2">
-                      <p className="text-sm text-slate-700">
-                        {student.rollNo} - {student.name}
-                      </p>
-                      <span
-                        className={`rounded-full px-2 py-1 text-xs font-semibold ring-1 ${
-                          student.status === "Present"
-                            ? "bg-[var(--app-success-soft)] text-[var(--app-success-text)] ring-emerald-200"
-                            : "bg-[var(--app-danger-soft)] text-[var(--app-danger-text)] ring-rose-200"
-                        }`}
-                      >
-                        {student.status}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
-                  <p className="rounded-lg bg-[var(--app-success-soft)] px-3 py-2 font-semibold text-[var(--app-success-text)]">
-                    Present: {attendanceDraft.students.filter((student) => student.status === "Present").length}
-                  </p>
-                  <p className="rounded-lg bg-white px-3 py-2 font-semibold text-slate-700">
-                    Total strength: {attendanceDraft.students.length}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={submitAttendance}
-                  className="mt-3 w-full rounded-xl bg-[var(--app-accent)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#b07e10]"
-                >
-                  Submit attendance
-                </button>
+              <div className="flex items-center justify-between gap-2 rounded-2xl bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600 ring-1 ring-slate-200">
+                <span>
+                  Absent: {absentCount} of {attendanceDraft.students.length}
+                </span>
+                <span className="text-slate-500">Tap the switch to mark a student absent</span>
               </div>
-            ) : null}
+
+              <button
+                type="button"
+                onClick={submitAttendance}
+                className="w-full rounded-xl bg-[#16c7bd] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#13b4ab]"
+              >
+                Submit attendance
+              </button>
+            </div>
           </div>
         </div>
       ) : null}
