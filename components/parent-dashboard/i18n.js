@@ -110,7 +110,7 @@ const TE_TRANSLATIONS = {
   "Text": "మెసేజ్",
   "Maths": "మ్యాథ్స్",
   "Science": "సైన్స్",
-  "Social": "సోశల",
+  "Social": "సోషల్",
   "English": "ఇంగ్లిష్",
   "Hindi": "హిందీ",
   "Telugu": "తెలుగు",
