@@ -254,7 +254,7 @@ export default function QuizTab() {
             <div className="border-b border-slate-200 bg-slate-50 px-3 py-3 sm:px-4">
               <div className="mb-3">
                 <p className="text-sm text-slate-500">Class quiz dashboard</p>
-                <h3 className="mt-1 text-base font-semibold text-slate-900 sm:text-lg">Student quiz scores (same class & section)</h3>
+                <h3 className="mt-1 text-base font-semibold text-slate-900 sm:text-lg">Student quiz scores </h3>
               </div>
 
               <div className="relative w-full sm:w-64 z-50" ref={scoreSectionMenuRef}>
