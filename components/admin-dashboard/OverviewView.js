@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import {
   Bar,
@@ -13,14 +13,11 @@ import {
   YAxis,
 } from "recharts";
 import {
-  alerts,
   attendanceTrend,
-  highlights,
+  EVENTS,
   metricDrilldown,
   topMetrics,
   trendTabs,
-  upcomingModules,
-  timetableModules,
 } from "@/components/admin-dashboard/data";
 
 const EMPTY_ROWS = [];
@@ -268,22 +265,87 @@ function StaffBreakdownCard() {
   );
 }
 
-export default function OverviewView({ activeTrend, onTrendChange, leaveRequests, activeMetric, onOpenMetric, onNavigate }) {
-  const [activeHighlight, setActiveHighlight] = useState("alerts");
-  const [activeModule, setActiveModule] = useState(null);
+function UpcomingEvents() {
+  return (
+    <section className="mt-4 rounded-4xl bg-white p-4 shadow-[0_14px_34px_-24px_rgba(15,23,42,0.25)] sm:p-5">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div>
+          <p className="text-sm text-slate-500">School calendar</p>
+          <h2 className="text-xl font-semibold text-slate-950">Upcoming events</h2>
+        </div>
+        <button
+          type="button"
+          className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
+        >
+          See all
+        </button>
+      </div>
+
+      <div className="-mx-4 overflow-x-auto px-4 no-scrollbar sm:-mx-5 sm:px-5">
+        <div className="flex min-w-max gap-4 pb-1">
+          {EVENTS.map((event, index) => {
+            const Icon = event.icon;
+            return (
+              <article
+                key={event.id}
+                className={`stagger-item relative w-[280px] shrink-0 overflow-hidden rounded-[32px] bg-gradient-to-br ${event.gradient} p-4 text-white shadow-[0_22px_44px_-28px_rgba(30,41,59,0.65)]`}
+                style={{ "--stagger-delay": `${90 + index * 70}ms` }}
+              >
+                <div className="mb-4 flex items-start justify-between gap-2">
+                  <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/35 bg-white/15 backdrop-blur-md">
+                    <Icon size={20} strokeWidth={2.2} />
+                  </div>
+                  <span className="rounded-full border border-white/35 bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-md">
+                    {event.status}
+                  </span>
+                </div>
+
+                <h3 className="text-xl font-semibold leading-tight">{event.title}</h3>
+                <p className="mt-1 text-sm font-medium text-white/85">{event.date}</p>
+                <p className="mt-2 line-clamp-2 text-sm text-white/85">{event.description}</p>
+
+                <div className="mt-4 flex items-center justify-between">
+                  <div className="flex -space-x-2.5">
+                    {event.participants.slice(0, 4).map((avatar, avatarIndex) => (
+                      <div
+                        key={`${event.id}-avatar-${avatarIndex}`}
+                        className="h-8 w-8 overflow-hidden rounded-full border-2 border-white/85 bg-white"
+                      >
+                        <Image
+                          src={avatar}
+                          alt="Participant"
+                          width={32}
+                          height={32}
+                          className="h-8 w-8 object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs font-semibold tracking-wide text-white/85">{event.attendees} participants</p>
+                </div>
+              </article>
+            );
+          })}
+
+          <button
+            type="button"
+            className="stagger-item grid w-[280px] shrink-0 place-content-center rounded-[32px] border-2 border-dashed border-slate-300 bg-slate-50 p-5 text-center text-slate-600 transition hover:border-slate-400 hover:bg-slate-100 hover:text-slate-900"
+            style={{ "--stagger-delay": `${90 + EVENTS.length * 70}ms` }}
+          >
+            <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-white shadow-[0_10px_26px_-18px_rgba(30,41,59,0.5)]">
+              <span className="text-2xl font-semibold">+</span>
+            </div>
+            <p className="mt-3 text-sm font-semibold">Add Event</p>
+            <p className="mt-1 text-xs">Quick action for principal dashboard</p>
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default function OverviewView({ activeTrend, onTrendChange, activeMetric, onOpenMetric }) {
   const trend = attendanceTrend[activeTrend] || attendanceTrend.Today;
-
-  const dynamicHighlightValue = (item) => {
-    if (item.title === "Pending Leaves") {
-      return leaveRequests.filter((x) => x.status === "Pending").length;
-    }
-    if (item.title === "Approved") {
-      return leaveRequests.filter((x) => x.status === "Approved").length;
-    }
-    return item.value;
-  };
-
-  const activeModuleItem = [...upcomingModules, ...timetableModules].find((item) => item.key === activeModule);
 
   return (
     <>
@@ -309,6 +371,8 @@ export default function OverviewView({ activeTrend, onTrendChange, leaveRequests
       </section>
 
       <DrilldownPanel activeMetric={activeMetric} />
+
+      <UpcomingEvents />
 
       <section className="mt-4 rounded-4xl bg-white p-4 shadow-[0_14px_34px_-24px_rgba(15,23,42,0.25)] sm:p-5">
         <div>
@@ -351,93 +415,7 @@ export default function OverviewView({ activeTrend, onTrendChange, leaveRequests
         </div>
       </section>
 
-      <section className="mt-4 rounded-4xl bg-white p-4 shadow-[0_14px_34px_-24px_rgba(15,23,42,0.25)] sm:p-5">
-        <p className="text-sm text-slate-500">Operational highlights</p>
-        <h2 className="mt-1 text-2xl font-semibold">Action cards</h2>
-        <div className="mt-4 grid gap-3 xl:grid-cols-3">
-          {highlights.map((item) => (
-            <button
-              key={item.title}
-              type="button"
-              onClick={() => {
-                setActiveHighlight(item.key);
-                if (item.key === "pendingLeaves" || item.key === "approved") {
-                  onNavigate("approvals");
-                }
-              }}
-              className="rounded-3xl p-5 text-left transition hover:-translate-y-0.5"
-              style={{ backgroundColor: `${item.color}15`, border: `1px solid ${item.color}40` }}
-            >
-              <p className="text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: item.color }}>{item.title}</p>
-              <p className="mt-2 text-5xl font-bold leading-none" style={{ color: item.color }}>{dynamicHighlightValue(item)}</p>
-              <p className="mt-2 text-sm" style={{ color: item.color }}>{item.subtitle}</p>
-              <p className="mt-2 text-xs font-semibold" style={{ color: item.color }}>{item.actionLabel}</p>
-            </button>
-          ))}
-        </div>
-        {activeHighlight === "alerts" ? (
-          <div className="mt-4 grid gap-3 md:grid-cols-3">
-            {alerts.map((alert) => (
-              <div key={alert.title} className="rounded-2xl bg-slate-50 p-4">
-                <p className="font-semibold text-slate-900">{alert.title}</p>
-                <p className="mt-1 text-sm text-slate-600">{alert.detail}</p>
-                <p className="mt-2 text-xs font-semibold text-rose-600">{alert.priority} priority</p>
-              </div>
-            ))}
-          </div>
-        ) : null}
-      </section>
-
-      <section className="mt-4 grid gap-4 xl:grid-cols-[1fr_1fr]">
-        <article className="rounded-4xl bg-white p-4 shadow-[0_14px_34px_-24px_rgba(15,23,42,0.25)] sm:p-5">
-          <p className="text-sm text-slate-500">Upcoming modules</p>
-          <h2 className="mt-1 text-xl font-semibold">Events, sports and calendar</h2>
-          <div className="mt-4 space-y-3">
-            {upcomingModules.map((item) => (
-              <button
-                key={item.title}
-                type="button"
-                onClick={() => {
-                  setActiveModule(item.key);
-                  onNavigate(item.linkTo);
-                }}
-                className="w-full rounded-2xl bg-slate-50 p-4 text-left transition hover:bg-[#fff4d6]"
-              >
-                <p className="font-semibold text-slate-900">{item.title}</p>
-                <p className="mt-1 text-sm text-slate-600">{item.detail}</p>
-              </button>
-            ))}
-          </div>
-        </article>
-
-        <article className="rounded-4xl bg-white p-4 shadow-[0_14px_34px_-24px_rgba(15,23,42,0.25)] sm:p-5">
-          <p className="text-sm text-slate-500">Timetable and substitution</p>
-          <h2 className="mt-1 text-xl font-semibold">Automation status</h2>
-          <div className="mt-4 space-y-3">
-            {timetableModules.map((item) => (
-              <button
-                key={item.title}
-                type="button"
-                onClick={() => {
-                  setActiveModule(item.key);
-                  onNavigate(item.linkTo);
-                }}
-                className="w-full rounded-2xl bg-slate-50 p-4 text-left transition hover:bg-[#fff4d6]"
-              >
-                <p className="font-semibold text-slate-900">{item.title}</p>
-                <p className="mt-1 text-sm text-slate-600">{item.detail}</p>
-              </button>
-            ))}
-          </div>
-          {activeModuleItem ? (
-            <div className="mt-4 rounded-2xl bg-[#fff4d6] p-4 ring-1 ring-[#f7e2a3]">
-              <p className="text-sm font-semibold text-[#8b6400]">Selected module</p>
-              <p className="mt-1 font-semibold text-slate-900">{activeModuleItem.title}</p>
-              <p className="mt-1 text-sm text-slate-600">{activeModuleItem.detail}</p>
-            </div>
-          ) : null}
-        </article>
-      </section>
+    
     </>
   );
 }

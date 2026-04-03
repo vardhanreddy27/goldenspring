@@ -81,6 +81,15 @@ textarea {
   animation-delay: var(--stagger-delay, 0ms);
 }
 
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 .layout {
   min-height: 100vh;
 }

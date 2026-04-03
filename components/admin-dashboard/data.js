@@ -287,6 +287,42 @@ export const initialBroadcastMessages = [
   { id: 2, audience: "Parents", message: "PTM schedule shared in parent app.", time: "11:20 AM" },
 ];
 
+export const EVENTS = [
+  {
+    id: "science-lab-fair",
+    title: "Science Lab Fair",
+    date: "Fri, 12 Apr • 10:30 AM",
+    description: "Live experiment booths and student prototypes in the main science lab.",
+    status: "Confirmed",
+    gradient: "from-indigo-600 via-indigo-500 to-violet-500",
+    icon: ClipboardCheck,
+    participants: ["/student1.png", "/student2.png", "/student3.png", "/student4.png"],
+    attendees: 94,
+  },
+  {
+    id: "math-olympiad",
+    title: "Math Olympiad Prep",
+    date: "Mon, 15 Apr • 09:00 AM",
+    description: "Final strategy round for top-performing sections before district qualifiers.",
+    status: "Confirmed",
+    gradient: "from-rose-500 via-pink-500 to-orange-400",
+    icon: CalendarDays,
+    participants: ["/student2.png", "/student3.png", "/student4.png", "/student.jpeg"],
+    attendees: 67,
+  },
+  {
+    id: "assemblies-showcase",
+    title: "Assembly Showcase",
+    date: "Wed, 17 Apr • 08:40 AM",
+    description: "Music and speech performances led by class leaders from grades 6 to 10.",
+    status: "Confirmed",
+    gradient: "from-teal-500 via-cyan-500 to-blue-500",
+    icon: Megaphone,
+    participants: ["/student1.png", "/student4.png", "/student3.png", "/student.jpeg"],
+    attendees: 112,
+  },
+];
+
 export const upcomingModules = [
   { key: "sports", title: "Sports Meet", detail: "Inter-house athletics on Friday, 9:30 AM", linkTo: "attendance" },
   { key: "competitions", title: "Competitions", detail: "Math and Science competitions registration closes tomorrow", linkTo: "communication" },

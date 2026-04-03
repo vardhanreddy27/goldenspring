@@ -1,4 +1,4 @@
-import { BarChart, Bar, LabelList, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, PieChart, Pie, Cell, Legend } from "recharts";
+import { BarChart, Bar, LabelList, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, PieChart, Pie, Cell } from "recharts";
 import { AlertTriangle } from "lucide-react";
 import { attendanceMonthly, attendanceLog } from "./data";
 import { useMemo } from "react";
@@ -35,27 +35,25 @@ export default function ParentAttendanceTab({ lang = PARENT_LANGUAGES.EN }) {
     attendancePct: Math.round((week.present / Math.max(1, week.present + week.absent)) * 100),
   }));
 
-  const stripedData = useMemo(() => {
-    const segments = 84;
-    const presentSegments = Math.round((segments * totalPresent) / Math.max(1, totalDays));
-    return Array.from({ length: segments }, (_, i) => ({
-      name: i < presentSegments ? "Present" : "Absent",
-      value: 1,
-      isPresent: i < presentSegments,
-    }));
+  const donutData = useMemo(() => {
+    const absentDays = Math.max(totalDays - totalPresent, 0);
+    return [
+      { name: "Present", value: totalPresent, isPresent: true },
+      { name: "Absent", value: absentDays, isPresent: false },
+    ].filter((item) => item.value > 0);
   }, [totalPresent, totalDays]);
 
   const donutCells = useMemo(
     () =>
-      stripedData.map((entry, index) => (
+      donutData.map((entry, index) => (
         <Cell
           key={`cell-${index}`}
-          fill={entry.isPresent ? "#10b981" : "#dc2626"}
+          fill={entry.isPresent ? "url(#presentStripePattern)" : "#dc2626"}
           stroke="white"
-          strokeWidth={0.35}
+          strokeWidth={1}
         />
       )),
-    [stripedData]
+    [donutData]
   );
 
   return (
@@ -71,7 +69,13 @@ export default function ParentAttendanceTab({ lang = PARENT_LANGUAGES.EN }) {
               <span className="text-sm font-medium text-slate-700">{t("Absent")}</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-emerald-600"></div>
+              <div
+                className="h-4 w-4 border border-emerald-500"
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(135deg, rgba(16,185,129,0.95) 0 2px, rgba(255,255,255,0.9) 2px 4px)",
+                }}
+              ></div>
               <span className="text-sm font-medium text-slate-700">{t("Present")}</span>
             </div>
           </div>
@@ -82,13 +86,20 @@ export default function ParentAttendanceTab({ lang = PARENT_LANGUAGES.EN }) {
           <div className="w-full max-w-md h-80 flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
+                <defs>
+                  <pattern id="presentStripePattern" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(25)">
+                    <rect width="6" height="6" fill="#e6faf3" />
+                    <rect width="2" height="6" fill="#10b981" />
+                  </pattern>
+                </defs>
                 <Pie
-                  data={stripedData}
+                  data={donutData}
                   cx="50%"
                   cy="50%"
                   innerRadius={75}
                   outerRadius={90}
-                  paddingAngle={0.8}
+                  paddingAngle={2}
+                  cornerRadius={6}
                   dataKey="value"
                   startAngle={90}
                   endAngle={-270}
