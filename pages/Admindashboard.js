@@ -180,6 +180,7 @@ export default function AdminDashboard({ user = {} }) {
   const mobileNavItems = navItems.filter((item) => item.id !== "profile");
   const isProfileView = activeMenu === "profile";
   const profileSheetOpen = activeMenu === "profile";
+  const showTopHeader = activeMenu === "overview" || activeMenu === "communication";
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
@@ -197,64 +198,66 @@ export default function AdminDashboard({ user = {} }) {
 
       <main className={`relative flex-1 ${isProfileView ? "pb-24 lg:pb-8" : "pb-28 lg:pb-8"}`}>
         <div className={`mx-auto flex max-w-6xl flex-col px-3 pb-8 pt-3 sm:px-5 lg:px-6 lg:pt-6 ${isProfileView ? "min-h-0" : "min-h-dvh"}`}>
-          <section className="rounded-4xl bg-white/80 p-4 shadow-sm ring-1 ring-white/60 backdrop-blur sm:p-5">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-3 lg:hidden">
-                  <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-white p-1.5">
-                    <Image src="/logo.png" alt="NMS Logo" width={34} height={34} className="object-contain" priority />
+          {showTopHeader ? (
+            <section className="rounded-4xl bg-white/80 p-4 shadow-sm ring-1 ring-white/60 backdrop-blur sm:p-5">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-3 lg:hidden">
+                    <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-white p-1.5">
+                      <Image src="/logo.png" alt="NMS Logo" width={34} height={34} className="object-contain" priority />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-semibold tracking-[0.22em]">NMS</p>
+                      <p className="text-sm text-slate-500">Principal Dashboard</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-2xl font-semibold tracking-[0.22em]">NMS</p>
-                    <p className="text-sm text-slate-500">Principal Dashboard</p>
-                  </div>
+
+                  <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Welcome , Vardhan</h1>
                 </div>
 
-                <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Welcome , Vardhan</h1>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveMenu("profile");
+                    }}
+                    className="rounded-full p-0.5 transition-all duration-150 hover:scale-95 active:scale-90"
+                    aria-label="Open profile"
+                  >
+                    <span className="block h-12 w-12 overflow-hidden rounded-full border border-slate-200 bg-white shadow-sm lg:h-14 lg:w-14">
+                      <Image
+                        src="/principal.jpeg"
+                        alt="Principal profile"
+                        width={56}
+                        height={56}
+                        className="h-full w-full object-cover"
+                      />
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => signOut({ callbackUrl: "/Admin_login" })}
+                    className="hidden rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-slate-800 active:scale-[0.97] lg:inline-flex"
+                  >
+                    Logout
+                  </button>
+                </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveMenu("profile");
-                  }}
-                  className="rounded-full p-0.5 transition-all duration-150 hover:scale-95 active:scale-90"
-                  aria-label="Open profile"
-                >
-                  <span className="block h-12 w-12 overflow-hidden rounded-full border border-slate-200 bg-white shadow-sm lg:h-14 lg:w-14">
-                    <Image
-                      src="/principal.jpeg"
-                      alt="Principal profile"
-                      width={56}
-                      height={56}
-                      className="h-full w-full object-cover"
-                    />
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => signOut({ callbackUrl: "/Admin_login" })}
-                  className="hidden rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-slate-800 active:scale-[0.97] lg:inline-flex"
-                >
-                  Logout
-                </button>
+              <div className="mt-4 flex items-center rounded-3xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                <Search className="mr-3 h-5 w-5 text-slate-400" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder="Search any dashboard module..."
+                  className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
+                />
               </div>
-            </div>
 
-            <div className="mt-4 flex items-center rounded-3xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-              <Search className="mr-3 h-5 w-5 text-slate-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
-                placeholder="Search any dashboard module..."
-                className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
-              />
-            </div>
-
-            <SearchResults results={searchResults} onSelect={setActiveMenu} />
-          </section>
+              <SearchResults results={searchResults} onSelect={setActiveMenu} />
+            </section>
+          ) : null}
 
           <div key={activeMenu} className="page-enter">
             {activeMenu === "overview" ? (

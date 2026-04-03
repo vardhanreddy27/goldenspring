@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
+import { Bell, CalendarDays, Megaphone, MessageSquare, Plus, ShieldAlert } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -33,7 +34,7 @@ const upcomingExams = [
     image: "/maths.png",
   },
   {
-    id: "exam-2",
+    audience: "Principal",
     dateLabel: "15 June",
     subject: "Science",
     type: "Monthly test",
@@ -52,6 +53,59 @@ const upcomingExams = [
     subject: "English",
     type: "Weekly test",
     image: "/english.png",
+  },
+];
+
+const announcements = [
+  {
+    id: "a1",
+    audience: "Principal",
+    title: "School holiday announced for heavy rains",
+    message: "Classes will remain closed tomorrow. Students should stay home and follow the weather advisory.",
+    date: "16/04/26",
+    category: "Urgent",
+    icon: ShieldAlert,
+    accent: "from-rose-500 to-orange-400",
+  },
+  {
+    id: "a2",
+    audience: "Teachers",
+    title: "Morning attendance review at 8:30 AM",
+    message: "All class teachers should update attendance before the first bell and report exceptions in the group.",
+    date: "16/04/26",
+    category: "Reminder",
+    icon: Bell,
+    accent: "from-indigo-500 to-violet-500",
+  },
+  {
+    id: "a3",
+    audience: "Principal",
+    title: "Annual day rehearsal schedule shared",
+    message: "Practice will start from Grade 6. Stage timings and student groups are attached in the notice board.",
+    date: "15/04/26",
+    category: "Event",
+    icon: CalendarDays,
+    accent: "from-teal-500 to-cyan-500",
+  },
+  {
+    id: "a4",
+    audience: "Teachers",
+    title: "Lab safety instructions reissued",
+    message: "Science and biology staff should ensure safety checklists are complete before practical sessions.",
+    date: "15/04/26",
+    category: "Policy",
+    icon: Megaphone,
+    accent: "from-amber-500 to-rose-500",
+  },
+  {
+    id: "a5",
+    audience: "Principal",
+    title: "Parent meeting postponed by one hour",
+    message: "Because of road traffic updates, the parent meeting will begin at 10:30 AM instead of 9:30 AM.",
+    date: "14/04/26",
+    category: "Update",
+    icon: MessageSquare,
+    accent: "from-sky-500 to-blue-500",
   },
 ];
 
@@ -261,6 +315,8 @@ function StaffBreakdownCard() {
                   innerRadius={60}
                   outerRadius={90}
                   paddingAngle={3}
+                  cornerRadius={12}
+                  strokeLinecap="round"
                   stroke="#ffffff"
                   strokeWidth={6}
                 >
@@ -385,6 +441,155 @@ function UpcomingEvents() {
   );
 }
 
+function AnnouncementBoard() {
+  const [activeAudience, setActiveAudience] = useState("All");
+  const [page, setPage] = useState(1);
+  const [draftTitle, setDraftTitle] = useState("");
+  const [draftMessage, setDraftMessage] = useState("");
+  const pageSize = 3;
+
+  const filteredAnnouncements = useMemo(() => {
+    if (activeAudience === "All") {
+      return announcements;
+    }
+
+    return announcements.filter((item) => item.audience === activeAudience);
+  }, [activeAudience]);
+
+  const totalPages = Math.max(Math.ceil(filteredAnnouncements.length / pageSize), 1);
+  const safePage = Math.min(page, totalPages);
+  const visibleAnnouncements = useMemo(() => {
+    const start = (safePage - 1) * pageSize;
+    return filteredAnnouncements.slice(start, start + pageSize);
+  }, [filteredAnnouncements, safePage]);
+
+  const audienceTabs = ["All", "Principal", "Teachers"];
+
+  const getAvatar = (audience) => (audience === "Teachers" ? "/teacher.avif" : "/principal.jpeg");
+
+  return (
+    <section className="mt-4 rounded-4xl bg-white p-4 shadow-[0_14px_34px_-24px_rgba(15,23,42,0.25)] sm:p-5">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="text-sm text-slate-500">Notice board</p>
+          <h2 className="text-2xl font-semibold text-slate-950">Announcements</h2>
+         
+        </div>
+      </div>
+
+      <div className="mt-4 rounded-[28px] border border-slate-200 bg-slate-50 p-4 sm:p-5">
+        <p className="text-sm font-semibold text-slate-900">Compose announcement</p>
+        <div className="mt-3 grid gap-3">
+          <input
+            type="text"
+            value={draftTitle}
+            onChange={(event) => setDraftTitle(event.target.value)}
+            placeholder="Announcement title"
+            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none ring-slate-300 placeholder:text-slate-400 focus:ring"
+          />
+          <textarea
+            value={draftMessage}
+            onChange={(event) => setDraftMessage(event.target.value)}
+            placeholder="Write the announcement message"
+            rows={4}
+            className="w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none ring-slate-300 placeholder:text-slate-400 focus:ring"
+          />
+          <button
+            type="button"
+            className="inline-flex items-center justify-center gap-2 self-start rounded-full bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
+          >
+            Send
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        {audienceTabs.map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            onClick={() => {
+              setActiveAudience(tab);
+              setPage(1);
+            }}
+            className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+              activeAudience === tab ? "bg-slate-950 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-4 space-y-3">
+        {visibleAnnouncements.map((item) => {
+          const avatar = getAvatar(item.audience);
+
+          return (
+            <article key={item.id} className="relative rounded-[28px] border border-slate-200 bg-slate-50 p-4 sm:p-5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div className="flex min-w-0 gap-3">
+                  <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full border border-slate-200 bg-white">
+                    <Image
+                      src={avatar}
+                      alt={item.audience === "Teachers" ? "Teacher" : "Principal"}
+                      width={48}
+                      height={48}
+                      className="h-12 w-12 object-cover"
+                    />
+                  </div>
+
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500 ring-1 ring-slate-200">
+                        {item.audience}
+                      </span>
+                      <span className="rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500 ring-1 ring-slate-200">
+                        {item.category}
+                      </span>
+                    </div>
+                    <h3 className="mt-2 text-lg font-semibold text-slate-950">{item.title}</h3>
+                    <p className="mt-1 text-sm leading-6 text-slate-600">{item.message}</p>
+                  </div>
+                </div>
+
+                <div className="absolute right-4 top-4 shrink-0 text-right sm:right-5 sm:top-5">
+                  <p className="text-sm font-semibold text-slate-700">{item.date}</p>
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+
+      <div className="mt-4 flex flex-col gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-slate-500">
+          Page {safePage} of {totalPages} · {filteredAnnouncements.length} announcements
+        </p>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+            disabled={safePage === 1}
+            className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <button
+            type="button"
+            onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={safePage === totalPages}
+            className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function UpcomingExams() {
   return (
     <section className="mt-4 rounded-4xl bg-white p-4 shadow-[0_14px_34px_-24px_rgba(15,23,42,0.25)] sm:p-5">
@@ -497,6 +702,8 @@ export default function OverviewView({ activeTrend, onTrendChange, activeMetric,
           </ResponsiveContainer>
         </div>
       </section>
+
+      <AnnouncementBoard />
 
       <UpcomingExams />
 
