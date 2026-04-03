@@ -46,15 +46,6 @@ const studentQuizLeaderboard = [
   { id: 6, name: "Varun", className: "VI", section: "C", score: 90, quizzes: 9, avatar: "/student6.avif", stars: 3 },
 ];
 
-const quizAvatarBg = [
-  "bg-rose-100",
-  "bg-sky-100",
-  "bg-amber-100",
-  "bg-emerald-100",
-  "bg-violet-100",
-  "bg-cyan-100",
-];
-
 const teacherAvatarPool = ["/teacher.avif", "/teacher2.jpg", "/teacher3.avif", "/teacher4.webp"];
 
 function clamp(value, min, max) {
@@ -268,7 +259,7 @@ export default function TimetableView() {
               <div key={student.id} className="flex items-center justify-between rounded-2xl bg-slate-50 px-3 py-2">
                 <div className="flex items-center gap-3">
                   <span className="flex w-8 justify-center text-sm font-bold text-slate-500">{medalNode(index + 1)}</span>
-                  <span className={`h-9 w-9 overflow-hidden rounded-full ring-1 ring-slate-200 ${quizAvatarBg[index % quizAvatarBg.length]}`}>
+                  <span className="h-9 w-9 overflow-hidden rounded-full ring-1 ring-slate-200">
                     <Image src={student.avatar} alt={student.name} width={36} height={36} className="h-9 w-9 object-cover" />
                   </span>
                   <div>
