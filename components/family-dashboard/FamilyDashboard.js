@@ -276,7 +276,7 @@ export default function FamilyDashboard({ initialRole = "student" }) {
   }
 
   return (
-    <div className=" bg-[#eef3fb] text-slate-950 lg:flex">
+    <div className="pb-12 bg-[#eef3fb] text-slate-950 lg:flex">
       <FamilySidebar
         activeRole={activeRole}
         activeMenu={activeMenu}

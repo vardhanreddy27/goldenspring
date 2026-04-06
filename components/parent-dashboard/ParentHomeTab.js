@@ -101,7 +101,7 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN }) {
   }
 
   return (
-    <div className="space-y-6 py-6 mb-9">
+    <div className="space-y-6 py-6">
       {/* Child Overview */}
       <section className="bg-linear-to-r from-[#fff4d6] to-yellow-50 rounded-2xl border border-yellow-100 p-6">
         <div className="flex items-start justify-between gap-4 mb-4">

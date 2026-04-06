@@ -224,7 +224,7 @@ export function MoreTab({
   onAvatarClick,
 }) {
   return (
-    <section className="-mx-3 mt-6 min-h-[calc(100vh-10rem)] space-y-0 bg-white mb-9">
+    <section className=" mt-6 min-h-[calc(100vh-10rem)] space-y-0 bg-white mb-9">
       <TeacherHeroCard
         displayName={displayName}
         subject={subject}
@@ -233,7 +233,7 @@ export function MoreTab({
         onAvatarClick={onAvatarClick}
       />
 
-      <article className=" bg-white p-5">
+      <article className=" bg-white -mx-3  p-5">
         <p className="text-sm text-slate-500">Teacher control</p>
         <h2 className="mt-1 text-2xl font-semibold text-slate-900">Quick actions</h2>
 

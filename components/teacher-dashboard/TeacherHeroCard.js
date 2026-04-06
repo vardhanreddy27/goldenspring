@@ -8,7 +8,7 @@ export default function TeacherHeroCard({
   onAvatarClick,
 }) {
   return (
-    <article className="rounded-[28px] bg-[#eef4fb] p-4 mx-3 shadow-[0_12px_30px_-22px_rgba(15,23,42,0.28)] sm:p-5">
+    <article className="rounded-[28px] bg-[#eef4fb] p-4 mx-2 shadow-[0_12px_30px_-22px_rgba(15,23,42,0.28)] sm:p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2.5">

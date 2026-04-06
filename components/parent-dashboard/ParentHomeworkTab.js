@@ -65,7 +65,7 @@ export default function ParentHomeworkTab({ lang = PARENT_LANGUAGES.EN }) {
   }, []);
 
   return (
-    <div className="space-y-6 pb-24 pt-4 font-sans">
+    <div className="space-y-6  pt-4 font-sans">
       {/* 1. CALENDAR STRIP */}
       <section className="rounded-4xl border border-slate-100 bg-white p-4 shadow-sm mx-1">
         <div className="mb-4 flex items-center justify-between px-2">

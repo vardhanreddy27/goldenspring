@@ -193,10 +193,10 @@ export default function AdminDashboard({ user = {} }) {
   }
 
   return (
-    <div className="min-h-dvh bg-[#eef3fb] text-slate-950 lg:flex">
+    <div className="min-h-dvh bg-[#eef3fb]  text-slate-950 lg:flex">
       <SidebarNav activeMenu={activeMenu} onMenuChange={setActiveMenu} />
 
-      <main className={`relative flex-1 ${isProfileView ? "pb-24 lg:pb-8" : "pb-28 lg:pb-8"}`}>
+      <main className="relative flex-1 mb-12" >
         <div className={`mx-auto flex max-w-6xl flex-col px-3 pb-8 pt-3 sm:px-5 lg:px-6 lg:pt-6 ${isProfileView ? "min-h-0" : "min-h-dvh"}`}>
           {showTopHeader ? (
             <section className="rounded-4xl bg-white/80 p-4 shadow-sm ring-1 ring-white/60 backdrop-blur sm:p-5">

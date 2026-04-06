@@ -250,7 +250,7 @@ export default function CommunicationView({
 
   if (activeSection === "menu") {
     return (
-      <section className="-mx-3 mt-6 min-h-[calc(100vh-10rem)] space-y-0 bg-white mb-9">
+      <section className="-mx-3 mt-6 min-h-[calc(100vh-10rem)] space-y-0 bg-white ">
         <article className="bg-white p-5">
           <p className="text-sm text-slate-500">Administrative tools</p>
           <h2 className="mt-1 text-2xl font-semibold text-slate-900">Quick actions</h2>

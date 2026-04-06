@@ -157,7 +157,7 @@ export default function TeacherDashboard({ user }) {
       <TeacherSidebar activeMenu={activeMenu} onMenuChange={setActiveMenu} />
 
       <main className={`relative flex-1 ${activeMenu === "timetable" ? "bg-[#eef1f6]" : ""}`}>
-        <div className="mx-auto flex   max-w-6xl flex-col  pb-8 pt-3 sm:px-5 lg:px-6 lg:pt-6">
+        <div className=" flex   max-w-6xl flex-col  pb-8 pt-3 sm:px-5 lg:px-6 lg:pt-6">
           {showTopHeader ? (
             <section className="bg-white p-4 sm:p-5">
               <div className="flex items-start justify-between gap-3 lg:hidden">

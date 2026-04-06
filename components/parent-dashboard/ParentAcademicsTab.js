@@ -102,7 +102,7 @@ export default function ParentAcademicsTab({ lang = PARENT_LANGUAGES.EN }) {
   }, []);
 
   return (
-    <div className="space-y-6 py-6 mb-9">
+    <div className="space-y-6 py-6 ">
       <section className="rounded-3xl border border-slate-200 bg-white p-4 sm:p-5">
         <p className="text-sm text-slate-500 font-medium">{t("Academics")}</p>
         <h2 className="mt-1 text-2xl font-semibold text-slate-900">{t("Performance overview")}</h2>

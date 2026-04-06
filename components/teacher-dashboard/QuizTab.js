@@ -250,8 +250,8 @@ export default function QuizTab() {
             })}
           </div>
 
-          <article className="mt-5 overflow-visible rounded-3xl border border-slate-200 bg-white shadow-[0_14px_30px_-28px_rgba(15,23,42,0.55)]">
-            <div className="border-b border-slate-200 bg-slate-50 px-3 py-3 sm:px-4">
+          <article className="mt-5 overflow-visible rounded-3xl border border-slate-200 bg-white ">
+            <div className=" px-3 py-3 sm:px-4">
               <div className="mb-3">
                 <p className="text-sm text-slate-500">Class quiz dashboard</p>
                 <h3 className="mt-1 text-base font-semibold text-slate-900 sm:text-lg">Student quiz scores </h3>
