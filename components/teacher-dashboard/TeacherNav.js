@@ -1,12 +1,12 @@
 import { signOut } from "next-auth/react";
 import Image from "next/image";
-import { BookOpenCheck, CalendarDays, ClipboardCheck, Home, MoreHorizontal } from "lucide-react";
+import { BookOpenCheck, FileText, ClipboardCheck, Home, MoreHorizontal } from "lucide-react";
 
 export const menuItems = [
   { id: "home", label: "Home", icon: Home },
   { id: "attendance", label: "Attendance", icon: ClipboardCheck },
   { id: "quiz", label: "Quiz", icon: BookOpenCheck },
-  { id: "timetable", label: "Timetable", icon: CalendarDays },
+  { id: "exam", label: "Exam", icon: FileText },
   { id: "more", label: "More", icon: MoreHorizontal },
 ];
 

@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { CheckCircle2, Send, Camera, Paperclip, Eye, Edit2 } from "lucide-react";
+import { CheckCircle2, Send, Camera, Paperclip, Eye, Edit2, Sparkles } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { todayClasses, dashboardInsights, teacherSections } from "./data";
@@ -17,6 +17,8 @@ const homeworkClassesForBottom = uniqueHomeworkClasses.filter(
 export default function HomeTab({ displayName = "Harika", subject = "English", classesToday = 4, avatarSrc = "/teacher.avif", onAvatarClick }) {
   const fileInputRef = useRef({});
   const cameraInputRef = useRef({});
+  const aiHomeworkRunRef = useRef(0);
+  const [isAiHomeworkFilling, setIsAiHomeworkFilling] = useState(false);
 
   // Per-section homework state: key = classId, value = { text, sent, attachments, images }
   const [homeworkState, setHomeworkState] = useState(() =>
@@ -110,6 +112,75 @@ export default function HomeTab({ displayName = "Harika", subject = "English", c
 
   function handleEdit(key) {
     setHomeworkState((prev) => ({ ...prev, [key]: { ...prev[key], sent: false } }));
+  }
+
+  function wait(ms) {
+    return new Promise((resolve) => window.setTimeout(resolve, ms));
+  }
+
+  async function handleHomeworkAiFill() {
+    const runId = aiHomeworkRunRef.current + 1;
+    aiHomeworkRunRef.current = runId;
+    setIsAiHomeworkFilling(true);
+
+    const sectionKeys = homeworkClassesForBottom.map((cls) => `${cls.className}-${cls.section}`);
+    const attachmentKeys = new Set(sectionKeys.slice(0, 2));
+    const templates = [
+      "Check the questions attached and complete all answers in your notebook.",
+      "Check the questions attached and solve the given problems neatly.",
+      "Revise today's concept and answer the practice questions shared in class.",
+      "Write short notes for the chapter points discussed in today's session.",
+    ];
+
+    setHomeworkState((prev) => {
+      const next = { ...prev };
+      sectionKeys.forEach((key) => {
+        next[key] = {
+          ...next[key],
+          text: "",
+          sent: false,
+          attachments: attachmentKeys.has(key)
+            ? [
+                {
+                  id: `ai-attachment-${runId}-${key}`,
+                  name: `${key}-questions.pdf`,
+                  type: "application/pdf",
+                  size: 0,
+                },
+              ]
+            : [],
+          images: [],
+        };
+      });
+      return next;
+    });
+
+    for (let idx = 0; idx < sectionKeys.length; idx += 1) {
+      const key = sectionKeys[idx];
+      const text = templates[idx % templates.length];
+
+      for (let charCount = 1; charCount <= text.length; charCount += 1) {
+        if (aiHomeworkRunRef.current !== runId) return;
+
+        const snippet = text.slice(0, charCount);
+        setHomeworkState((prev) => ({
+          ...prev,
+          [key]: {
+            ...prev[key],
+            text: snippet,
+          },
+        }));
+
+        await wait(12);
+      }
+
+      await wait(60);
+    }
+
+    if (aiHomeworkRunRef.current === runId) {
+      setIsAiHomeworkFilling(false);
+      aiHomeworkRunRef.current = 0;
+    }
   }
 
   function getPeriodNote(period) {
@@ -301,7 +372,18 @@ export default function HomeTab({ displayName = "Harika", subject = "English", c
 
         <article className="stagger-item flex-1 rounded-3xl bg-white p-4 shadow-[0_12px_30px_-24px_rgba(15,23,42,0.32)] sm:p-5 xl:flex-1" style={{ "--stagger-delay": "170ms" }}>
           <p className="text-sm text-slate-500">Notify parents &amp; students</p>
-          <h2 className="mt-1 text-xl font-semibold text-slate-900">Today&apos;s homework</h2>
+          <div className="mt-1 flex items-center justify-between gap-2">
+            <h2 className="text-xl font-semibold text-slate-900">Today&apos;s homework</h2>
+            <button
+              type="button"
+              onClick={handleHomeworkAiFill}
+              disabled={isAiHomeworkFilling}
+              className="inline-flex items-center gap-1 rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700 ring-1 ring-sky-200 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              AI
+            </button>
+          </div>
 
           <div className="mt-4 space-y-4">
             {homeworkClassesForBottom.map((cls) => {

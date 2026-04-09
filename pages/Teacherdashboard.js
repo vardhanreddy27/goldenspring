@@ -7,8 +7,8 @@ import { authOptions } from "@/lib/auth";
 import { TeacherSidebar, TeacherBottomNav } from "@/components/teacher-dashboard/TeacherNav";
 import HomeTab from "@/components/teacher-dashboard/HomeTab";
 import { AttendanceTab } from "@/components/teacher-dashboard/AttendanceTab";
-import TimetableTab from "@/components/teacher-dashboard/TimetableTab";
 import QuizTab from "@/components/teacher-dashboard/QuizTab";
+import ExamTab from "@/components/teacher-dashboard/ExamTab";
 import { MoreTab, ProfileBottomSheet, ToolModal } from "@/components/teacher-dashboard/MoreTab";
 import { buildMonthCalendar, dayKey, weekDaysFromDate } from "@/components/teacher-dashboard/utils";
 import { attendanceClasses, monthlyCalendarEvents } from "@/components/teacher-dashboard/data";
@@ -143,24 +143,27 @@ export default function TeacherDashboard({ user }) {
   useEffect(() => {
     if (!router.isReady) return;
     const requestedTab = router.query.tab;
-    const allowedTabs = ["home", "attendance", "quiz", "timetable", "more"];
+    const allowedTabs = ["home", "attendance", "quiz", "exam", "more"];
 
     if (typeof requestedTab === "string" && allowedTabs.includes(requestedTab)) {
-      setActiveMenu(requestedTab);
+      const frame = window.requestAnimationFrame(() => {
+        setActiveMenu(requestedTab);
+      });
+      return () => window.cancelAnimationFrame(frame);
     }
   }, [router.isReady, router.query.tab]);
 
   const displayName = "Harika";
 
   return (
-    <div className={`min-h-dvh text-slate-950 lg:flex ${activeMenu === "timetable" ? "bg-[#eef1f6]" : "bg-white"}`}>
+    <div className={`min-h-dvh text-slate-950 lg:flex ${activeMenu === "exam" ? "bg-white" : "bg-white"}`}>
       <TeacherSidebar activeMenu={activeMenu} onMenuChange={setActiveMenu} />
 
-      <main className={`relative flex-1 ${activeMenu === "timetable" ? "bg-[#eef1f6]" : ""}`}>
-        <div className=" flex   max-w-6xl flex-col  pb-8 pt-3 sm:px-5 lg:px-6 lg:pt-6">
+      <main className={`relative flex-1 ${activeMenu === "exam" ? "bg-white" : ""}`}>
+        <div className=" flex   max-w-6xl flex-col  pb-8  sm:px-5 lg:px-6 lg:pt-6">
           {showTopHeader ? (
             <section className="bg-white p-4 sm:p-5">
-              <div className="flex items-start justify-between gap-3 lg:hidden">
+              <div className="flex items-start justify-between gap-3  lg:hidden">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl bg-white p-1.5">
@@ -235,16 +238,7 @@ export default function TeacherDashboard({ user }) {
             />
           ) : null}
           {activeMenu === "quiz" ? <QuizTab /> : null}
-          {activeMenu === "timetable" ? (
-            <TimetableTab
-              calendarDate={calendarDate}
-              setCalendarDate={setCalendarDate}
-              monthGrid={monthGrid}
-              monthEventsByDate={monthEventsByDate}
-              events={calendarEvents}
-              setEvents={setCalendarEvents}
-            />
-          ) : null}
+          {activeMenu === "exam" ? <ExamTab /> : null}
           {activeMenu === "more" ? (
             <MoreTab
               onOpenToolModal={setActiveToolModal}

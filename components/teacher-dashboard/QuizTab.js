@@ -12,13 +12,182 @@ import {
   ChevronDown,
   Star,
 } from "lucide-react";
+import Swal from "sweetalert2";
 import { teacherSections, quizChaptersBySection } from "./data";
 
 const studentAvatarPool = ["/student1.png", "/student2.png", "/student3.png", "/student4.png", "/student.jpeg"];
 const quizRowAvatarBg = ["bg-rose-100", "bg-sky-100", "bg-amber-100", "bg-emerald-100", "bg-violet-100"];
+const AI_QUESTION_COUNT = 40;
+const AI_VISIBLE_QUESTION_COUNT = 6;
+
+function buildAiQuestionBank(lessonTitle) {
+  const lowerTitle = lessonTitle.toLowerCase();
+
+  const profiles = [
+    {
+      key: "matter",
+      concepts: ["particle motion", "diffusion", "states of matter", "evaporation", "boiling"],
+      correct: [
+        "Particles of matter are always moving.",
+        "Diffusion is faster in gases than in liquids.",
+        "Evaporation causes cooling.",
+        "Boiling occurs at a fixed temperature.",
+      ],
+      distractors: [
+        "Matter has no mass.",
+        "Particles are completely stationary.",
+        "Diffusion happens only in solids.",
+        "Boiling and evaporation are identical in all conditions.",
+      ],
+      applications: ["perfume spreading in air", "drying of wet clothes", "steam from hot tea", "sweating cools the body"],
+    },
+    {
+      key: "atom",
+      concepts: ["law of conservation of mass", "law of constant proportions", "atomic mass", "molecular formula", "valency"],
+      correct: [
+        "Atoms combine in whole-number ratios.",
+        "Chemical reactions conserve total mass.",
+        "Valency helps predict combining capacity.",
+        "A molecule is made of two or more atoms bonded together.",
+      ],
+      distractors: [
+        "Atoms are created during chemical reactions.",
+        "Mass disappears after a reaction.",
+        "Valency has no role in compound formation.",
+        "Molecules contain only one atom always.",
+      ],
+      applications: ["writing formulas", "balancing equations", "identifying compounds", "counting atoms in molecules"],
+    },
+    {
+      key: "gravitation",
+      concepts: ["universal gravitation", "mass and weight", "acceleration due to gravity", "free fall", "buoyancy"],
+      correct: [
+        "Gravitational force acts between any two masses.",
+        "Weight changes with location, mass does not.",
+        "Objects in free fall accelerate due to gravity.",
+        "Buoyant force acts opposite to gravity in fluids.",
+      ],
+      distractors: [
+        "Gravity acts only on Earth.",
+        "Mass and weight are always the same quantity.",
+        "Free-falling objects have zero acceleration.",
+        "Buoyancy acts downward.",
+      ],
+      applications: ["satellite motion", "weighing objects", "floating ships", "falling fruits"],
+    },
+    {
+      key: "energy",
+      concepts: ["work", "kinetic energy", "potential energy", "power", "conservation of energy"],
+      correct: [
+        "Work is done when force causes displacement.",
+        "Kinetic energy depends on mass and velocity.",
+        "Potential energy depends on position.",
+        "Energy cannot be created or destroyed.",
+      ],
+      distractors: [
+        "Work is done without displacement.",
+        "Kinetic energy is independent of speed.",
+        "Potential energy has no relation to height.",
+        "Energy vanishes after use.",
+      ],
+      applications: ["lifting a bag", "moving a bicycle", "water in a dam", "electrical appliances"],
+    },
+    {
+      key: "sound",
+      concepts: ["vibration", "frequency", "amplitude", "speed of sound", "reflection of sound"],
+      correct: [
+        "Sound is produced by vibrating objects.",
+        "Frequency determines pitch.",
+        "Amplitude affects loudness.",
+        "Echo is due to reflection of sound.",
+      ],
+      distractors: [
+        "Sound travels in vacuum easily.",
+        "Pitch depends on amplitude only.",
+        "Loudness has no relation to amplitude.",
+        "Echo is caused by refraction.",
+      ],
+      applications: ["musical instruments", "ultrasound scanning", "echo sounding", "human speech"],
+    },
+  ];
+
+  const fallback = {
+    concepts: ["core concept", "scientific reasoning", "observation", "application", "experiment"],
+    correct: [
+      "The concept should be explained with a scientific reason.",
+      "A correct answer uses principle plus example.",
+      "Physics explanations rely on evidence.",
+      "Concepts can be applied to daily life situations.",
+    ],
+    distractors: [
+      "Any random sentence is acceptable.",
+      "Scientific concepts need no reasoning.",
+      "Observations are never useful in Physics.",
+      "Applications are unrelated to concepts.",
+    ],
+    applications: ["classroom discussion", "lab activity", "daily observation", "problem solving"],
+  };
+
+  const profile = profiles.find((item) => lowerTitle.includes(item.key)) || fallback;
+  const letters = ["A", "B", "C", "D"];
+
+  function buildOptions(correctText, distractorPool, shift) {
+    const threeDistractors = [
+      distractorPool[shift % distractorPool.length],
+      distractorPool[(shift + 1) % distractorPool.length],
+      distractorPool[(shift + 2) % distractorPool.length],
+    ];
+    const raw = [correctText, ...threeDistractors];
+    const rotated = raw.map((_, index) => raw[(index + shift) % raw.length]);
+    const answerIndex = rotated.findIndex((item) => item === correctText);
+    return { options: rotated, answer: letters[Math.max(0, answerIndex)] };
+  }
+
+  return Array.from({ length: AI_QUESTION_COUNT }, (_, index) => {
+    const concept = profile.concepts[index % profile.concepts.length];
+    const application = profile.applications[index % profile.applications.length];
+    const correct = profile.correct[index % profile.correct.length];
+    const { options, answer } = buildOptions(correct, profile.distractors, index % 4);
+
+    const questionPatterns = [
+      `Which statement about ${concept} in ${lessonTitle} is correct?`,
+      `Choose the best explanation of ${concept} in ${lessonTitle}.`,
+      `How is ${concept} applied in ${application}?`,
+      `Identify the scientifically correct point from ${lessonTitle}.`,
+      `Which option best matches the concept of ${concept}?`,
+    ];
+
+    return {
+      id: index + 1,
+      question: questionPatterns[index % questionPatterns.length],
+      options,
+      answer,
+    };
+  });
+}
+
+function pickRandomQuestions(bank, count, previousIds = []) {
+  const previousKey = previousIds.slice().sort((a, b) => a - b).join("-");
+
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    const shuffled = [...bank].sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, count);
+    const selectedKey = selected.map((item) => item.id).sort((a, b) => a - b).join("-");
+
+    if (selectedKey !== previousKey) {
+      return selected;
+    }
+  }
+
+  return [...bank].sort(() => Math.random() - 0.5).slice(0, count);
+}
+
+function wait(ms) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
 
 function createQuestionSet() {
-  return Array.from({ length: 6 }, (_, index) => ({
+  return Array.from({ length: AI_VISIBLE_QUESTION_COUNT }, (_, index) => ({
     id: index + 1,
     question: "",
     options: ["", "", "", ""],
@@ -27,6 +196,9 @@ function createQuestionSet() {
 }
 
 function statusPill(status) {
+  if (status === "completed") {
+    return "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200";
+  }
   if (status === "submitted") {
     return "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200";
   }
@@ -37,12 +209,14 @@ function statusPill(status) {
 }
 
 function statusLabel(status) {
+  if (status === "completed") return "";
   if (status === "submitted") return "Submitted";
   if (status === "added") return "Quiz Added";
   return "Not Added";
 }
 
 function statusIcon(status) {
+  if (status === "completed") return CheckCircle2;
   if (status === "submitted") return CheckCircle2;
   if (status === "added") return PlusCircle;
   return CircleDashed;
@@ -78,6 +252,8 @@ export default function QuizTab() {
   const [isScoreSectionMenuOpen, setIsScoreSectionMenuOpen] = useState(false);
   const [openAnswerDropdown, setOpenAnswerDropdown] = useState(null);
   const scoreSectionMenuRef = useRef(null);
+  const lastAiQuestionIdsRef = useRef([]);
+  const typingRunRef = useRef(0);
 
   const selectedSection = useMemo(
     () => teacherSections.find((item) => item.id === selectedSectionId) || null,
@@ -125,7 +301,7 @@ export default function QuizTab() {
 
   const chapterKey = selectedSection && selectedChapter ? `${selectedSection.id}:${selectedChapter.id}` : "";
   const activeQuestions = chapterKey ? draftByChapter[chapterKey] || createQuestionSet() : [];
-  const displayedChapters = selectedChapter ? [selectedChapter] : chapters;
+  const displayedChapters = chapters;
 
   // Close dropdowns when clicking outside
   const handleClickOutside = (e) => {
@@ -138,6 +314,104 @@ export default function QuizTab() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  function resetAiTyping() {
+    setOpenAnswerDropdown(null);
+    lastAiQuestionIdsRef.current = [];
+    typingRunRef.current += 1;
+  }
+
+  async function startAiTyping() {
+    if (!selectedChapter) return;
+
+    const questionBank = buildAiQuestionBank(selectedChapter.title);
+    const pickedQuestions = pickRandomQuestions(questionBank, AI_VISIBLE_QUESTION_COUNT, lastAiQuestionIdsRef.current);
+    lastAiQuestionIdsRef.current = pickedQuestions.map((item) => item.id);
+    const selectedQuestions = pickedQuestions.map((item, index) => ({
+      ...item,
+      id: index + 1,
+    }));
+
+    const runId = typingRunRef.current + 1;
+    typingRunRef.current = runId;
+
+    setDraftByChapter((prev) => ({
+      ...prev,
+      [chapterKey]: createQuestionSet(),
+    }));
+    setFlashMessage(`AI questions loaded.`);
+
+    const workingQuestions = createQuestionSet();
+
+    for (let questionIndex = 0; questionIndex < selectedQuestions.length; questionIndex += 1) {
+      const sourceQuestion = selectedQuestions[questionIndex];
+
+      for (let charCount = 1; charCount <= sourceQuestion.question.length; charCount += 1) {
+        if (typingRunRef.current !== runId) return;
+
+        workingQuestions[questionIndex] = {
+          ...workingQuestions[questionIndex],
+          question: sourceQuestion.question.slice(0, charCount),
+          options: ["", "", "", ""],
+          answer: "",
+        };
+
+        setDraftByChapter((prev) => ({
+          ...prev,
+          [chapterKey]: workingQuestions.map((item) => ({ ...item })),
+        }));
+
+        await wait(14);
+      }
+
+      if (typingRunRef.current !== runId) return;
+
+      const typedOptions = ["", "", "", ""];
+      for (let optionIndex = 0; optionIndex < sourceQuestion.options.length; optionIndex += 1) {
+        const sourceOption = sourceQuestion.options[optionIndex] || "";
+
+        for (let charCount = 1; charCount <= sourceOption.length; charCount += 1) {
+          if (typingRunRef.current !== runId) return;
+
+          typedOptions[optionIndex] = sourceOption.slice(0, charCount);
+
+          workingQuestions[questionIndex] = {
+            ...workingQuestions[questionIndex],
+            question: sourceQuestion.question,
+            options: [...typedOptions],
+            answer: "",
+          };
+
+          setDraftByChapter((prev) => ({
+            ...prev,
+            [chapterKey]: workingQuestions.map((item) => ({ ...item })),
+          }));
+
+          await wait(10);
+        }
+      }
+
+      if (typingRunRef.current !== runId) return;
+
+      workingQuestions[questionIndex] = {
+        ...workingQuestions[questionIndex],
+        question: sourceQuestion.question,
+        options: [...sourceQuestion.options],
+        answer: sourceQuestion.answer,
+      };
+
+      setDraftByChapter((prev) => ({
+        ...prev,
+        [chapterKey]: workingQuestions.map((item) => ({ ...item })),
+      }));
+
+      await wait(70);
+    }
+
+    if (typingRunRef.current === runId) {
+      typingRunRef.current = 0;
+    }
+  }
 
   function getEffectiveStatus(chapter) {
     return statusOverrides[`${selectedSectionId}:${chapter.id}`] || chapter.status;
@@ -177,26 +451,45 @@ export default function QuizTab() {
     setFlashMessage("Quiz draft saved for this chapter.");
   }
 
-  function submitQuiz() {
-    if (!chapterKey) return;
+  async function submitQuiz() {
+    if (!chapterKey || !selectedChapter) return;
+
+    const lessonTitle = selectedChapter.title;
     setStatusOverrides((prev) => ({ ...prev, [chapterKey]: "submitted" }));
-    setFlashMessage("Quiz submitted successfully.");
+
+    await Swal.fire({
+      icon: "success",
+      title: "Quiz Submitted",
+      text: `${lessonTitle} quiz submitted`,
+      confirmButtonText: "OK",
+    });
+
+    backToLessonList();
   }
 
   function openSection(sectionId) {
     setSelectedSectionId(sectionId);
     setSelectedChapterId("");
+    resetAiTyping();
     setFlashMessage("");
   }
 
   function openChapter(chapterId) {
     setSelectedChapterId(chapterId);
+    resetAiTyping();
+    setFlashMessage("");
+  }
+
+  function backToLessonList() {
+    setSelectedChapterId("");
+    resetAiTyping();
     setFlashMessage("");
   }
 
   function backToClassList() {
     setSelectedSectionId("");
     setSelectedChapterId("");
+    resetAiTyping();
     setFlashMessage("");
   }
 
@@ -204,8 +497,8 @@ export default function QuizTab() {
     <section className="page-enter space-y-4 px-3 pb-24">
       {!selectedSection ? (
         <article className="stagger-item bg-(--app-surface)  sm:p-5" style={{ "--stagger-delay": "40ms" }}>
-          <p className="text-sm text-slate-500">Quiz center</p>
-          <h2 className="mt-1 text-xl font-semibold text-slate-900">Select class to create quiz</h2>
+          <p className="text-sm text-slate-500">Physics quiz center</p>
+          <h2 className="mt-1 text-xl font-semibold text-slate-900">Select class to create Physics quiz</h2>
 
           <div className="mt-4 grid grid-cols-2 gap-3">
             {teacherSections.map((section, sectionIndex) => {
@@ -240,7 +533,7 @@ export default function QuizTab() {
 
                     <div>
                       <p className="text-[10px] font-semibold uppercase tracking-[0.09em] text-slate-500">Next to start</p>
-                      <p className="mt-1 line-clamp-2 text-xs font-semibold text-[#0b7f78] sm:text-[13px]">
+                      <p className="mt-1 line-clamp-2 text-xs font-semibold text-[#c43642] sm:text-[13px]">
                         {getPendingQuizLabel(section.id)}
                       </p>
                     </div>
@@ -253,7 +546,7 @@ export default function QuizTab() {
           <article className="mt-5 overflow-visible rounded-3xl border border-slate-200 bg-white ">
             <div className=" px-3 py-3 sm:px-4">
               <div className="mb-3">
-                <p className="text-sm text-slate-500">Class quiz dashboard</p>
+                <p className="text-sm text-slate-500">Physics quiz dashboard</p>
                 <h3 className="mt-1 text-base font-semibold text-slate-900 sm:text-lg">Student quiz scores </h3>
               </div>
 
@@ -348,49 +641,60 @@ export default function QuizTab() {
         </article>
       ) : (
         <article className="stagger-item bg-(--app-surface) p-4 sm:p-5" style={{ "--stagger-delay": "60ms" }}>
-          <div className="flex items-center justify-between gap-2">
+          <div className="relative flex min-h-10 items-center">
             <button
               type="button"
               onClick={backToClassList}
-              className="inline-flex items-center gap-1 rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700"
+              className="inline-flex items-center gap-1    py-1.5 text-xs font-semibold text-slate-700"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-6 w-6" />
               Back
             </button>
-          </div>
 
-          <div className="mt-3">
-            <p className="text-sm text-slate-500">Selected class</p>
-            <h3 className="text-lg font-semibold text-slate-900">
-              Class {selectedSection.className} - Section {selectedSection.section}
+            <h3 className="absolute left-1/2 -translate-x-1/2 text-center text-lg font-semibold text-slate-900">
+               {selectedSection.className}  {selectedSection.section} - Section
             </h3>
+
+            <p className="ml-auto text-sm font-semibold text-slate-600">Physics</p>
           </div>
 
-          <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-            {displayedChapters.map((chapter) => {
-              const effectiveStatus = getEffectiveStatus(chapter);
-              const Icon = statusIcon(effectiveStatus);
-              const isActive = selectedChapterId === chapter.id;
-              return (
-                <button
-                  key={chapter.id}
-                  type="button"
-                  onClick={() => openChapter(chapter.id)}
-                  className={`rounded-2xl border p-3 text-left transition active:scale-[0.99] ${
-                    isActive
-                      ? "border-sky-300 bg-sky-50"
-                      : "border-(--app-border) bg-(--app-surface-muted)"
-                  }`}
-                >
-                  <p className="text-sm font-semibold text-slate-900">{chapter.title}</p>
-                  <span className={`mt-2 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${statusPill(effectiveStatus)}`}>
-                    <Icon className="h-3.5 w-3.5" />
-                    {statusLabel(effectiveStatus)}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+          {!selectedChapter ? (
+            <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+              {displayedChapters.map((chapter, index) => {
+                const isCompleted = index < 2;
+                const effectiveStatus = isCompleted ? "completed" : getEffectiveStatus(chapter);
+                const Icon = statusIcon(effectiveStatus);
+                const isActive = selectedChapterId === chapter.id;
+                return (
+                  <button
+                    key={chapter.id}
+                    type="button"
+                    onClick={() => {
+                      if (!isCompleted) {
+                        openChapter(chapter.id);
+                      }
+                    }}
+                    disabled={isCompleted}
+                    className={`rounded-2xl border p-3 text-left transition ${
+                      isCompleted
+                        ? "cursor-default border-emerald-200 bg-emerald-50/70"
+                        : isActive
+                          ? "active:scale-[0.99] border-sky-300 bg-sky-50"
+                          : "active:scale-[0.99] border-(--app-border) bg-(--app-surface-muted)"
+                    }`}
+                  >
+                    <p className="text-sm font-semibold text-slate-900">{chapter.title}</p>
+                    {!isCompleted ? (
+                      <span className={`mt-2 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${statusPill(effectiveStatus)}`}>
+                        <Icon className="h-3.5 w-3.5" />
+                        {statusLabel(effectiveStatus)}
+                      </span>
+                    ) : null}
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
         </article>
       )}
 
@@ -398,13 +702,18 @@ export default function QuizTab() {
         <article className="stagger-item bg-(--app-surface) p-4 sm:p-5" style={{ "--stagger-delay": "120ms" }}>
           <div className="relative">
             <div className="pr-20">
-              <p className="text-sm text-slate-500">Quiz builder</p>
               <h3 className="text-lg font-semibold text-slate-900">{selectedChapter.title}</h3>
+              
+               
             </div>
-            <span className="absolute right-0 top-0 inline-flex items-center gap-1 rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700 ring-1 ring-sky-200">
+            <button
+              type="button"
+              onClick={startAiTyping}
+              className="absolute right-0 top-0 inline-flex items-center gap-1 rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700 ring-1 ring-sky-200"
+            >
               <Sparkles className="h-3.5 w-3.5" />
-              AI 
-            </span>
+              AI
+            </button>
           </div>
 
           <div className="mt-4 space-y-3">
@@ -446,7 +755,7 @@ export default function QuizTab() {
                   {openAnswerDropdown === item.id && (
                     <div className="absolute left-0 top-full z-40 mt-2 w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
                       <div className="py-1" role="listbox" aria-label="Select correct answer">
-                        {["A", "B", "C", "D"].map((option) => (
+                        {['A', 'B', 'C', 'D'].map((option) => (
                           <button
                             key={option}
                             type="button"
@@ -470,12 +779,6 @@ export default function QuizTab() {
               </div>
             ))}
           </div>
-
-          {flashMessage ? (
-            <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700">
-              {flashMessage}
-            </div>
-          ) : null}
 
           <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
             <button
