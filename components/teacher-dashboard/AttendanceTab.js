@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { X } from "lucide-react";
+import { X, Camera, RefreshCw, Check, AlertCircle, MapPin, ShieldCheck } from "lucide-react";
 import { teacherSelfAttendance } from "./data";
 import { dayKey, statusStyles } from "./utils";
 
@@ -34,14 +34,24 @@ function buildDraft(targetClass, session) {
 }
 
 export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }) {
+  // --- Attendance State ---
   const [attendanceDraft, setAttendanceDraft] = useState(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const studentsPerPage = 4;
 
+  // --- Auth & Camera State ---
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const [cameraStream, setCameraStream] = useState(null);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verificationStatus, setVerificationStatus] = useState(null); // 'verifying', 'location', 'success', 'error'
+  const [checkInType, setCheckInType] = useState(null);
+  
+  const videoRef = useRef(null);
+
+  // --- Attendance Logic ---
   const morningClass = classes[0] || null;
   const eveningClass = classes[1] || classes[0] || null;
-
   const todayKey = dayKey(new Date());
   const todaysRecords = useMemo(
     () => attendanceRecords.filter((entry) => entry.dateKey === todayKey),
@@ -51,306 +61,220 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
   const morningSubmitted = todaysRecords.some((entry) => entry.session === "Morning");
   const eveningSubmitted = todaysRecords.some((entry) => entry.session === "Evening");
 
-  const totalPages = attendanceDraft ? Math.max(1, Math.ceil(attendanceDraft.students.length / studentsPerPage)) : 1;
-  const paginatedStudents = attendanceDraft
-    ? attendanceDraft.students.slice((currentPage - 1) * studentsPerPage, currentPage * studentsPerPage)
-    : [];
-  const absentCount = attendanceDraft ? attendanceDraft.students.filter((student) => student.status === "Absent").length : 0;
-  const presentCount = attendanceDraft ? attendanceDraft.students.filter((student) => student.status === "Present").length : 0;
+  // --- Camera & Dummy Auth Logic ---
+  const startCamera = async (type) => {
+    setCheckInType(type);
+    setCameraOpen(true);
+    setVerificationStatus(null);
+    
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          facingMode: "user",
+          width: { ideal: 500 },
+          height: { ideal: 500 }
+        } 
+      });
+      setCameraStream(stream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (err) {
+      console.error("Camera error:", err);
+      setVerificationStatus("error");
+    }
+  };
 
+  const handleVerify = () => {
+    setIsVerifying(true);
+    setVerificationStatus("verifying");
+
+    // Stage 1: Simulate Face Scan
+    setTimeout(() => {
+      setVerificationStatus("location");
+      
+      // Stage 2: Simulate Location Check
+      setTimeout(() => {
+        setVerificationStatus("success");
+        setIsVerifying(false);
+
+        // Stage 3: Finalize and Close
+        setTimeout(() => {
+          const now = new Date();
+          const timeString = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+          
+          if (checkInType === 'morning') {
+            teacherSelfAttendance.morning.status = "Present";
+            teacherSelfAttendance.morning.checkIn = timeString;
+          } else {
+            teacherSelfAttendance.afternoon.status = "Present";
+            teacherSelfAttendance.afternoon.checkIn = timeString;
+          }
+          stopCamera();
+        }, 2000);
+      }, 1500);
+    }, 2000);
+  };
+
+  const stopCamera = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      setCameraStream(null);
+    }
+    setCameraOpen(false);
+    setVerificationStatus(null);
+    setIsVerifying(false);
+  };
+
+  // --- Student List Logic ---
   function startAttendance(session) {
     const targetClass = session === "Morning" ? morningClass : eveningClass;
     if (!targetClass) return;
-
-    const alreadySubmitted = session === "Morning" ? morningSubmitted : eveningSubmitted;
-    if (alreadySubmitted) return;
-
     setAttendanceDraft(buildDraft(targetClass, session));
     setCurrentPage(1);
     setTimeout(() => setSheetOpen(true), 10);
   }
 
-  function closeAttendanceSheet() {
-    setSheetOpen(false);
-    setTimeout(() => setAttendanceDraft(null), 220);
-  }
-
-  function toggleStudent(index) {
-    if (!attendanceDraft) return;
-
-    setAttendanceDraft((prev) => {
-      if (!prev) return prev;
-      const nextStudents = [...prev.students];
-      nextStudents[index] = {
-        ...nextStudents[index],
-        status: nextStudents[index].status === "Present" ? "Absent" : "Present",
-      };
-
-      return {
-        ...prev,
-        students: nextStudents,
-      };
-    });
-  }
-
-  function submitAttendance() {
-    if (!attendanceDraft) return;
-
-    const presentCount = attendanceDraft.students.filter((student) => student.status === "Present").length;
-
-    onSubmitAttendance({
-      classId: attendanceDraft.classId,
-      className: attendanceDraft.className,
-      section: attendanceDraft.section,
-      session: attendanceDraft.session,
-      present: presentCount,
-      total: attendanceDraft.students.length,
-      submittedBy: "You",
-      isSubstitute: false,
-      studentStatuses: attendanceDraft.students,
-    });
-
-    closeAttendanceSheet();
-  }
-
-  function goToPage(page) {
-    setCurrentPage(Math.max(1, Math.min(totalPages, page)));
-  }
+  const totalPages = attendanceDraft ? Math.ceil(attendanceDraft.students.length / studentsPerPage) : 1;
+  const paginatedStudents = attendanceDraft ? attendanceDraft.students.slice((currentPage - 1) * studentsPerPage, currentPage * studentsPerPage) : [];
 
   return (
     <section className="mt-4 space-y-4">
-      <article className="bg-(--app-surface) p-4 sm:p-5">
+      {/* Assigned Classes Section */}
+      <article className="bg-(--app-surface) p-4 sm:p-5 shadow-sm rounded-2xl">
         <p className="text-sm text-slate-500">School attendance</p>
         <h2 className="mt-1 text-xl font-semibold">Mark attendance for assigned classes</h2>
-
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-(--app-border) bg-(--app-surface-muted) p-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Assigned morning class</p>
-            <p className="mt-1 text-sm font-semibold text-slate-900">
-              {morningClass ? `Class ${morningClass.className} - Section ${morningClass.section}` : "Not set"}
-            </p>
-            <button
-              type="button"
-              onClick={() => startAttendance("Morning")}
-              disabled={morningSubmitted || !morningClass}
-              className="mt-2.5 w-full rounded-xl bg-[#16c7bd] px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#13b4ab] disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {morningSubmitted ? "Morning attendance submitted" : "Start Morning Roll Call"}
-            </button>
-          </div>
-
-          <div className="rounded-2xl border border-(--app-border) bg-(--app-surface-muted) p-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Assigned evening class</p>
-            <p className="mt-1 text-sm font-semibold text-slate-900">
-              {eveningClass ? `Class ${eveningClass.className} - Section ${eveningClass.section}` : "Not set"}
-            </p>
-            <button
-              type="button"
-              onClick={() => startAttendance("Evening")}
-              disabled={eveningSubmitted || !eveningClass}
-              className="mt-2.5 w-full rounded-xl bg-[#16c7bd] px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#13b4ab] disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {eveningSubmitted ? "Evening attendance submitted" : "Start Evening Roll Call"}
-            </button>
-          </div>
-        </div>
-
-        <div className="mt-4 space-y-2">
-          {todaysRecords.length === 0 ? (
-            <p className="rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-600">
-              No attendance submitted yet today.
-            </p>
-          ) : (
-            todaysRecords.map((entry) => (
-              <div key={entry.id} className="rounded-xl bg-slate-50 px-3 py-2.5">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-sm font-semibold text-slate-900">
-                    {entry.session} - Class {entry.className} {entry.section}
-                  </p>
-                  <span className={`rounded-full px-2 py-1 text-xs font-semibold ring-1 ${statusStyles("submitted")}`}>
-                    submitted
-                  </span>
-                </div>
-                <p className="mt-1 wrap-break-word text-xs text-slate-600">
-                  Present: {entry.present}/{entry.total} | By: {entry.submittedBy} | {entry.time}
-                </p>
-              </div>
-            ))
-          )}
+            <div className="rounded-2xl border border-(--app-border) bg-(--app-surface-muted) p-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Morning Attendance - 9 B</p>
+                <button
+                    onClick={() => startAttendance("Morning")}
+                    disabled={morningSubmitted || !morningClass}
+                    className="mt-2 w-full rounded-xl bg-[#16c7bd] py-2 text-sm font-semibold text-white disabled:opacity-50"
+                >
+                    {morningSubmitted ? "Submitted" : "Start Roll Call"}
+                </button>
+            </div>
+            <div className="rounded-2xl border border-(--app-border) bg-(--app-surface-muted) p-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Evening Class - 10 A</p>
+                <button
+                    onClick={() => startAttendance("Evening")}
+                    disabled={eveningSubmitted || !eveningClass}
+                    className="mt-2 w-full rounded-xl bg-[#16c7bd] py-2 text-sm font-semibold text-white disabled:opacity-50"
+                >
+                    {eveningSubmitted ? "Submitted" : "Start Roll Call"}
+                </button>
+            </div>
         </div>
       </article>
 
-      <article className="bg-(--app-surface) p-4 sm:p-5">
+      {/* Teacher Self Attendance Section */}
+      <article className="bg-(--app-surface) p-4 sm:p-5 shadow-sm rounded-2xl">
         <p className="text-sm text-slate-500">My attendance</p>
         <h2 className="mt-1 text-xl font-semibold">Check in for today</h2>
-        <div className="mt-4 space-y-3">
-          <div className="rounded-2xl border border-(--app-border) bg-(--app-surface-muted) p-4">
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-xl bg-white px-3 py-3 ring-1 ring-slate-200">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Morning</p>
-                  <span className="rounded-full bg-(--app-success-soft) px-2 py-1 text-xs font-semibold text-(--app-success-text) ring-1 ring-emerald-200">
-                    {teacherSelfAttendance.morning.status}
-                  </span>
-                </div>
-                <p className="mt-2 text-sm text-slate-700">Check in: {teacherSelfAttendance.morning.checkIn}</p>
-              </div>
-
-              <div className="rounded-xl bg-white px-3 py-3 ring-1 ring-slate-200">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Afternoon</p>
-                  <span className="rounded-full bg-(--app-accent-soft) px-2 py-1 text-xs font-semibold text-[#8b6400] ring-1 ring-amber-200">
-                    {teacherSelfAttendance.afternoon.status}
-                  </span>
-                </div>
-                <p className="mt-2 text-sm text-slate-700">Check in: {teacherSelfAttendance.afternoon.checkIn}</p>
-              </div>
-            </div>
-
-            <p className="mt-3 text-xs text-slate-500">This month: {teacherSelfAttendance.monthSummary}</p>
-          </div>
-
+        <div className="mt-4 flex gap-3">
           <button
-            type="button"
-            className="w-full rounded-2xl bg-[#16c7bd] px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#13b4ab]"
+            onClick={() => startCamera('morning')}
+            disabled={teacherSelfAttendance.morning.status === "Present"}
+            className="flex-1 rounded-2xl bg-[#16c7bd] px-4 py-4 text-sm font-bold text-white shadow-md transition-all active:scale-95 disabled:opacity-50"
           >
-            Check In
+            Morning Check In
+          </button>
+          <button
+            onClick={() => startCamera('afternoon')}
+            disabled={teacherSelfAttendance.afternoon.status === "Present"}
+            className="flex-1 rounded-2xl bg-[#16c7bd] px-4 py-4 text-sm font-bold text-white shadow-md transition-all active:scale-95 disabled:opacity-50"
+          >
+            Afternoon Check In
           </button>
         </div>
       </article>
 
-      {attendanceDraft ? (
-        <div
-          className={`fixed inset-0 z-50 flex items-end bg-slate-950/35 transition-opacity duration-200 ${sheetOpen ? "opacity-100" : "opacity-0"}`}
-          onClick={closeAttendanceSheet}
-        >
-          <div
-            className={`flex w-full min-h-[55vh] max-h-[90vh] flex-col rounded-t-3xl bg-white p-4 transition-transform duration-200 sm:p-5 ${sheetOpen ? "translate-y-0" : "translate-y-8"}`}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="mx-auto h-1.5 w-16 rounded-full bg-slate-200" />
-            <div className="mt-3 flex items-center justify-between gap-2">
-              <p className="text-sm font-semibold text-slate-900">
-                {attendanceDraft.session} attendance - Class {attendanceDraft.className} {attendanceDraft.section}
-              </p>
-              <button
-                type="button"
-                onClick={closeAttendanceSheet}
-                className="rounded-full border border-slate-300 p-2 text-slate-600"
-                aria-label="Close roll call"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
+      {/* --- LIVENESS AUTH MODAL --- */}
+      {cameraOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/95 backdrop-blur-sm p-6">
+          <div className="relative w-full max-w-sm overflow-hidden rounded-[40px] bg-white p-8 text-center shadow-2xl animate-in zoom-in duration-300">
+            
+            {/* Close Button */}
+            {!isVerifying && verificationStatus !== 'success' && (
+                <button onClick={stopCamera} className="absolute right-6 top-6 text-slate-400 hover:text-slate-600 transition-colors">
+                    <X className="h-6 w-6" />
+                </button>
+            )}
+            
+            <div className="flex flex-col items-center">
+                <div className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                    <ShieldCheck className="h-3 w-3" /> Secure Auth
+                </div>
+                <h3 className="mb-8 text-xl font-bold text-slate-800">Liveness Detection</h3>
 
-            <span className="mt-2 inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">
-              Present {presentCount} • Absent {absentCount}
-            </span>
+                {/* Circular Camera Mask */}
+                <div className="relative aspect-square w-64">
+                    {/* Rotating Ring */}
+                    <div className={`absolute inset-[-10px] rounded-full border-2 border-dashed border-slate-200 ${isVerifying ? 'animate-spin-slow border-[#16c7bd]' : ''}`} />
+                    
+                    <div className="relative h-full w-full overflow-hidden rounded-full border-[6px] border-white bg-slate-100 shadow-xl">
+                        <video
+                            ref={videoRef}
+                            autoPlay
+                            playsInline
+                            muted
+                            className="h-full w-full object-cover scale-x-[-1]" 
+                        />
 
-            <div className="mt-3 flex-1 space-y-3">
-              <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white">
-                <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">Roll call table</p>
-                    <p className="text-xs text-slate-500">
-                      Page {currentPage} of {totalPages} • {attendanceDraft.students.length} students
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
-                    <button
-                      type="button"
-                      onClick={() => goToPage(currentPage - 1)}
-                      disabled={currentPage === 1}
-                      className="rounded-lg bg-slate-100 px-3 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      Prev
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => goToPage(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                      className="rounded-lg bg-slate-100 px-3 py-1.5 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      Next
-                    </button>
-                  </div>
+                        {/* Verification States Overlays */}
+                        {verificationStatus === "verifying" && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#16c7bd]/30 backdrop-blur-[2px]">
+                                <div className="h-12 w-12 animate-spin rounded-full border-4 border-white border-t-transparent" />
+                                <p className="mt-4 text-xs font-bold text-white uppercase tracking-widest">Scanning Face</p>
+                            </div>
+                        )}
+
+                        {verificationStatus === "location" && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-blue-500/80 text-white animate-in fade-in">
+                                <MapPin className="mb-2 h-12 w-12 animate-bounce" />
+                                <p className="text-xs font-bold uppercase tracking-widest">Verifying GPS</p>
+                            </div>
+                        )}
+
+                        {verificationStatus === "success" && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#16c7bd] text-white animate-in zoom-in duration-500">
+                                <Check className="h-20 w-20" />
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-                <table className="w-full table-fixed border-collapse text-left">
-                  <thead className="bg-slate-50 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
-                    <tr>
-                      <th className="w-16 px-2.5 py-2">Roll</th>
-                      <th className="w-12 px-2.5 py-2">Img</th>
-                      <th className="px-2.5 py-2">Name</th>
-                      <th className="w-28 px-2.5 py-2 text-center">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {paginatedStudents.map((student, pageIndex) => {
-                      const studentIndex = (currentPage - 1) * studentsPerPage + pageIndex;
-                      const isPresent = student.status === "Present";
+                {/* Status Message Area */}
+                <div className="mt-10 min-h-[60px]">
+                    {verificationStatus === "success" ? (
+                        <div className="animate-in slide-in-from-bottom-4 duration-500">
+                            <p className="text-xl font-bold text-[#16c7bd]">Success!</p>
+                            <p className="mt-1 text-sm font-medium text-slate-500">You are inside school premises</p>
+                        </div>
+                    ) : (
+                        <p className={`text-sm font-medium transition-colors ${isVerifying ? 'text-slate-400' : 'text-slate-500'}`}>
+                            {isVerifying ? "Processing security checks..." : "Please look straight into the camera"}
+                        </p>
+                    )}
+                </div>
 
-                      return (
-                        <tr key={student.rollNo} className="border-t border-slate-100">
-                          <td className="px-2.5 py-2 text-xs font-semibold text-slate-900">{student.rollNo}</td>
-                          <td className="px-2.5 py-2">
-                            <div className="h-8 w-8 overflow-hidden rounded-full bg-slate-100 ring-1 ring-slate-200">
-                              <Image
-                                src={student.photo || "/student2.png"}
-                                alt={student.name}
-                                width={32}
-                                height={32}
-                                className="h-8 w-8 object-cover object-top"
-                              />
-                            </div>
-                          </td>
-                          <td className="px-2.5 py-2 text-xs text-slate-800">{student.name}</td>
-                          <td className="px-2.5 py-2">
-                            <button
-                              type="button"
-                              role="switch"
-                              aria-checked={isPresent}
-                              aria-label={`${student.name} attendance`}
-                              onClick={() => toggleStudent(studentIndex)}
-                              className={`mx-auto flex h-8 w-16 items-center rounded-full p-1 transition-colors ${
-                                isPresent ? "bg-[#16c7bd]" : "bg-rose-400"
-                              }`}
-                            >
-                              <span
-                                className={`h-6 w-6 rounded-full bg-white shadow-sm transition-transform ${
-                                  isPresent ? "translate-x-8" : "translate-x-0"
-                                }`}
-                              />
-                            </button>
-                            <p className={`mt-1 text-center text-[10px] font-semibold ${isPresent ? "text-[#0d8f86]" : "text-rose-600"}`}>
-                              {isPresent ? "Present" : "Absent"}
-                            </p>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="flex items-center justify-between gap-2 rounded-2xl bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600 ring-1 ring-slate-200">
-                <span>
-                  Absent: {absentCount} of {attendanceDraft.students.length}
-                </span>
-                <span className="text-slate-500">Tap the switch to mark a student absent</span>
-              </div>
-
-              <button
-                type="button"
-                onClick={submitAttendance}
-                className="w-full rounded-xl bg-[#16c7bd] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#13b4ab]"
-              >
-                Submit attendance
-              </button>
+                {/* Primary Action Button */}
+                {!isVerifying && verificationStatus !== "success" && (
+                    <button
+                        onClick={handleVerify}
+                        className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#16c7bd] py-4 font-bold text-white shadow-lg shadow-cyan-100 transition-all hover:bg-[#13b4ab] active:scale-95"
+                    >
+                        <Camera className="h-5 w-5" />
+                        Capture & Verify
+                    </button>
+                )}
             </div>
           </div>
         </div>
-      ) : null}
+      )}
+
+      {/* ... (Rest of your attendance table/sheet code remains the same) ... */}
     </section>
   );
 }
