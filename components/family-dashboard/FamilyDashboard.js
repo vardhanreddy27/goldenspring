@@ -194,7 +194,7 @@ export default function FamilyDashboard({ initialRole = "student" }) {
     }
 
     const savedParentLanguage = window.localStorage.getItem("parentDashboardLanguage");
-    if (savedParentLanguage === PARENT_LANGUAGES.EN || savedParentLanguage === PARENT_LANGUAGES.TE) {
+    if (savedParentLanguage === PARENT_LANGUAGES.EN || savedParentLanguage === PARENT_LANGUAGES.UR) {
       setParentLanguage(savedParentLanguage);
     }
   }, []);
@@ -370,11 +370,11 @@ export default function FamilyDashboard({ initialRole = "student" }) {
                     {!isStudent ? (
                       <button
                         type="button"
-                        onClick={() => setParentLanguage((prev) => (prev === PARENT_LANGUAGES.EN ? PARENT_LANGUAGES.TE : PARENT_LANGUAGES.EN))}
+                        onClick={() => setParentLanguage((prev) => (prev === PARENT_LANGUAGES.EN ? PARENT_LANGUAGES.UR : PARENT_LANGUAGES.EN))}
                         className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-slate-300"
                         aria-label="Toggle parent dashboard language"
                       >
-                        <Image src="/telugu.png" alt="Telugu language" width={16} height={16} className="rounded-sm object-cover" />
+                        <Image src="/urdu.svg" alt="Urdu language" width={16} height={16} className="rounded-sm object-cover" />
                         <span>{languageToggleLabel(parentLanguage)}</span>
                       </button>
                     ) : null}
