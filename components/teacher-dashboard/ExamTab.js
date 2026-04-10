@@ -270,7 +270,7 @@ function buildPapers({ schoolName, classLabel, subjectLabel, examType, difficult
           items: sectionThreeQuestions,
         },
       ],
-      footer: "Quantum Heights School, Kadapa | Confidential - Internal Assessment",
+      footer: "GOLDEN SPRING School, Kadapa | Confidential - Internal Assessment",
     };
   });
 }
@@ -431,7 +431,7 @@ export default function ExamTab() {
       const topicsArray = Array.from(selectedTopicIds);
       const paperCount = selectedTestType === "Slip Test" ? 1 : 3;
       const papers = buildPapers({
-        schoolName: "Quantum Heights School",
+        schoolName: "GOLDEN SPRING School",
         classLabel: `Class ${selectedSection.className} - Section ${selectedSection.section}`,
         subjectLabel: selectedSyllabus.label,
         examType: selectedExamType,
@@ -591,9 +591,8 @@ export default function ExamTab() {
                 <div className="px-4 py-4 sm:px-6">
                   <div className="flex items-start gap-3">
                     <div className="flex items-center gap-3 flex-1">
-                      <Image src="/logo.jpg" alt="Quantum Heights logo" width={48} height={48} className="rounded-lg object-contain" />
                       <div>
-                        <p className="text-xl font-black tracking-tight text-slate-900">QUANTUM HEIGHTS SCHOOL</p>
+                        <p className="text-xl font-black tracking-tight text-slate-900">GOLDEN SPRING SCHOOL</p>
                         <p className="text-sm font-semibold text-slate-700">{paper.subtitle}</p>
                       </div>
                     </div>

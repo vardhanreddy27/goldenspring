@@ -15,11 +15,8 @@ export function TeacherSidebar({ activeMenu, onMenuChange }) {
     <aside className="hidden w-72 shrink-0 bg-slate-950 text-slate-100 lg:flex lg:flex-col">
       <div className="px-7 pb-6 pt-8">
         <div className="flex items-center gap-3">
-          <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-white p-1.5">
-            <Image src="/logo.jpg" alt="QH Logo" width={50} height={50} className="object-contain" priority />
-          </div>
           <div>
-            <p className="text-2xl font-semibold tracking-[0.22em]">QH</p>
+            <p className="text-2xl font-semibold tracking-[0.22em]">GS</p>
             <p className="text-sm text-slate-400">Teacher Workspace</p>
           </div>
         </div>

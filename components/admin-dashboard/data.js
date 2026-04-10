@@ -58,8 +58,8 @@ export const attendanceTrend = {
 };
 
 export const attendanceWindows = [
-  { period: "Morning", studentsPresent: 1218, studentsTotal: 1286, teachersPresent: 46, teachersTotal: 48 },
-  { period: "Evening", studentsPresent: 1194, studentsTotal: 1286, teachersPresent: 45, teachersTotal: 48 },
+  { period: "Morning", studentsPresent: 206, studentsTotal: 206, teachersPresent: 46, teachersTotal: 48 },
+  { period: "Evening", studentsPresent: 198, studentsTotal: 206, teachersPresent: 45, teachersTotal: 48 },
 ];
 
 function formatGradeLabel(grade) {

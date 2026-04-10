@@ -1,7 +1,7 @@
 {
-  "name": "QH TEACHERS",
-  "short_name": "QH Teachers",
-  "description": "QH Teachers progressive web app",
+  "name": "GS TEACHERS",
+  "short_name": "GS Teachers",
+  "description": "GS Teachers progressive web app",
   "id": "/Teacher_login",
   "start_url": "/Teacher_login",
   "scope": "/",
@@ -9,18 +9,5 @@
   "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#1f2937",
-  "icons": [
-    {
-      "src": "/logo.jpg",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/logo.jpg",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ]
+  "icons": []
 }

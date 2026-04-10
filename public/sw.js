@@ -1,11 +1,10 @@
-const CACHE_NAME = "qh-pwa-v3";
+const CACHE_NAME = "GS-pwa-v4";
 const STATIC_ASSETS = [
   "/",
   "/Admin_login",
   "/Teacher_login",
   "/Student_login",
   "/Parent_login",
-  "/logo.jpg",
   "/manifest.webmanifest",
   "/manifest-admin.webmanifest",
   "/manifest-teacher.webmanifest",
@@ -72,8 +71,29 @@ self.addEventListener("fetch", (event) => {
     && (STATIC_ASSETS.includes(url.pathname)
       || /\.(?:js|css|png|jpg|jpeg|svg|webp|ico|woff2?|ttf|eot|json)$/i.test(url.pathname));
 
+  const isImageRequest = /\.(?:png|jpg|jpeg|svg|webp|ico)$/i.test(url.pathname);
+
   if (!isStaticAssetRequest) {
     event.respondWith(fetch(event.request));
+    return;
+  }
+
+  // Prefer network for images so logo/branding updates appear immediately.
+  if (isImageRequest) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200 && networkResponse.type === "basic") {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+          }
+
+          return networkResponse;
+        })
+        .catch(async () => caches.match(event.request))
+    );
     return;
   }
 

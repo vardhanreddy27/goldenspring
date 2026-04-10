@@ -9,7 +9,7 @@ export default function StudentQuizPage() {
   const gameUrl = useMemo(() => {
     const url = new URL("https://rizzrunner.vercel.app/");
     url.searchParams.set("subject", subject);
-    url.searchParams.set("source", "qh-student-pwa");
+    url.searchParams.set("source", "GS-student-pwa");
     return url.toString();
   }, [subject]);
 
