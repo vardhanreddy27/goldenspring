@@ -1,6 +1,6 @@
 import { useMemo, useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { X, Camera, RefreshCw, Check, AlertCircle, MapPin, ShieldCheck } from "lucide-react";
+import { X, Camera, Check, MapPin, ShieldCheck, Clock } from "lucide-react";
 import { teacherSelfAttendance } from "./data";
 import { dayKey, statusStyles } from "./utils";
 
@@ -10,14 +10,14 @@ const DUMMY_STUDENTS = {
     { rollNo: "02", name: "Diya", photo: "/student2.png" },
     { rollNo: "03", name: "Karthik", photo: "/student3.png" },
     { rollNo: "04", name: "Saanvi", photo: "/student4.png" },
-    { rollNo: "05", name: "Vikram", photo: "/student1.png" },
+    { rollNo: "05", name: "Vikram", photo: "/student5.png" },
   ],
   "class-5a": [
-    { rollNo: "11", name: "Moksha", photo: "/student2.png" },
-    { rollNo: "12", name: "Aditya", photo: "/student3.png" },
-    { rollNo: "13", name: "Nithya", photo: "/student4.png" },
-    { rollNo: "14", name: "Rahul", photo: "/student1.png" },
-    { rollNo: "15", name: "Tara", photo: "/student2.png" },
+    { rollNo: "11", name: "Moksha", photo: "/student6.png" },
+    { rollNo: "12", name: "Aditya", photo: "/student1.png" },
+    { rollNo: "13", name: "Nithya", photo: "/student2.png" },
+    { rollNo: "14", name: "Rahul", photo: "/student3.png" },
+    { rollNo: "15", name: "Tara", photo: "/student4.png" },
   ],
 };
 
@@ -34,25 +34,23 @@ function buildDraft(targetClass, session) {
 }
 
 export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }) {
-  // --- Attendance State ---
+  // --- Attendance States ---
   const [attendanceDraft, setAttendanceDraft] = useState(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const studentsPerPage = 4;
+  const studentsPerPage = 5; // Updated to 5 as per your requirement
 
-  // --- Auth & Camera State ---
+  // --- Face Auth States ---
   const [cameraOpen, setCameraOpen] = useState(false);
   const [cameraStream, setCameraStream] = useState(null);
   const [isVerifying, setIsVerifying] = useState(false);
-  const [verificationStatus, setVerificationStatus] = useState(null); // 'verifying', 'location', 'success', 'error'
-  const [checkInType, setCheckInType] = useState(null);
-  
+  const [verificationStatus, setVerificationStatus] = useState(null); // 'verifying', 'location', 'success'
   const videoRef = useRef(null);
 
-  // --- Attendance Logic ---
   const morningClass = classes[0] || null;
   const eveningClass = classes[1] || classes[0] || null;
   const todayKey = dayKey(new Date());
+
   const todaysRecords = useMemo(
     () => attendanceRecords.filter((entry) => entry.dateKey === todayKey),
     [attendanceRecords, todayKey]
@@ -61,72 +59,7 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
   const morningSubmitted = todaysRecords.some((entry) => entry.session === "Morning");
   const eveningSubmitted = todaysRecords.some((entry) => entry.session === "Evening");
 
-  // --- Camera & Dummy Auth Logic ---
-  const startCamera = async (type) => {
-    setCheckInType(type);
-    setCameraOpen(true);
-    setVerificationStatus(null);
-    
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
-          facingMode: "user",
-          width: { ideal: 500 },
-          height: { ideal: 500 }
-        } 
-      });
-      setCameraStream(stream);
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-    } catch (err) {
-      console.error("Camera error:", err);
-      setVerificationStatus("error");
-    }
-  };
-
-  const handleVerify = () => {
-    setIsVerifying(true);
-    setVerificationStatus("verifying");
-
-    // Stage 1: Simulate Face Scan
-    setTimeout(() => {
-      setVerificationStatus("location");
-      
-      // Stage 2: Simulate Location Check
-      setTimeout(() => {
-        setVerificationStatus("success");
-        setIsVerifying(false);
-
-        // Stage 3: Finalize and Close
-        setTimeout(() => {
-          const now = new Date();
-          const timeString = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-          
-          if (checkInType === 'morning') {
-            teacherSelfAttendance.morning.status = "Present";
-            teacherSelfAttendance.morning.checkIn = timeString;
-          } else {
-            teacherSelfAttendance.afternoon.status = "Present";
-            teacherSelfAttendance.afternoon.checkIn = timeString;
-          }
-          stopCamera();
-        }, 2000);
-      }, 1500);
-    }, 2000);
-  };
-
-  const stopCamera = () => {
-    if (cameraStream) {
-      cameraStream.getTracks().forEach(track => track.stop());
-      setCameraStream(null);
-    }
-    setCameraOpen(false);
-    setVerificationStatus(null);
-    setIsVerifying(false);
-  };
-
-  // --- Student List Logic ---
+  // --- Student Attendance Handlers ---
   function startAttendance(session) {
     const targetClass = session === "Morning" ? morningClass : eveningClass;
     if (!targetClass) return;
@@ -135,146 +68,250 @@ export function AttendanceTab({ classes, attendanceRecords, onSubmitAttendance }
     setTimeout(() => setSheetOpen(true), 10);
   }
 
+  function toggleStudent(index) {
+    if (!attendanceDraft) return;
+    const nextStudents = [...attendanceDraft.students];
+    nextStudents[index].status = nextStudents[index].status === "Present" ? "Absent" : "Present";
+    setAttendanceDraft({ ...attendanceDraft, students: nextStudents });
+  }
+
+  // --- Teacher Face Auth Logic ---
+  const startFaceAuth = async () => {
+    setCameraOpen(true);
+    setVerificationStatus(null);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: "user", width: { ideal: 500 }, height: { ideal: 500 } } 
+      });
+      setCameraStream(stream);
+      if (videoRef.current) videoRef.current.srcObject = stream;
+    } catch (err) {
+      alert("Camera access denied");
+      setCameraOpen(false);
+    }
+  };
+
+  const handleVerify = () => {
+    setIsVerifying(true);
+    setVerificationStatus("verifying");
+    // Simulation sequence: Face -> GPS -> Success
+    setTimeout(() => {
+      setVerificationStatus("location");
+      setTimeout(() => {
+        setVerificationStatus("success");
+        setTimeout(() => {
+          stopCamera();
+          // Here you would typically call a function to update teacherSelfAttendance status
+        }, 2000);
+      }, 1500);
+    }, 2000);
+  };
+
+  const stopCamera = () => {
+    if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
+    setCameraOpen(false);
+    setVerificationStatus(null);
+    setIsVerifying(false);
+  };
+
+  // Pagination helpers
   const totalPages = attendanceDraft ? Math.ceil(attendanceDraft.students.length / studentsPerPage) : 1;
   const paginatedStudents = attendanceDraft ? attendanceDraft.students.slice((currentPage - 1) * studentsPerPage, currentPage * studentsPerPage) : [];
+  const absentCount = attendanceDraft?.students.filter(s => s.status === "Absent").length || 0;
+  const presentCount = attendanceDraft?.students.filter(s => s.status === "Present").length || 0;
 
   return (
-    <section className="mt-4 space-y-4">
-      {/* Assigned Classes Section */}
-      <article className="bg-(--app-surface) p-4 sm:p-5 shadow-sm rounded-2xl">
+    <section className="mt-4 space-y-6 pb-10">
+      
+      {/* 1. ASSIGNED CLASSES SECTION */}
+      <article className="bg-white p-5 rounded-2xl shadow-sm ring-1 ring-slate-100">
         <p className="text-sm text-slate-500">School attendance</p>
-        <h2 className="mt-1 text-xl font-semibold">Mark attendance for assigned classes</h2>
+        <h2 className="mt-1 text-xl font-bold">Mark attendance for assigned classes</h2>
+        
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-(--app-border) bg-(--app-surface-muted) p-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Morning Attendance - 9 B</p>
+          {['Morning', 'Evening'].map((session) => {
+            const isMorning = session === 'Morning';
+            const target = isMorning ? morningClass : eveningClass;
+            const submitted = isMorning ? morningSubmitted : eveningSubmitted;
+            return (
+              <div key={session} className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{session} Attendance</p>
+                <p className="mt-1 text-sm font-bold text-slate-900">
+                  {target ? `Class ${target.className} - Section ${target.section}` : "Not assigned"}
+                </p>
                 <button
-                    onClick={() => startAttendance("Morning")}
-                    disabled={morningSubmitted || !morningClass}
-                    className="mt-2 w-full rounded-xl bg-[#16c7bd] py-2 text-sm font-semibold text-white disabled:opacity-50"
+                  onClick={() => startAttendance(session)}
+                  disabled={submitted || !target}
+                  className="mt-3 w-full rounded-xl bg-[#16c7bd] py-2.5 text-sm font-bold text-white shadow-sm disabled:opacity-50"
                 >
-                    {morningSubmitted ? "Submitted" : "Start Roll Call"}
+                  {submitted ? "Submitted" : `Start ${session} Roll Call`}
                 </button>
-            </div>
-            <div className="rounded-2xl border border-(--app-border) bg-(--app-surface-muted) p-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">Evening Class - 10 A</p>
-                <button
-                    onClick={() => startAttendance("Evening")}
-                    disabled={eveningSubmitted || !eveningClass}
-                    className="mt-2 w-full rounded-xl bg-[#16c7bd] py-2 text-sm font-semibold text-white disabled:opacity-50"
-                >
-                    {eveningSubmitted ? "Submitted" : "Start Roll Call"}
-                </button>
-            </div>
+              </div>
+            );
+          })}
         </div>
       </article>
 
-      {/* Teacher Self Attendance Section */}
-      <article className="bg-(--app-surface) p-4 sm:p-5 shadow-sm rounded-2xl">
-        <p className="text-sm text-slate-500">My attendance</p>
-        <h2 className="mt-1 text-xl font-semibold">Check in for today</h2>
-        <div className="mt-4 flex gap-3">
-          <button
-            onClick={() => startCamera('morning')}
-            disabled={teacherSelfAttendance.morning.status === "Present"}
-            className="flex-1 rounded-2xl bg-[#16c7bd] px-4 py-4 text-sm font-bold text-white shadow-md transition-all active:scale-95 disabled:opacity-50"
-          >
-            Morning Check In
-          </button>
-          <button
-            onClick={() => startCamera('afternoon')}
-            disabled={teacherSelfAttendance.afternoon.status === "Present"}
-            className="flex-1 rounded-2xl bg-[#16c7bd] px-4 py-4 text-sm font-bold text-white shadow-md transition-all active:scale-95 disabled:opacity-50"
-          >
-            Afternoon Check In
-          </button>
+      {/* 2. MY ATTENDANCE SECTION (Replicated from screenshot) */}
+      <article className="px-1">
+        <p className="text-sm font-medium text-slate-500">My attendance</p>
+        <h2 className="text-2xl font-bold text-slate-900">Check in for today</h2>
+        
+        <div className="mt-4 rounded-[28px] bg-slate-50 p-4 ring-1 ring-slate-200/60">
+          <div className="space-y-3">
+            {[ 
+              { label: 'MORNING', data: teacherSelfAttendance.morning },
+              { label: 'AFTERNOON', data: teacherSelfAttendance.afternoon }
+            ].map((item) => (
+              <div key={item.label} className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">{item.label}</span>
+                  {item.data.status === "Present" && (
+                    <span className="rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-bold text-emerald-600 ring-1 ring-emerald-100">Present</span>
+                  )}
+                </div>
+                <div className="mt-2 flex items-center gap-2 text-slate-600">
+                  <Clock className="h-4 w-4 text-slate-300" />
+                  <span className="text-sm font-medium">Check in: {item.data.checkIn || "--:--"}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="mt-4 px-1 text-[13px] font-medium text-slate-500">
+            This month: <span className="text-slate-700">{teacherSelfAttendance.monthSummary}</span>
+          </p>
         </div>
+
+        <button
+          onClick={startFaceAuth}
+          className="mt-4 w-full rounded-2xl bg-[#16c7bd] py-4 text-sm font-bold text-white shadow-lg active:scale-95"
+        >
+          Check In with Face Auth
+        </button>
       </article>
 
-      {/* --- LIVENESS AUTH MODAL --- */}
-      {cameraOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/95 backdrop-blur-sm p-6">
-          <div className="relative w-full max-w-sm overflow-hidden rounded-[40px] bg-white p-8 text-center shadow-2xl animate-in zoom-in duration-300">
+      {/* 3. ROLL CALL BOTTOM SHEET */}
+      {attendanceDraft && (
+        <div className={`fixed inset-0 z-50 flex items-end bg-slate-950/35 transition-opacity duration-300 ${sheetOpen ? "opacity-100" : "opacity-0"}`} onClick={() => setSheetOpen(false)}>
+          <div className="w-full max-h-[90vh] flex flex-col rounded-t-[32px] bg-white p-5 animate-in slide-in-from-bottom duration-300" onClick={e => e.stopPropagation()}>
+            <div className="mx-auto h-1.5 w-16 rounded-full bg-slate-200" />
             
-            {/* Close Button */}
-            {!isVerifying && verificationStatus !== 'success' && (
-                <button onClick={stopCamera} className="absolute right-6 top-6 text-slate-400 hover:text-slate-600 transition-colors">
-                    <X className="h-6 w-6" />
-                </button>
-            )}
-            
-            <div className="flex flex-col items-center">
-                <div className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
-                    <ShieldCheck className="h-3 w-3" /> Secure Auth
+            <div className="mt-4 flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">{attendanceDraft.session} attendance - Class {attendanceDraft.className} {attendanceDraft.section}</h3>
+                <div className="mt-2 inline-flex rounded-full bg-slate-50 px-3 py-1 text-[11px] font-bold text-slate-600 ring-1 ring-slate-200">
+                  Present {presentCount} • Absent {absentCount}
                 </div>
-                <h3 className="mb-8 text-xl font-bold text-slate-800">Liveness Detection</h3>
-
-                {/* Circular Camera Mask */}
-                <div className="relative aspect-square w-64">
-                    {/* Rotating Ring */}
-                    <div className={`absolute inset-[-10px] rounded-full border-2 border-dashed border-slate-200 ${isVerifying ? 'animate-spin-slow border-[#16c7bd]' : ''}`} />
-                    
-                    <div className="relative h-full w-full overflow-hidden rounded-full border-[6px] border-white bg-slate-100 shadow-xl">
-                        <video
-                            ref={videoRef}
-                            autoPlay
-                            playsInline
-                            muted
-                            className="h-full w-full object-cover scale-x-[-1]" 
-                        />
-
-                        {/* Verification States Overlays */}
-                        {verificationStatus === "verifying" && (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#16c7bd]/30 backdrop-blur-[2px]">
-                                <div className="h-12 w-12 animate-spin rounded-full border-4 border-white border-t-transparent" />
-                                <p className="mt-4 text-xs font-bold text-white uppercase tracking-widest">Scanning Face</p>
-                            </div>
-                        )}
-
-                        {verificationStatus === "location" && (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-blue-500/80 text-white animate-in fade-in">
-                                <MapPin className="mb-2 h-12 w-12 animate-bounce" />
-                                <p className="text-xs font-bold uppercase tracking-widest">Verifying GPS</p>
-                            </div>
-                        )}
-
-                        {verificationStatus === "success" && (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#16c7bd] text-white animate-in zoom-in duration-500">
-                                <Check className="h-20 w-20" />
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Status Message Area */}
-                <div className="mt-10 min-h-[60px]">
-                    {verificationStatus === "success" ? (
-                        <div className="animate-in slide-in-from-bottom-4 duration-500">
-                            <p className="text-xl font-bold text-[#16c7bd]">Success!</p>
-                            <p className="mt-1 text-sm font-medium text-slate-500">You are inside school premises</p>
-                        </div>
-                    ) : (
-                        <p className={`text-sm font-medium transition-colors ${isVerifying ? 'text-slate-400' : 'text-slate-500'}`}>
-                            {isVerifying ? "Processing security checks..." : "Please look straight into the camera"}
-                        </p>
-                    )}
-                </div>
-
-                {/* Primary Action Button */}
-                {!isVerifying && verificationStatus !== "success" && (
-                    <button
-                        onClick={handleVerify}
-                        className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#16c7bd] py-4 font-bold text-white shadow-lg shadow-cyan-100 transition-all hover:bg-[#13b4ab] active:scale-95"
-                    >
-                        <Camera className="h-5 w-5" />
-                        Capture & Verify
-                    </button>
-                )}
+              </div>
+              <button onClick={() => setSheetOpen(false)} className="rounded-full border border-slate-200 p-2"><X size={18}/></button>
             </div>
+
+            <div className="mt-6 flex-1 overflow-hidden rounded-[24px] border border-slate-100 shadow-sm">
+              <div className="flex items-center justify-between border-b bg-white px-4 py-3">
+                <p className="text-xs font-bold text-slate-800">Roll call table <span className="block text-[10px] font-medium text-slate-400">Page {currentPage} of {totalPages}</span></p>
+                <div className="flex gap-2">
+                   <button onClick={() => setCurrentPage(p => Math.max(1, p-1))} className="rounded-lg bg-slate-50 px-3 py-1 text-[11px] font-bold text-slate-400 disabled:opacity-30">Prev</button>
+                   <button onClick={() => setCurrentPage(p => Math.min(totalPages, p+1))} className="rounded-lg bg-slate-100 px-3 py-1 text-[11px] font-bold text-slate-600 disabled:opacity-30">Next</button>
+                </div>
+              </div>
+
+              <table className="w-full text-left">
+                <thead className="bg-slate-50 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                  <tr>
+                    <th className="px-4 py-3">Roll</th>
+                    <th className="px-4 py-3">Img</th>
+                    <th className="px-4 py-3">Name</th>
+                    <th className="px-4 py-3 text-right">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {paginatedStudents.map((student, idx) => {
+                    const globalIdx = (currentPage - 1) * studentsPerPage + idx;
+                    const isPresent = student.status === "Present";
+                    return (
+                      <tr key={student.rollNo}>
+                        <td className="px-4 py-4 text-xs font-bold">{student.rollNo}</td>
+                        <td className="px-4 py-4">
+                          <Image src={student.photo} alt="user" width={36} height={36} className="rounded-full ring-2 ring-white" />
+                        </td>
+                        <td className="px-4 py-4 text-xs font-semibold text-slate-700">{student.name}</td>
+                        <td className="px-4 py-4 text-right">
+                          <button 
+                            onClick={() => toggleStudent(globalIdx)}
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isPresent ? 'bg-[#16c7bd]' : 'bg-rose-400'}`}
+                          >
+                            <span className={`h-4 w-4 transform rounded-full bg-white transition-transform ${isPresent ? 'translate-x-6' : 'translate-x-1'}`} />
+                          </button>
+                          <p className={`mt-1 text-[9px] font-bold ${isPresent ? 'text-[#16c7bd]' : 'text-rose-500'}`}>{student.status}</p>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            <button className="mt-6 w-full rounded-2xl bg-[#16c7bd] py-4 font-bold text-white shadow-lg active:scale-95">
+              Submit attendance
+            </button>
           </div>
         </div>
       )}
 
-      {/* ... (Rest of your attendance table/sheet code remains the same) ... */}
+      {/* 4. FACE AUTH MODAL */}
+      {cameraOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/95 backdrop-blur-sm p-6">
+          <div className="relative w-full max-w-sm rounded-[48px] bg-white p-10 text-center shadow-2xl animate-in zoom-in duration-300">
+            <div className="mb-2 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+              <ShieldCheck size={14}/> Secure Verification
+            </div>
+            <h3 className="text-xl font-bold text-slate-800">Liveness Detection</h3>
+
+            <div className="relative mx-auto mt-8 aspect-square w-60">
+              <div className={`absolute inset-[-12px] rounded-full border-2 border-dashed border-slate-200 ${isVerifying ? 'animate-spin-slow border-[#16c7bd]' : ''}`} />
+              <div className="relative h-full w-full overflow-hidden rounded-full border-[6px] border-white bg-slate-100 shadow-xl">
+                <video ref={videoRef} autoPlay playsInline muted className="h-full w-full object-cover scale-x-[-1]" />
+                
+                {verificationStatus === "location" && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-blue-500/80 text-white animate-in fade-in">
+                    <MapPin className="mb-2 h-10 w-10 animate-bounce" />
+                    <p className="text-[10px] font-bold uppercase tracking-widest">Verifying GPS</p>
+                  </div>
+                )}
+
+                {verificationStatus === "success" && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-[#16c7bd] text-white animate-in zoom-in">
+                    <Check size={64} strokeWidth={3} />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-8 min-h-[60px]">
+              {verificationStatus === "success" ? (
+                <div className="animate-in slide-in-from-bottom-2 text-[#16c7bd]">
+                  <p className="text-lg font-bold">Success!</p>
+                  <p className="text-sm font-medium text-slate-500">You are inside school premises</p>
+                </div>
+              ) : (
+                <p className="text-lg font-bold text-slate-800">Please, look straight<br/>into the camera</p>
+              )}
+            </div>
+
+            {!isVerifying && (
+              <button onClick={handleVerify} className="mt-6 w-full rounded-2xl bg-[#16c7bd] py-4 font-bold text-white transition-all active:scale-95">
+                Capture & Verify
+              </button>
+            )}
+          
+          </div>
+        </div>
+      )}
+
+      <style jsx global>{`
+        @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .animate-spin-slow { animation: spin-slow 10s linear infinite; }
+      `}</style>
     </section>
   );
 }
