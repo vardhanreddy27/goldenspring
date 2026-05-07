@@ -62,6 +62,13 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN }) {
     };
   }, []);
   const t = (text) => translateText(lang, text);
+  const tNotification = (text) => {
+    const translated = translateText(lang, text);
+    if (translated !== text) return translated;
+    if (text === "Maths Revision Sheet Shared") return t("Maths Revision Sheet Shared");
+    if (text === "Parent-Teacher Meeting This Friday") return t("Parent-Teacher Meeting This Friday");
+    return translated;
+  };
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sourceFilter, setSourceFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
@@ -105,13 +112,15 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN }) {
   }));
   const translatedNotifications = paginatedNotifications.map((notification) => ({
     ...notification,
-    title: t(notification.title),
-    message: t(notification.message),
+    title: tNotification(notification.title),
+    message: tNotification(notification.message),
     sourceRole: t(notification.sourceRole),
+    sourceName: tNotification(notification.sourceName),
     category: t(notification.category),
     priority: t(notification.priority),
-    actionLabel: t(notification.actionLabel),
+    actionLabel: tNotification(notification.actionLabel),
   }));
+
   const childAvatar = childInfo.photo || "/student.jpeg";
 
   function updateFilter(setter, value) {
@@ -139,12 +148,14 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN }) {
     if (sourceRole === t("Principal")) return <School className="h-4 w-4" />;
     if (sourceRole === t("PET")) return <Dumbbell className="h-4 w-4" />;
     if (sourceRole === t("Transport")) return <Bus className="h-4 w-4" />;
+    if (sourceRole === t("Library")) return <BookOpen className="h-4 w-4" />;
+    if (sourceRole === t("Counsellor")) return <UserCircle2 className="h-4 w-4" />;
     return <UserCircle2 className="h-4 w-4" />;
   }
 
   function getPriorityTone(priority) {
     if (priority === t("High")) return "border-rose-200 bg-rose-50 text-rose-700";
-    if (priority === t("medium")) return "border-amber-200 bg-amber-50 text-amber-700";
+    if (priority === t("Medium")) return "border-amber-200 bg-amber-50 text-amber-700";
     return "border-emerald-200 bg-emerald-50 text-emerald-700";
   }
 
@@ -331,7 +342,7 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN }) {
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-sm">
                         {getSourceIcon(notification.sourceRole)}
-                        {t(notification.sourceRole)}
+                        {notification.sourceRole}
                       </span>
                       <span className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold ${getCategoryTone(notification.category)}`}>
                         {notification.category}

@@ -36,18 +36,18 @@ export const childInfo = {
 
 // Pending homework - shows what's due when
 export const pendingHomework = [
-  { id: 1, subject: "English", title: "Essay writing on 'My School'", dueDate: "2026-03-28", priority: "high", description: "Write 500 words essay" },
-  { id: 2, subject: "Maths", title: "Algebra worksheet - Equations", dueDate: "2026-03-29", priority: "high", description: "Complete exercises 5.1 to 5.3" },
-  { id: 3, subject: "Science", title: "Digestive system diagram", dueDate: "2026-03-30", priority: "medium", description: "Labeled diagram with explanation" },
-  { id: 4, subject: "Social", title: "Chapter notes - Climate", dueDate: "2026-03-31", priority: "medium", description: "Complete chapter 12 handwritten notes" },
+  { id: 1, subject: "English", title: "'నా పాఠశాల' పై వ్యాస రచన", dueDate: "2026-03-28", priority: "high", description: "500 పదాల వ్యాసం రాయండి" },
+  { id: 2, subject: "Maths", title: "బీజగణిత వర్క్‌షీట్ - సమీకరణాలు", dueDate: "2026-03-29", priority: "high", description: "అభ్యాసాలు 5.1 నుండి 5.3 పూర్తి చేయండి" },
+  { id: 3, subject: "Science", title: "జీర్ణ వ్యవస్థ చిత్రం", dueDate: "2026-03-30", priority: "medium", description: "వివరణతో లేబుల్ చేసిన చిత్రం" },
+  { id: 4, subject: "Social", title: "అధ్యాయ నోట్లు - వాతావరణం", dueDate: "2026-03-31", priority: "medium", description: "అధ్యాయం 12 చేతివ్రాత నోట్స్ పూర్తి చేయండి" },
 ];
 
 // Assignments - shown separately in assignments tab
 export const studentAssignments = [
-  { id: 1, subject: "English", title: "Essay writing", dueDate: "2026-03-28", status: "Pending", description: "Write 500 words essay" },
-  { id: 2, subject: "Maths", title: "Algebra worksheet", dueDate: "2026-03-29", status: "Pending", description: "Complete exercises 5.1 to 5.3" },
-  { id: 3, subject: "Science", title: "Digestive system diagram", dueDate: "2026-03-30", status: "Submitted", description: "Labeled diagram with explanation" },
-  { id: 4, subject: "Social", title: "Chapter notes - Climate", dueDate: "2026-03-31", status: "Pending", description: "Complete chapter 12 handwritten notes" },
+  { id: 1, subject: "English", title: "వ్యాస రచన", dueDate: "2026-03-28", status: "Pending", description: "500 పదాల వ్యాసం రాయండి" },
+  { id: 2, subject: "Maths", title: "బీజగణిత వర్క్‌షీట్", dueDate: "2026-03-29", status: "Pending", description: "అభ్యాసాలు 5.1 నుండి 5.3 పూర్తి చేయండి" },
+  { id: 3, subject: "Science", title: "జీర్ణ వ్యవస్థ చిత్రం", dueDate: "2026-03-30", status: "Submitted", description: "వివరణతో లేబుల్ చేసిన చిత్రం" },
+  { id: 4, subject: "Social", title: "అధ్యాయ నోట్లు - వాతావరణం", dueDate: "2026-03-31", status: "Pending", description: "అధ్యాయం 12 చేతివ్రాత నోట్స్ పూర్తి చేయండి" },
 ];
 
 // Subject performance - SHOWS WHERE CHILD IS LACKING
@@ -62,18 +62,18 @@ export const subjectPerformance = [
 
 // Performance alerts for parent
 export const performanceAlerts = [
-  { type: "weak-subject", subject: "Maths", score: 62, message: "Math score dropped 8 points. Focus needed.", severity: "high" },
-  { type: "weak-subject", subject: "Social", score: 68, message: "Social Science is below average. Review notes.", severity: "high" },
-  { type: "pending-homework", subject: "English", message: "Essay due tomorrow - not yet submitted", severity: "medium" },
-  { type: "attendance", message: "2 absences this month - monitor carefully", severity: "medium" },
+  { type: "weak-subject", subject: "Maths", score: 62, message: "గణిత స్కోర్ 8 పాయింట్లు తగ్గింది. దృష్టి అవసరం.", severity: "high" },
+  { type: "weak-subject", subject: "Social", score: 68, message: "సామాజిక శాస్త్రం సగటు కంటే తక్కువగా ఉంది. నోట్స్ తిరిగి చూడండి.", severity: "high" },
+  { type: "pending-homework", subject: "English", message: "వ్యాసం రేపు గడువు - ఇంకా సమర్పించలేదు", severity: "medium" },
+  { type: "attendance", message: "ఈ నెల 2 గైర్హాజరీలు ఉన్నాయి - జాగ్రత్తగా గమనించండి", severity: "medium" },
 ];
 
 // School-wide and class-level messages shown in parent dashboard
 export const parentNotifications = [
   {
     id: 1,
-    title: "Parent-Teacher Meeting This Friday",
-    message: "The term review meeting is scheduled for Friday at 4:00 PM. Please confirm your slot from the school portal.",
+    title: "ఈ శుక్రవారం తల్లిదండ్రులు-ఉపాధ్యాయుల సమావేశం",
+    message: "టర్మ్ సమీక్ష సమావేశం శుక్రవారం సాయంత్రం 4:00 గంటలకు నిర్ణయించబడింది. దయచేసి పాఠశాల పోర్టల్ నుండి మీ స్లాట్‌ను నిర్ధారించండి.",
     sourceRole: "Principal",
     sourceName: "Dr. N. Sreenivas",
     category: "School",
@@ -83,8 +83,8 @@ export const parentNotifications = [
   },
   {
     id: 2,
-    title: "Maths Revision Sheet Shared",
-    message: "A short practice sheet has been uploaded for linear equations and word problems. Please complete it by Monday.",
+    title: "గణితం పునర్విమర్శ షీట్ పంచబడింది",
+    message: "రేఖీయ సమీకరణలు మరియు పద సమస్యల కోసం ఒక చిన్న సాధన షీట్ అప్‌లోడ్ చేయబడింది. దయచేసి దానిని సోమవారం లోపు పూర్తి చేయండి.",
     sourceRole: "Class Teacher",
     sourceName: "Ms. Kavya",
     category: "Academics",
@@ -94,8 +94,8 @@ export const parentNotifications = [
   },
   {
     id: 3,
-    title: "Sports Practice Moved Earlier",
-    message: "Athletics practice begins 30 minutes early tomorrow. Please send sports shoes and a water bottle.",
+    title: "క్రీడా సాధన ముందుకు మార్చబడింది",
+    message: "రేపు అథ్లెటిక్స్ సాధన 30 నిమిషాలు ముందుగానే ప్రారంభమవుతుంది. దయచేసి స్పోర్ట్స్ షూస్ మరియు నీటి బాటిల్ పంపండి.",
     sourceRole: "PET",
     sourceName: "Mr. Raghav",
     category: "Sports",
@@ -105,8 +105,8 @@ export const parentNotifications = [
   },
   {
     id: 4,
-    title: "Bus Route Delay Notice",
-    message: "Morning pickup for your route may run 10 minutes late tomorrow because of road maintenance.",
+    title: "బస్ మార్గం ఆలస్య సూచన",
+    message: "రోడ్డు పనుల కారణంగా మీ మార్గంలో ఉదయపు పికప్ రేపు 10 నిమిషాలు ఆలస్యం కావచ్చు.",
     sourceRole: "Transport",
     sourceName: "Transport Desk",
     category: "Transport",
@@ -116,8 +116,8 @@ export const parentNotifications = [
   },
   {
     id: 5,
-    title: "Unit Test Timetable Published",
-    message: "The next unit test schedule is now live. Please review the dates and subjects with your child.",
+    title: "యూనిట్ పరీక్ష టైమ్‌టేబుల్ విడుదలైంది",
+    message: "తదుపరి యూనిట్ పరీక్ష షెడ్యూల్ ఇప్పుడు అందుబాటులో ఉంది. దయచేసి తేదీలు మరియు విషయాలను మీ పిల్లతో కలిసి పరిశీలించండి.",
     sourceRole: "Exam Cell",
     sourceName: "Assessment Team",
     category: "Exams",
@@ -127,8 +127,8 @@ export const parentNotifications = [
   },
   {
     id: 6,
-    title: "Counsellor Check-In Available",
-    message: "Weekly well-being support sessions are open for students preparing for exams and presentations.",
+    title: "కౌన్సలర్ చెక్-ఇన్ అందుబాటులో ఉంది",
+    message: "పరీక్షలు మరియు ప్రెజెంటేషన్లకు సిద్ధమవుతున్న విద్యార్థుల కోసం వారపు మద్దతు సమావేశాలు అందుబాటులో ఉన్నాయి.",
     sourceRole: "Counsellor",
     sourceName: "Ms. Prerna",
     category: "Wellbeing",
@@ -138,8 +138,8 @@ export const parentNotifications = [
   },
   {
     id: 7,
-    title: "Library Book Return Reminder",
-    message: "One library book is due for return by Monday to avoid a late fee.",
+    title: "గ్రంథాలయ పుస్తకం తిరిగి ఇవ్వమని గుర్తు",
+    message: "లేట్ ఫీజు నివారించేందుకు ఒక గ్రంథాలయ పుస్తకం సోమవారం లోపు తిరిగి ఇవ్వాలి.",
     sourceRole: "Library",
     sourceName: "Library Desk",
     category: "School",
@@ -149,8 +149,8 @@ export const parentNotifications = [
   },
   {
     id: 8,
-    title: "Science Activity Materials",
-    message: "Please bring chart paper and color pens for Monday's digestive system activity.",
+    title: "శాస్త్ర కార్యకలాప సామగ్రి",
+    message: "సోమవారం జరిగే జీర్ణ వ్యవస్థ కార్యకలాపం కోసం చార్ట్ పేపర్ మరియు రంగు పెన్లు తీసుకురండి.",
     sourceRole: "Subject Teacher",
     sourceName: "Mr. Harish",
     category: "Academics",
@@ -160,8 +160,8 @@ export const parentNotifications = [
   },
   {
     id: 9,
-    title: "Safety Drill This Week",
-    message: "A school safety drill is planned this week. Students will follow class teacher instructions.",
+    title: "ఈ వారం భద్రతా డ్రిల్",
+    message: "ఈ వారం పాఠశాల భద్రతా డ్రిల్ ప్లాన్ చేయబడింది. విద్యార్థులు తరగతి ఉపాధ్యాయుడి సూచనలను అనుసరిస్తారు.",
     sourceRole: "Principal",
     sourceName: "Dr. N. Sreenivas",
     category: "School",
@@ -171,8 +171,8 @@ export const parentNotifications = [
   },
   {
     id: 10,
-    title: "Fitness Log Submission",
-    message: "Please sign and send the weekly fitness log tomorrow for participation tracking.",
+    title: "ఫిట్నెస్ లాగ్ సమర్పణ",
+    message: "పాల్గొనడం ట్రాకింగ్ కోసం వారపు ఫిట్నెస్ లాగ్‌ను సంతకం చేసి రేపు పంపండి.",
     sourceRole: "PET",
     sourceName: "Mr. Raghav",
     category: "Sports",
@@ -212,9 +212,9 @@ export const childTimetable = [
 
 // Upcoming tests
 export const upcomingTests = [
-  { id: 1, subject: "Maths", chapter: "Linear Equations", date: "2026-03-28", syllabus: "Exercises 5.1 to 5.3", difficulty: "High", needsAttention: true },
-  { id: 2, subject: "Science", chapter: "Nutrition in Animals", date: "2026-03-31", syllabus: "Chapter 7 full", difficulty: "Medium" },
-  { id: 3, subject: "English", chapter: "Prose + Grammar", date: "2026-04-03", syllabus: "Lesson 4 and tenses", difficulty: "Medium" },
+  { id: 1, subject: "Maths", chapter: "రేఖీయ సమీకరణాలు", date: "2026-03-28", syllabus: "అభ్యాసాలు 5.1 నుండి 5.3", difficulty: "High", needsAttention: true },
+  { id: 2, subject: "Science", chapter: "జంతువుల్లో పోషణ", date: "2026-03-31", syllabus: "అధ్యాయం 7 మొత్తం", difficulty: "Medium" },
+  { id: 3, subject: "English", chapter: "గద్యము + వ్యాకరణం", date: "2026-04-03", syllabus: "పాఠం 4 మరియు కాలాలు", difficulty: "Medium" },
 ];
 
 // Performance insights and analysis

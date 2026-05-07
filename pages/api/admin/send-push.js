@@ -1,15 +1,6 @@
 import { neon } from "@neondatabase/serverless";
 import webpush from "web-push";
 
-const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || "YOUR_PUBLIC_KEY";
-const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || "YOUR_PRIVATE_KEY";
-
-webpush.setVapidDetails(
-  "mailto:admin@goldenspring.com",
-  VAPID_PUBLIC_KEY,
-  VAPID_PRIVATE_KEY
-);
-
 function getSqlClient() {
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl) throw new Error("DATABASE_URL is not configured.");
@@ -25,6 +16,14 @@ export default async function handler(req, res) {
   if (!title || !message) {
     return res.status(400).json({ error: "Missing title or message" });
   }
+
+  const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY;
+  const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY;
+  if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY || VAPID_PUBLIC_KEY === "YOUR_PUBLIC_KEY" || VAPID_PRIVATE_KEY === "YOUR_PRIVATE_KEY") {
+    return res.status(500).json({ error: "VAPID keys are not configured." });
+  }
+
+  webpush.setVapidDetails("mailto:admin@goldenspring.com", VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
 
   let subscriptions = [];
   try {

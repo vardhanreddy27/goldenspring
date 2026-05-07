@@ -19,8 +19,9 @@ import ParentAttendanceTab from "@/components/parent-dashboard/ParentAttendanceT
 import ParentTimetableTab from "@/components/parent-dashboard/ParentTimetableTab";
 import ParentAcademicsTab from "@/components/parent-dashboard/ParentAcademicsTab";
 import ParentMoreTab from "@/components/parent-dashboard/ParentMoreTab";
-import { parentMenuItems, parentProfileDefaults } from "@/components/parent-dashboard/data";
+import { parentMenuItems, parentProfileDefaults, parentNotifications } from "@/components/parent-dashboard/data";
 import { languageToggleLabel, PARENT_LANGUAGES, translateText } from "@/components/parent-dashboard/i18n";
+import { Bell } from "lucide-react";
 
 const familyRoleItems = [
   { id: "student", label: "Student" },
@@ -144,6 +145,7 @@ export default function FamilyDashboard({ initialRole = "student" }) {
   const [activeMenu, setActiveMenu] = useState(() => roleConfig[initialRole]?.defaultMenu || "home");
   const [studentProfileSheetOpen, setStudentProfileSheetOpen] = useState(false);
   const [parentProfileSheetOpen, setParentProfileSheetOpen] = useState(false);
+  const [parentNotificationsOpen, setParentNotificationsOpen] = useState(false);
   const [profileSaving, setProfileSaving] = useState(false);
   const [studentProfileForm, setStudentProfileForm] = useState(getInitialStudentProfile());
   const [parentProfileForm, setParentProfileForm] = useState(getInitialParentProfile());
@@ -224,6 +226,7 @@ export default function FamilyDashboard({ initialRole = "student" }) {
     setActiveMenu(roleConfig[nextRole].defaultMenu);
     setStudentProfileSheetOpen(false);
     setParentProfileSheetOpen(false);
+    setParentNotificationsOpen(false);
   }
 
   function handleMenuChange(nextMenu) {
@@ -309,7 +312,7 @@ export default function FamilyDashboard({ initialRole = "student" }) {
                       <>
                         <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">{subtitle}</span>
                         <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                          Roll: {studentProfileForm.rollNumber || "-"}
+                          {parentT("Roll")} : {studentProfileForm.rollNumber || "-"}
                         </span>
                       </>
                     ) : (
@@ -368,19 +371,29 @@ export default function FamilyDashboard({ initialRole = "student" }) {
                     </button>
 
                     {!isStudent ? (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setParentLanguage((prev) =>
-                            prev === PARENT_LANGUAGES.EN ? PARENT_LANGUAGES.TE : PARENT_LANGUAGES.EN
-                          )
-                        }
-                        className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-slate-300"
-                        aria-label="Toggle parent dashboard language"
-                      >
-                        <Image src="/telugu.png" alt="Telugu language" width={16} height={16} className="rounded-sm object-cover" />
-                        <span>{languageToggleLabel(parentLanguage)}</span>
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setParentNotificationsOpen(true)}
+                          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-slate-300"
+                          aria-label="Open notifications"
+                        >
+                          <Bell className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setParentLanguage((prev) =>
+                              prev === PARENT_LANGUAGES.EN ? PARENT_LANGUAGES.TE : PARENT_LANGUAGES.EN
+                            )
+                          }
+                          className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-slate-300"
+                          aria-label="Toggle parent dashboard language"
+                        >
+                          <Image src="/telugu.png" alt="తెలుగు" width={16} height={16} className="rounded-sm object-cover" />
+                          <span>{languageToggleLabel(parentLanguage)}</span>
+                        </button>
+                      </div>
                     ) : null}
                   </div>
                 </div>
@@ -447,14 +460,14 @@ export default function FamilyDashboard({ initialRole = "student" }) {
         onProfileSave={handleStudentProfileSave}
         profileSaving={profileSaving}
         onLogout={handleLogout}
-        title="Student profile details"
-        nameLabel="Student name"
+        title="విద్యార్థి వివరాలు"
+        nameLabel="విద్యార్థి పేరు"
         nameField="studentName"
-        classLabel="Class"
+        classLabel="తరగతి"
         classField="className"
-        sectionLabel="Section"
+        sectionLabel="విభాగం"
         sectionField="section"
-        rollLabel="Roll number"
+        rollLabel="రోల్ నంబర్"
         rollField="rollNumber"
          showProfilePicUpload={true}
          profilePicField="profilePic"
@@ -468,18 +481,54 @@ export default function FamilyDashboard({ initialRole = "student" }) {
         onProfileSave={handleParentProfileSave}
         profileSaving={profileSaving}
         onLogout={handleLogout}
-        title="Parent profile details"
-        nameLabel="Parent name"
+        title="తల్లిదండ్రుల వివరాలు"
+        nameLabel="తల్లిదండ్రుల పేరు"
         nameField="parentName"
-        classLabel="Child class"
+        classLabel="పిల్ల తరగతి"
         classField="childClass"
-        sectionLabel="Child section"
+        sectionLabel="పిల్ల విభాగం"
         sectionField="childSection"
-        rollLabel="Child roll number"
+        rollLabel="పిల్ల రోల్ నంబర్"
         rollField="childRollNumber"
-        childNameLabel="Child name"
+        childNameLabel="పిల్ల పేరు"
         childNameField="childName"
+        />
+
+      <NotificationsSheet
+        open={parentNotificationsOpen}
+        onClose={() => setParentNotificationsOpen(false)}
+        lang={parentLanguage}
       />
+    </div>
+  );
+}
+
+function NotificationsSheet({ open, onClose, lang }) {
+  if (!open) return null;
+  const t = (text) => translateText(lang, text);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end bg-slate-950/40" onClick={onClose}>
+      <div className="w-full rounded-t-3xl bg-white p-5 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-slate-900">{t("School Announcements")}</h3>
+          <button type="button" onClick={onClose} className="rounded-full border border-slate-200 p-2 text-slate-600">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        <p className="mt-1 text-sm text-slate-500">
+          {t("Important notices from the school office, teachers, sports staff, transport and exam cell.")}
+        </p>
+        <div className="mt-4 max-h-[70vh] space-y-3 overflow-auto">
+          {parentNotifications.map((item) => (
+            <article key={item.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-xs font-semibold text-slate-500">{t(item.sourceRole)} • {t(item.category)}</p>
+              <h4 className="mt-2 text-sm font-semibold text-slate-950">{t(item.title)}</h4>
+              <p className="mt-1 text-sm text-slate-700">{t(item.message)}</p>
+            </article>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -493,14 +542,14 @@ function ProfileBottomSheet({
   onProfileSave,
   profileSaving,
   onLogout,
-  title = "Profile details",
-  nameLabel = "Name",
+  title = "ప్రొఫైల్ వివరాలు",
+  nameLabel = "పేరు",
   nameField = "name",
-  classLabel = "Class",
+  classLabel = "తరగతి",
   classField = "className",
-  sectionLabel = "Section",
+  sectionLabel = "విభాగం",
   sectionField = "section",
-  rollLabel = "Roll number",
+  rollLabel = "రోల్ నంబర్",
   rollField = "rollNumber",
   childNameLabel,
   childNameField,
@@ -520,7 +569,7 @@ function ProfileBottomSheet({
             type="button"
             onClick={onClose}
             className="rounded-full border border-slate-300 p-2 text-slate-600 hover:bg-slate-50"
-            aria-label="Close profile popup"
+            aria-label="ప్రొఫైల్ మూసు"
           >
             <X className="h-4 w-4" />
           </button>
@@ -655,14 +704,14 @@ function ProfileBottomSheet({
               disabled={profileSaving}
               className="w-full rounded-2xl bg-[#16c7bd] px-4 py-3 text-sm font-semibold text-white hover:bg-[#12a79f] disabled:cursor-not-allowed disabled:bg-[#8fded8]"
             >
-              {profileSaving ? "Saving..." : "Update profile"}
+              {profileSaving ? parentT("Saving...") : parentT("Update profile")}
             </button>
             <button
               type="button"
               onClick={onLogout}
               className="w-full rounded-2xl bg-rose-600 px-4 py-3 text-sm font-semibold text-white hover:bg-rose-500"
             >
-              Logout
+              {parentT("Logout")}
             </button>
           </div>
         </form>
