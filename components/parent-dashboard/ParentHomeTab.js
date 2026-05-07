@@ -18,7 +18,58 @@ import { PARENT_LANGUAGES, translateText } from "./i18n";
 import { useEffect } from "react";
 import { urlBase64ToUint8Array } from "@/utils/push";
 
-export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN }) {
+const TE_NOTIFICATION_MAP = {
+  "Parent-Teacher Meeting This Friday": "ఈ శుక్రవారం తల్లిదండ్రులు-ఉపాధ్యాయుల సమావేశం",
+  "The term review meeting is scheduled for Friday at 4:00 PM. Please confirm your slot from the school portal.": "టర్మ్ సమీక్ష సమావేశం శుక్రవారం సాయంత్రం 4:00 గంటలకు నిర్ణయించబడింది. దయచేసి పాఠశాల పోర్టల్ నుండి మీ స్లాట్‌ను నిర్ధారించండి.",
+  "Maths Revision Sheet Shared": "గణితం పునర్విమర్శ షీట్ పంచబడింది",
+  "A short practice sheet has been uploaded for linear equations and word problems. Please complete it by Monday.": "రేఖీయ సమీకరణలు మరియు పద సమస్యల కోసం ఒక చిన్న సాధన షీట్ అప్‌లోడ్ చేయబడింది. దయచేసి దానిని సోమవారం లోపు పూర్తి చేయండి.",
+  "Sports Practice Moved Earlier": "క్రీడా సాధన ముందుకు మార్చబడింది",
+  "Athletics practice begins 30 minutes early tomorrow. Please send sports shoes and a water bottle.": "రేపు అథ్లెటిక్స్ సాధన 30 నిమిషాలు ముందుగానే ప్రారంభమవుతుంది. దయచేసి స్పోర్ట్స్ షూస్ మరియు నీటి బాటిల్ పంపండి.",
+  "Bus Route Delay Notice": "బస్ మార్గం ఆలస్య సూచన",
+  "Morning pickup for your route may run 10 minutes late tomorrow because of road maintenance.": "రోడ్డు పనుల కారణంగా మీ మార్గంలో ఉదయపు పికప్ రేపు 10 నిమిషాలు ఆలస్యం కావచ్చు.",
+  "Unit Test Timetable Published": "యూనిట్ పరీక్ష టైమ్‌టేబుల్ విడుదలైంది",
+  "The next unit test schedule is now live. Please review the dates and subjects with your child.": "తదుపరి యూనిట్ పరీక్ష షెడ్యూల్ ఇప్పుడు అందుబాటులో ఉంది. దయచేసి తేదీలు మరియు విషయాలను మీ పిల్లతో కలిసి పరిశీలించండి.",
+  "Counsellor Check-In Available": "కౌన్సలర్ చెక్-ఇన్ అందుబాటులో ఉంది",
+  "Weekly well-being support sessions are open for students preparing for exams and presentations.": "పరీక్షలు మరియు ప్రెజెంటేషన్లకు సిద్ధమవుతున్న విద్యార్థుల కోసం వారపు మద్దతు సమావేశాలు అందుబాటులో ఉన్నాయి.",
+  "Library Book Return Reminder": "గ్రంథాలయ పుస్తకం తిరిగి ఇవ్వమని గుర్తు",
+  "One library book is due for return by Monday to avoid a late fee.": "లేట్ ఫీజు నివారించేందుకు ఒక గ్రంథాలయ పుస్తకం సోమవారం లోపు తిరిగి ఇవ్వాలి.",
+  "Science Activity Materials": "శాస్త్ర కార్యకలాప సామగ్రి",
+  "Please bring chart paper and color pens for Monday's digestive system activity.": "సోమవారం జరిగే జీర్ణ వ్యవస్థ కార్యకలాపం కోసం చార్ట్ పేపర్ మరియు రంగు పెన్లు తీసుకురండి.",
+  "Safety Drill This Week": "ఈ వారం భద్రతా డ్రిల్",
+  "A school safety drill is planned this week. Students will follow class teacher instructions.": "ఈ వారం పాఠశాల భద్రతా డ్రిల్ ప్లాన్ చేయబడింది. విద్యార్థులు తరగతి ఉపాధ్యాయుడి సూచనలను అనుసరిస్తారు.",
+  "Fitness Log Submission": "ఫిట్నెస్ లాగ్ సమర్పణ",
+  "Please sign and send the weekly fitness log tomorrow for participation tracking.": "పాల్గొనడం ట్రాకింగ్ కోసం వారపు ఫిట్నెస్ లాగ్‌ను సంతకం చేసి రేపు పంపండి.",
+  "Principal": "ప్రిన్సిపాల్",
+  "Class Teacher": "తరగతి ఉపాధ్యాయుడు",
+  "PET": "పీఈటీ",
+  "Transport": "రవాణా",
+  "Exam Cell": "పరీక్ష విభాగం",
+  "Counsellor": "కౌన్సలర్",
+  "Library": "గ్రంథాలయం",
+  "Subject Teacher": "విషయ ఉపాధ్యాయుడు",
+  "School": "పాఠశాల",
+  "Academics": "అకాడెమిక్స్",
+  "Exams": "పరీక్షలు",
+  "Sports": "క్రీడలు",
+  "Wellbeing": "ఆరోగ్య సంరక్షణ",
+  "Book Slot": "స్లాట్ బుక్ చేయండి",
+  "Open Sheet": "షీట్ తెరవండి",
+  "Acknowledge": "అంగీకరించండి",
+  "View Update": "అప్డేట్ చూడండి",
+  "Open Timetable": "టైమ్‌టేబుల్ తెరవండి",
+  "Request Slot": "స్లాట్ అభ్యర్థించండి",
+  "View Details": "వివరాలు చూడండి",
+  "View Materials": "సామగ్రి చూడండి",
+  "Read Advisory": "సలహా చదవండి",
+  "Open Log": "లాగ్ తెరవండి",
+};
+
+function translateNotificationText(lang, value) {
+  if (lang === PARENT_LANGUAGES.TE) return TE_NOTIFICATION_MAP[value] || translateText(lang, value);
+  return value;
+}
+
+export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN, showNotificationsFeed = true }) {
   // Push notification subscription logic
   useEffect(() => {
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
@@ -62,13 +113,7 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN }) {
     };
   }, []);
   const t = (text) => translateText(lang, text);
-  const tNotification = (text) => {
-    const translated = translateText(lang, text);
-    if (translated !== text) return translated;
-    if (text === "Maths Revision Sheet Shared") return t("Maths Revision Sheet Shared");
-    if (text === "Parent-Teacher Meeting This Friday") return t("Parent-Teacher Meeting This Friday");
-    return translated;
-  };
+  const tNotification = (text) => translateNotificationText(lang, text);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sourceFilter, setSourceFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
@@ -112,13 +157,13 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN }) {
   }));
   const translatedNotifications = paginatedNotifications.map((notification) => ({
     ...notification,
-    title: tNotification(notification.title),
-    message: tNotification(notification.message),
-    sourceRole: t(notification.sourceRole),
-    sourceName: tNotification(notification.sourceName),
-    category: t(notification.category),
-    priority: t(notification.priority),
-    actionLabel: tNotification(notification.actionLabel),
+    title: translateNotificationText(lang, notification.title),
+    message: translateNotificationText(lang, notification.message),
+    sourceRole: translateNotificationText(lang, notification.sourceRole),
+    sourceName: translateNotificationText(lang, notification.sourceName),
+    category: translateNotificationText(lang, notification.category),
+    priority: translateNotificationText(lang, notification.priority),
+    actionLabel: translateNotificationText(lang, notification.actionLabel),
   }));
 
   const childAvatar = childInfo.photo || "/student.jpeg";
@@ -145,26 +190,26 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN }) {
   }
 
   function getSourceIcon(sourceRole) {
-    if (sourceRole === t("Principal")) return <School className="h-4 w-4" />;
-    if (sourceRole === t("PET")) return <Dumbbell className="h-4 w-4" />;
-    if (sourceRole === t("Transport")) return <Bus className="h-4 w-4" />;
-    if (sourceRole === t("Library")) return <BookOpen className="h-4 w-4" />;
-    if (sourceRole === t("Counsellor")) return <UserCircle2 className="h-4 w-4" />;
+    if (sourceRole === "Principal") return <School className="h-4 w-4" />;
+    if (sourceRole === "PET") return <Dumbbell className="h-4 w-4" />;
+    if (sourceRole === "Transport") return <Bus className="h-4 w-4" />;
+    if (sourceRole === "Library") return <BookOpen className="h-4 w-4" />;
+    if (sourceRole === "Counsellor") return <UserCircle2 className="h-4 w-4" />;
     return <UserCircle2 className="h-4 w-4" />;
   }
 
   function getPriorityTone(priority) {
-    if (priority === t("High")) return "border-rose-200 bg-rose-50 text-rose-700";
-    if (priority === t("Medium")) return "border-amber-200 bg-amber-50 text-amber-700";
+    if (priority === "high") return "border-rose-200 bg-rose-50 text-rose-700";
+    if (priority === "medium") return "border-amber-200 bg-amber-50 text-amber-700";
     return "border-emerald-200 bg-emerald-50 text-emerald-700";
   }
 
   function getCategoryTone(category) {
-    if (category === t("Academics")) return "bg-sky-50 text-sky-700 border-sky-100";
-    if (category === t("Exams")) return "bg-violet-50 text-violet-700 border-violet-100";
-    if (category === t("Sports")) return "bg-emerald-50 text-emerald-700 border-emerald-100";
-    if (category === t("Transport")) return "bg-amber-50 text-amber-700 border-amber-100";
-    if (category === t("Wellbeing")) return "bg-rose-50 text-rose-700 border-rose-100";
+    if (category === "Academics") return "bg-sky-50 text-sky-700 border-sky-100";
+    if (category === "Exams") return "bg-violet-50 text-violet-700 border-violet-100";
+    if (category === "Sports") return "bg-emerald-50 text-emerald-700 border-emerald-100";
+    if (category === "Transport") return "bg-amber-50 text-amber-700 border-amber-100";
+    if (category === "Wellbeing") return "bg-rose-50 text-rose-700 border-rose-100";
     return "bg-slate-50 text-slate-700 border-slate-200";
   }
 
@@ -304,6 +349,8 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN }) {
         </div>
       </section>
 
+      {showNotificationsFeed ? (
+      <>
       {/* Announcements & Notifications */}
       <section className="rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.35)] sm:p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
@@ -414,6 +461,8 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN }) {
           </div>
         </div>
       </section>
+      </>
+      ) : null}
     </div>
   );
 }
