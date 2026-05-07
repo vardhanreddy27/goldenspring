@@ -218,12 +218,12 @@ export default function AdminDashboard({ user = {} }) {
                 <div>
                   <div className="flex items-center gap-3 lg:hidden">
                     <div>
-                      <p className="text-2xl font-semibold ">GOLDEN SPRING </p>
-                      <p className="text-sm text-slate-500">Principal Dashboard</p>
+          <Image src="/s.jpg" alt="School Logo" width={60} height={60} className="rounded-lg mx-auto " />
                     </div>
                   </div>
 
-                  <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Welcome , Vardhan</h1>
+                  <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Welcome , Manasa</h1>                      <p className="text-sm text-slate-500">Principal Dashboard</p>
+
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -237,7 +237,7 @@ export default function AdminDashboard({ user = {} }) {
                   >
                     <span className="block h-12 w-12 overflow-hidden rounded-full border border-slate-200 bg-white shadow-sm lg:h-14 lg:w-14">
                       <Image
-                        src="/principal.jpeg"
+                        src="/principal.png"
                         alt="Principal profile"
                         width={56}
                         height={56}

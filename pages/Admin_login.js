@@ -80,10 +80,12 @@ export default function Admin_login() {
   return (
     <div className="min-h-dvh w-full bg-white md:min-h-screen md:bg-gray-100 md:flex md:items-center md:justify-center md:p-6">
       <div className="grid min-h-dvh w-full grid-rows-[0.92fr_1.08fr] bg-white px-6 pb-[calc(env(safe-area-inset-bottom)+1.75rem)] pt-[calc(env(safe-area-inset-top)+1.75rem)] md:hidden">
-        <div className="flex items-center justify-center">
-          <div className="w-full max-w-xs text-center">
-            <h1 className="mt-5 text-[2rem] font-semibold tracking-tight text-slate-950">GS Admin Login</h1>
-            <p className="mt-2 text-sm text-slate-500">Secure sign in for authorized staff</p>
+        <div className="flex flex-col items-center justify-center">
+          <Image src="/s.jpg" alt="School Logo" width={90} height={90} className="rounded-full mx-auto shadow-lg" />
+          <div className="w-full max-w-xs text-center mt-2">
+            <h1 className="mt-3 text-[2rem] font-bold tracking-tight text-[#16c7bd] drop-shadow">Nava Chaitanya Bharathi</h1>
+            <p className="mt-1 text-base text-slate-700 font-semibold">Admin Login</p>
+            <p className="mt-1 text-xs text-slate-500 italic">Secure sign in for authorized staff</p>
           </div>
         </div>
 
@@ -103,7 +105,7 @@ export default function Admin_login() {
                   id="userId"
                   type="text"
                   placeholder="Enter your user id"
-                  className="mt-1.5 w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#16c7bd] focus:ring-4 focus:ring-blue-200"
+                  className="mt-1.5 w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none "
                   autoComplete="username"
                   value={userId}
                   onChange={(event) => setUserId(event.target.value)}
@@ -120,7 +122,7 @@ export default function Admin_login() {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
-                    className="w-full rounded-2xl border border-slate-300 px-4 py-3 pr-11 text-sm text-slate-900 outline-none focus:border-[#16c7bd] focus:ring-4 focus:ring-blue-200"
+                    className="w-full rounded-2xl border border-slate-300 px-4 py-3 pr-11 text-sm text-slate-900  "
                     autoComplete="current-password"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
@@ -129,7 +131,7 @@ export default function Admin_login() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((current) => !current)}
-                    className="absolute inset-y-0 right-3 inline-flex items-center text-slate-500 hover:text-slate-700"
+                    className="absolute inset-y-0 right-3 inline-flex items-center text-slate-500 "
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
@@ -145,7 +147,7 @@ export default function Admin_login() {
 
               <button
                 type="submit"
-                className="w-full rounded-full bg-[#16c7bd] py-3 text-sm font-semibold text-white shadow-[0_16px_40px_-22px_rgba(22,121,168,0.25)] hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-200 disabled:cursor-not-allowed disabled:bg-slate-400"
+                className="w-full rounded-full bg-[#16c7bd] py-3 text-sm font-semibold text-white "
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Signing In..." : "Sign In"}
@@ -179,11 +181,11 @@ export default function Admin_login() {
 
       <div className="hidden w-full overflow-hidden bg-white shadow-none md:min-h-162.5 md:grid md:max-w-6xl md:grid-cols-2 md:rounded-3xl md:border md:border-slate-200 md:shadow-[0_24px_70px_-44px_rgba(15,23,42,0.22)]">
         <div className="relative overflow-hidden bg-white px-6 pb-14 pt-10 text-slate-900 sm:px-8 md:flex md:items-center md:px-10 md:py-14">
-          <div className="relative z-10 mx-auto max-w-70 text-center">
-            <h1 className="text-4xl font-semibold tracking-tight text-slate-950">GOLDEN SPRING</h1>
-            <p className="mt-4 text-sm/6 text-slate-600">
-              Primary and Secondary Education Kadapa, Andhra Pradesh
-            </p>
+          <div className="relative z-10 mx-auto max-w-70 text-center flex flex-col items-center">
+            <Image src="/s.jpg" alt="School Logo" width={110} height={110} className="rounded-full mx-auto shadow-lg mb-3" />
+            <h1 className="text-4xl font-extrabold tracking-tight text-[#16c7bd] drop-shadow">Nava Chaitanya Bharathi</h1>
+            <p className="mt-2 text-lg font-semibold text-slate-700">Admin Login</p>
+            <p className="mt-2 text-base text-slate-600">Primary & Secondary Education, Kadapa, Andhra Pradesh</p>
           </div>
         </div>
 
@@ -202,7 +204,7 @@ export default function Admin_login() {
                 id="userId-desktop"
                 type="text"
                 placeholder="Enter your user id"
-                className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#16c7bd] focus:ring-4 focus:ring-blue-200"
+                className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900"
                 autoComplete="username"
                 value={userId}
                 onChange={(event) => setUserId(event.target.value)}
@@ -219,7 +221,7 @@ export default function Admin_login() {
                   id="password-desktop"
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
-                  className="w-full rounded-xl border border-slate-300 px-4 py-3 pr-11 text-sm text-slate-900 outline-none focus:border-[#16c7bd] focus:ring-4 focus:ring-blue-200"
+                  className="w-full rounded-xl border border-slate-300 px-4 py-3 pr-11 text-sm text-slate-900 "
                   autoComplete="current-password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}

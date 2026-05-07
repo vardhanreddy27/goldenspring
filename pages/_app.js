@@ -18,12 +18,12 @@ export default function App({ Component, pageProps }) {
     router.pathname === "/Studentdashboard" ||
     router.pathname === "/Student_quiz";
   const appTitle = isAdminInstallContext
-    ? "GS ADMIN"
+    ? "Nava Chaitanya Bharathi ADMIN"
     : isTeacherInstallContext
-      ? "GS TEACHERS"
+      ? "Nava Chaitanya Bharathi TEACHERS"
       : isParentInstallContext || isStudentInstallContext
-        ? "GS Parents"
-      : "GOLDEN SPRING";
+        ? "Nava Chaitanya Bharathi Parents"
+      : "Nava Chaitanya Bharathi ";
   const manifestPath = isAdminInstallContext
     ? "/manifest-admin.webmanifest"
     : isTeacherInstallContext
@@ -92,7 +92,7 @@ export default function App({ Component, pageProps }) {
         <meta name="application-name" content={appTitle} />
         <meta
           name="description"
-          content="GOLDEN SPRING progressive web app"
+          content="Nava Chaitanya Bharathi  progressive web app"
         />
         <meta name="theme-color" content="#1f2937" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

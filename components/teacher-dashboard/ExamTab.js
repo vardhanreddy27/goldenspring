@@ -270,7 +270,7 @@ function buildPapers({ schoolName, classLabel, subjectLabel, examType, difficult
           items: sectionThreeQuestions,
         },
       ],
-      footer: "GOLDEN SPRING School, Kadapa | Confidential - Internal Assessment",
+      footer: "Nava Chaitanya Bharathi  School, Kadapa | Confidential - Internal Assessment",
     };
   });
 }
@@ -431,7 +431,7 @@ export default function ExamTab() {
       const topicsArray = Array.from(selectedTopicIds);
       const paperCount = selectedTestType === "Slip Test" ? 1 : 3;
       const papers = buildPapers({
-        schoolName: "GOLDEN SPRING School",
+        schoolName: "Nava Chaitanya Bharathi  School",
         classLabel: `Class ${selectedSection.className} - Section ${selectedSection.section}`,
         subjectLabel: selectedSyllabus.label,
         examType: selectedExamType,
@@ -592,7 +592,7 @@ export default function ExamTab() {
                   <div className="flex items-start gap-3">
                     <div className="flex items-center gap-3 flex-1">
                       <div>
-                        <p className="text-xl font-black tracking-tight text-slate-900">GOLDEN SPRING SCHOOL</p>
+                        <p className="text-xl font-black tracking-tight text-slate-900">Nava Chaitanya Bharathi  SCHOOL</p>
                         <p className="text-sm font-semibold text-slate-700">{paper.subtitle}</p>
                       </div>
                     </div>

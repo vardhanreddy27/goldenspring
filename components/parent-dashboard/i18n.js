@@ -1,9 +1,50 @@
 export const PARENT_LANGUAGES = {
   EN: "en",
-  UR: "ur", // Changed from TE to UR for Urdu
+  UR: "ur", // Urdu
+  TE: "te", // Telugu (spoken style)
 };
 
 const UR_TRANSLATIONS = {
+  const TE_TRANSLATIONS = {
+    // Telugu (spoken style, not pure)
+    "Teacher connect": "టీచర్ తో మాట్లాడండి",
+    "Contact teacher": "టీచర్ ని కాల్ చేయండి",
+    "Parent control": "పేరెంట్స్ కంట్రోల్",
+    "Quick actions": "క్విక్ ఆక్షన్స్",
+    "Coming soon": "త్వరలో వస్తుంది",
+    "Timetable": "టైమ్ టేబుల్",
+    "Weekly timetable": "వారపు టైమ్ టేబుల్",
+    "Morning and afternoon plan": "ఉదయం, మధ్యాహ్నం ప్లాన్",
+    "Morning prayer: 08:45 AM to 09:00 AM (Everyday)": "ఉదయం ప్రార్థన: 08:45 AM నుండి 09:00 AM వరకు (ప్రతి రోజు)",
+    "Morning": "ఉదయం",
+    "Afternoon": "మధ్యాహ్నం",
+    "Period": "పీరియడ్",
+    "Subject": "సబ్జెక్ట్",
+    "Time": "సమయం",
+    "Lunch break: 12:00 PM to 12:45 PM": "లంచ్ బ్రేక్: 12:00 PM నుండి 12:45 PM",
+    "Academic Calendar": "అకడెమిక్ క్యాలెండర్",
+    "Important dates and holidays": "ముఖ్యమైన తేదీలు, సెలవులు",
+    "Leave Request": "లీవ్ రిక్వెస్ట్",
+    "Request student leave quickly": "వెంటనే లీవ్ అడగండి",
+    "View Report card": "రిపోర్ట్ కార్డ్ చూడండి",
+    "Upcoming and past exams": "వచ్చే, గత ఎగ్జామ్స్",
+    "Syllabus": "సిలబస్",
+    "Track curriculum progress": "కరికులం ప్రోగ్రెస్ చూడండి",
+    "Announcements": "అనౌన్స్ మెంట్స్",
+    "School notices and updates": "స్కూల్ నోటీసులు, అప్డేట్స్",
+    "Bus Tracking": "బస్ ట్రాకింగ్",
+    "Live route and arrival status": "బస్ ఎక్కడుందో చూడండి",
+    "Tap to open full schedule": "పూర్తి షెడ్యూల్ కోసం టచ్ చేయండి",
+    "Call": "కాల్ చేయండి",
+    "Text": "మెసేజ్ పంపండి",
+    "Home": "హోమ్",
+    "Homework": "హోమ్ వర్క్",
+    "Attendance": "అటెండెన్స్",
+    "Academics": "అకడెమిక్స్",
+    "More": "మరిన్ని",
+    "Logout": "లాగౌట్",
+    // Add more as needed
+  };
   "Student": "طلبہ",
   "Parent": "والدین",
   "Family App": "فیملی ایپ",
@@ -198,8 +239,9 @@ const UR_TRANSLATIONS = {
 };
 
 export function translateText(lang, text) {
-  if (lang !== PARENT_LANGUAGES.UR) return text;
-  return UR_TRANSLATIONS[text] || text;
+  if (lang === PARENT_LANGUAGES.UR) return UR_TRANSLATIONS[text] || text;
+  if (lang === PARENT_LANGUAGES.TE) return TE_TRANSLATIONS[text] || text;
+  return text;
 }
 
 export function languageToggleLabel(lang) {

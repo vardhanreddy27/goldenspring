@@ -1,3 +1,19 @@
+# Push Notification Setup
+
+To enable push notifications, you must generate VAPID keys and set them in your environment:
+
+1. Generate keys (run in terminal):
+	npx web-push generate-vapid-keys
+
+2. Copy the public and private keys.
+
+3. Add to your .env file:
+	VAPID_PUBLIC_KEY=your_public_key_here
+	VAPID_PRIVATE_KEY=your_private_key_here
+
+4. Restart your server after updating .env.
+
+These keys are required for push notification subscription and sending.
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
 
 ## Getting Started

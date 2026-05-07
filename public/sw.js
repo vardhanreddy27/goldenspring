@@ -1,3 +1,19 @@
+// Push notification event handler
+self.addEventListener('push', function(event) {
+  let data = {};
+  try {
+    data = event.data.json();
+  } catch (e) {}
+  const title = data.title || 'GS School';
+  const options = {
+    body: data.message || '',
+    icon: '/student6.avif',
+    badge: '/student6.avif',
+    vibrate: [200, 100, 200],
+    data: data,
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
 const CACHE_NAME = "GS-pwa-v4";
 const STATIC_ASSETS = [
   "/",

@@ -15,8 +15,33 @@ import {
 } from "lucide-react";
 import { childInfo, performanceAlerts, upcomingTests, parentNotifications } from "./data";
 import { PARENT_LANGUAGES, translateText } from "./i18n";
+import { useEffect } from "react";
+import { urlBase64ToUint8Array } from "@/utils/push";
 
 export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN }) {
+  // Push notification subscription logic
+  useEffect(() => {
+    if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
+    // Only run in production
+    if (process.env.NODE_ENV !== "production") return;
+    // Only subscribe if not already done
+    if (window.localStorage.getItem("gs-push-subscribed")) return;
+
+    fetch("/api/parent/push-vapid-key").then((res) => res.json()).then(async ({ publicKey }) => {
+      if (!publicKey) return;
+      const registration = await navigator.serviceWorker.ready;
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicKey),
+      });
+      await fetch("/api/parent/push-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(subscription),
+      });
+      window.localStorage.setItem("gs-push-subscribed", "1");
+    }).catch(() => {});
+  }, []);
   const t = (text) => translateText(lang, text);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sourceFilter, setSourceFilter] = useState("all");

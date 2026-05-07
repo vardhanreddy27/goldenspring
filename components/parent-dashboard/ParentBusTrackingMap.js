@@ -5,7 +5,7 @@ import { divIcon } from "leaflet";
 import { Bus } from "lucide-react";
 
 const SCHOOL_LOCATION = {
-  name: "GOLDEN SPRING School, Kadapa",
+  name: "Nava Chaitanya Bharathi  School, Kadapa",
   position: [14.4728, 78.8236],
 };
 
@@ -312,7 +312,7 @@ export default function ParentBusTrackingMap() {
         <div className="pointer-events-none absolute left-2 right-2 top-2 z-10 flex items-start justify-between gap-3 rounded-3xl bg-white/90 px-4 py-3 shadow-[0_12px_28px_-24px_rgba(15,23,42,0.45)] ring-1 ring-slate-200/80 backdrop-blur">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Live Bus Network</p>
-            <h4 className="mt-1 text-sm font-semibold text-slate-900 sm:text-base">GOLDEN SPRING School, Kadapa</h4>
+            <h4 className="mt-1 text-sm font-semibold text-slate-900 sm:text-base">Nava Chaitanya Bharathi  School, Kadapa</h4>
             <p className="mt-1 text-[11px] font-medium text-slate-500">{TOTAL_BUSES} active buses</p>
           </div>
         
@@ -383,7 +383,7 @@ export default function ParentBusTrackingMap() {
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">All Buses</p>
-              <h3 className="mt-1 text-xl font-black tracking-tight text-slate-950 sm:text-2xl">Heading to GOLDEN SPRING School</h3>
+              <h3 className="mt-1 text-xl font-black tracking-tight text-slate-950 sm:text-2xl">Heading to Nava Chaitanya Bharathi  School</h3>
             </div>
           </div>
 

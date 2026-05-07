@@ -177,7 +177,7 @@ export default function Teacher_login() {
       <div className="hidden w-full overflow-hidden bg-white shadow-none md:grid md:min-h-162.5 md:max-w-6xl md:grid-cols-2 md:rounded-3xl md:border md:border-slate-200 md:shadow-[0_24px_70px_-44px_rgba(15,23,42,0.22)]">
         <div className="relative overflow-hidden bg-white px-6 pb-14 pt-10 text-slate-900 sm:px-8 md:flex md:items-center md:px-10 md:py-14">
           <div className="relative z-10 mx-auto max-w-70 text-center">
-            <h1 className="text-4xl font-semibold tracking-tight text-slate-950">GOLDEN SPRING</h1>
+            <h1 className="text-4xl font-semibold tracking-tight text-slate-950">Nava Chaitanya Bharathi </h1>
             <p className="mt-4 text-sm/6 text-slate-600">Teacher app access for classes, attendance and academic planning.</p>
           </div>
         </div>
