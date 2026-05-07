@@ -62,7 +62,7 @@ export default function ParentHomeworkTab({ lang = PARENT_LANGUAGES.EN }) {
       });
     });
     return Object.values(grouped);
-  }, []);
+  }, [t]);
 
   return (
     <div className="space-y-6  pt-4 font-sans">
@@ -111,7 +111,7 @@ export default function ParentHomeworkTab({ lang = PARENT_LANGUAGES.EN }) {
                 <div className="p-5">
                   <div className="flex items-center gap-4">
                     <div className="relative h-18 w-18 shrink-0 ">
-                      <Image src={SUBJECT_IMAGE_MAP[hw.subject.toLowerCase()]} alt={hw.subject} fill className="object-contain p-2" />
+                      <Image src={SUBJECT_IMAGE_MAP[hw.subject.toLowerCase()]} alt={t(hw.subject)} fill className="object-contain p-2" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="text-lg font-black text-slate-900 leading-tight">{t(hw.subject)}</h4>
@@ -147,7 +147,7 @@ export default function ParentHomeworkTab({ lang = PARENT_LANGUAGES.EN }) {
                 <div className="p-5">
                   <div className="flex items-center gap-4">
                     <div className="relative h-18 w-18 shrink-0 ">
-                      <Image src={group.imageSrc} alt={group.subject} fill className="object-contain p-2" />
+                      <Image src={group.imageSrc} alt={t(group.subject)} fill className="object-contain p-2" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="text-lg font-black text-slate-900 leading-tight">{t(group.subject)}</h4>

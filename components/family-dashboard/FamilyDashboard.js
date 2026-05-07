@@ -194,7 +194,7 @@ export default function FamilyDashboard({ initialRole = "student" }) {
     }
 
     const savedParentLanguage = window.localStorage.getItem("parentDashboardLanguage");
-    if (savedParentLanguage === PARENT_LANGUAGES.EN || savedParentLanguage === PARENT_LANGUAGES.UR) {
+    if (savedParentLanguage === PARENT_LANGUAGES.EN || savedParentLanguage === PARENT_LANGUAGES.UR || savedParentLanguage === PARENT_LANGUAGES.TE) {
       setParentLanguage(savedParentLanguage);
     }
   }, []);
@@ -315,7 +315,7 @@ export default function FamilyDashboard({ initialRole = "student" }) {
                     ) : (
                       <>
                         <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-                          Krishna
+                          {parentProfileForm.childName || "Krishna"}
                         </span>
                         <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">{subtitle}</span>
                       </>
@@ -370,11 +370,15 @@ export default function FamilyDashboard({ initialRole = "student" }) {
                     {!isStudent ? (
                       <button
                         type="button"
-                        onClick={() => setParentLanguage((prev) => (prev === PARENT_LANGUAGES.EN ? PARENT_LANGUAGES.UR : PARENT_LANGUAGES.EN))}
+                        onClick={() =>
+                          setParentLanguage((prev) =>
+                            prev === PARENT_LANGUAGES.EN ? PARENT_LANGUAGES.TE : PARENT_LANGUAGES.EN
+                          )
+                        }
                         className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-slate-300"
                         aria-label="Toggle parent dashboard language"
                       >
-                        <Image src="/urdu.svg" alt="Urdu language" width={16} height={16} className="rounded-sm object-cover" />
+                        <Image src="/telugu.png" alt="Telugu language" width={16} height={16} className="rounded-sm object-cover" />
                         <span>{languageToggleLabel(parentLanguage)}</span>
                       </button>
                     ) : null}
@@ -385,7 +389,7 @@ export default function FamilyDashboard({ initialRole = "student" }) {
               {isStudent ? (
                 <div className="mt-5">
                   <div className="mb-2 flex items-center justify-between text-sm">
-                    <p className="font-semibold text-slate-800">Attendance</p>
+                    <p className="font-semibold text-slate-800">{parentT("Attendance")}</p>
                     <p className="font-bold text-emerald-700">{attendancePercentage}%</p>
                   </div>
                   <div className="h-2.5 w-full overflow-hidden rounded-full bg-emerald-200/70">
@@ -542,7 +546,7 @@ function ProfileBottomSheet({
           </div>
 
           <div>
-            <label htmlFor="profile-contact" className="text-sm font-medium text-slate-600">Contact</label>
+            <label htmlFor="profile-contact" className="text-sm font-medium text-slate-600">{parentT("Contact")}</label>
             <input
               id="profile-contact"
               name="contact"
@@ -556,7 +560,7 @@ function ProfileBottomSheet({
           {nameField === "studentName" && (
             <>
               <div>
-                <label htmlFor="profile-roll" className="text-sm font-medium text-slate-600">Roll Number</label>
+                <label htmlFor="profile-roll" className="text-sm font-medium text-slate-600">{parentT("Roll Number")}</label>
                 <input
                   id="profile-roll"
                   name="rollNumber"
@@ -567,7 +571,7 @@ function ProfileBottomSheet({
                 />
               </div>
               <div>
-                <label htmlFor="profile-classsection" className="text-sm font-medium text-slate-600">Class/Section</label>
+                <label htmlFor="profile-classsection" className="text-sm font-medium text-slate-600">{parentT("Class/Section")}</label>
                 <input
                   id="profile-classsection"
                   name="classSection"
@@ -599,7 +603,7 @@ function ProfileBottomSheet({
 
           {showProfilePicUpload && (
             <div className="flex flex-col gap-2 mb-2">
-              <label className="text-sm font-medium text-slate-600 mb-1">Profile Picture</label>
+              <label className="text-sm font-medium text-slate-600 mb-1">{parentT("Profile Picture")}</label>
               <div
                 className="w-full border-2 border-dashed border-slate-300 rounded-2xl flex flex-col items-center justify-center bg-slate-50 relative cursor-pointer hover:border-[#16c7bd] transition-all"
                 style={{ height: '150px' }}
@@ -637,9 +641,9 @@ function ProfileBottomSheet({
                       tabIndex={-1}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="#16c7bd" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 16V4m0 0-4 4m4-4 4 4"/><rect width="20" height="12" x="2" y="8" stroke="#16c7bd" strokeWidth="2" rx="2"/></svg>
-                      <span>Upload</span>
+                      <span>{parentT("Upload")}</span>
                     </button>
-                    <span className="text-slate-500 text-sm">Choose a file or drag & drop it here</span>
+                    <span className="text-slate-500 text-sm">{parentT("Choose a file or drag & drop it here")}</span>
                   </div>
                 )}
               </div>

@@ -76,6 +76,7 @@ export default function ParentAcademicsTab({ lang = PARENT_LANGUAGES.EN }) {
   const strongSubjects = subjectPerformance.filter((s) => s.status === "good");
   const ringColors = ["#16c7bd", "#1e90ff", "#43a047", "#e53935", "#8e24aa", "#ff9800"];
   const activeChartData = academicsChartData[activePeriod] || academicsChartData.monthly;
+  const translatedChartData = activeChartData.map((entry) => ({ ...entry, label: t(entry.label) }));
 
   useEffect(() => {
     function handlePointerDown(event) {
@@ -126,7 +127,7 @@ export default function ParentAcademicsTab({ lang = PARENT_LANGUAGES.EN }) {
 
         <div className="mt-5 h-72 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={activeChartData} barGap={10}>
+            <BarChart data={translatedChartData} barGap={10}>
               <CartesianGrid strokeDasharray="4 4" stroke="#e2e8f0" vertical={false} />
               <XAxis dataKey="label" tickFormatter={(value) => t(value)} tick={{ fill: "#64748b", fontSize: 12 }} tickLine={false} axisLine={false} />
               <YAxis domain={[0, 100]} ticks={[0, 20, 40, 60, 80, 100]} tick={{ fill: "#64748b", fontSize: 12 }} tickLine={false} axisLine={false} />
@@ -147,7 +148,7 @@ export default function ParentAcademicsTab({ lang = PARENT_LANGUAGES.EN }) {
                   formatter={(value) => `${value}%`}
                   style={{ fill: "#64748b", fontSize: 12, fontWeight: 700 }}
                 />
-                {activeChartData.map((entry, index) => (
+                {translatedChartData.map((entry, index) => (
                   <Cell key={`bar-${entry.label}`} fill={CHART_BAR_COLORS[index % CHART_BAR_COLORS.length]} />
                 ))}
               </Bar>

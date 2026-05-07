@@ -22,25 +22,44 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN }) {
   // Push notification subscription logic
   useEffect(() => {
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
-    // Only run in production
-    if (process.env.NODE_ENV !== "production") return;
     // Only subscribe if not already done
     if (window.localStorage.getItem("gs-push-subscribed")) return;
+    if (!("Notification" in window)) return;
 
-    fetch("/api/parent/push-vapid-key").then((res) => res.json()).then(async ({ publicKey }) => {
-      if (!publicKey) return;
+    let cancelled = false;
+
+    async function subscribeForPush() {
+      const permission = Notification.permission === "granted"
+        ? "granted"
+        : await Notification.requestPermission();
+
+      if (permission !== "granted" || cancelled) return;
+
+      const { publicKey } = await fetch("/api/parent/push-vapid-key").then((res) => res.json());
+      if (!publicKey || cancelled) return;
+
       const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicKey),
-      });
+      const existingSubscription = await registration.pushManager.getSubscription();
+      const subscription =
+        existingSubscription ||
+        await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(publicKey),
+        });
+
       await fetch("/api/parent/push-subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(subscription),
       });
       window.localStorage.setItem("gs-push-subscribed", "1");
-    }).catch(() => {});
+    }
+
+    subscribeForPush().catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
   const t = (text) => translateText(lang, text);
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -80,6 +99,19 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN }) {
     { subject: t("English"), title: t("Essay writing") },
     { subject: t("Maths"), title: t("Algebra worksheet") },
   ];
+  const translatedUpcomingTests = upcomingTests.slice(0, 3).map((test) => ({
+    ...test,
+    subject: t(test.subject),
+  }));
+  const translatedNotifications = paginatedNotifications.map((notification) => ({
+    ...notification,
+    title: t(notification.title),
+    message: t(notification.message),
+    sourceRole: t(notification.sourceRole),
+    category: t(notification.category),
+    priority: t(notification.priority),
+    actionLabel: t(notification.actionLabel),
+  }));
   const childAvatar = childInfo.photo || "/student.jpeg";
 
   function updateFilter(setter, value) {
@@ -104,24 +136,24 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN }) {
   }
 
   function getSourceIcon(sourceRole) {
-    if (sourceRole === "Principal") return <School className="h-4 w-4" />;
-    if (sourceRole === "PET") return <Dumbbell className="h-4 w-4" />;
-    if (sourceRole === "Transport") return <Bus className="h-4 w-4" />;
+    if (sourceRole === t("Principal")) return <School className="h-4 w-4" />;
+    if (sourceRole === t("PET")) return <Dumbbell className="h-4 w-4" />;
+    if (sourceRole === t("Transport")) return <Bus className="h-4 w-4" />;
     return <UserCircle2 className="h-4 w-4" />;
   }
 
   function getPriorityTone(priority) {
-    if (priority === "high") return "border-rose-200 bg-rose-50 text-rose-700";
-    if (priority === "medium") return "border-amber-200 bg-amber-50 text-amber-700";
+    if (priority === t("High")) return "border-rose-200 bg-rose-50 text-rose-700";
+    if (priority === t("medium")) return "border-amber-200 bg-amber-50 text-amber-700";
     return "border-emerald-200 bg-emerald-50 text-emerald-700";
   }
 
   function getCategoryTone(category) {
-    if (category === "Academics") return "bg-sky-50 text-sky-700 border-sky-100";
-    if (category === "Exams") return "bg-violet-50 text-violet-700 border-violet-100";
-    if (category === "Sports") return "bg-emerald-50 text-emerald-700 border-emerald-100";
-    if (category === "Transport") return "bg-amber-50 text-amber-700 border-amber-100";
-    if (category === "Wellbeing") return "bg-rose-50 text-rose-700 border-rose-100";
+    if (category === t("Academics")) return "bg-sky-50 text-sky-700 border-sky-100";
+    if (category === t("Exams")) return "bg-violet-50 text-violet-700 border-violet-100";
+    if (category === t("Sports")) return "bg-emerald-50 text-emerald-700 border-emerald-100";
+    if (category === t("Transport")) return "bg-amber-50 text-amber-700 border-amber-100";
+    if (category === t("Wellbeing")) return "bg-rose-50 text-rose-700 border-rose-100";
     return "bg-slate-50 text-slate-700 border-slate-200";
   }
 
@@ -219,11 +251,11 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN }) {
             <div className="grid h-full grid-cols-[auto_1fr] items-center gap-3">
               <p className="text-4xl font-semibold leading-none text-slate-950 sm:text-5xl">{upcomingTests.length}</p>
               <ul className="min-w-0 space-y-1 rounded-xl bg-blue-50/90 p-2 ring-1 ring-blue-100">
-                {upcomingTests.slice(0, 3).map((test) => (
+                {translatedUpcomingTests.map((test) => (
                   <li key={test.id} className="flex items-center gap-2">
                     <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" aria-hidden="true" />
                     <span className="block min-w-0 truncate text-[11px] font-medium text-slate-700" title={test.subject}>
-                      {t(test.subject)}
+                      {test.subject}
                     </span>
                   </li>
                 ))}
@@ -285,7 +317,7 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN }) {
 
 
         <div className="mt-5 space-y-3">
-          {paginatedNotifications.map((notification) => {
+          {translatedNotifications.map((notification) => {
             const isRead = readIds.has(notification.id);
             return (
               <article
@@ -302,16 +334,16 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN }) {
                         {t(notification.sourceRole)}
                       </span>
                       <span className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold ${getCategoryTone(notification.category)}`}>
-                        {t(notification.category)}
+                        {notification.category}
                       </span>
                       <span
                         className={`rounded-full border px-2 py-1 text-[11px] font-semibold uppercase tracking-wide ${getPriorityTone(notification.priority)}`}
                       >
-                        {t(notification.priority)}
+                        {notification.priority}
                       </span>
                     </div>
-                    <h4 className="mt-3 text-sm font-semibold text-slate-950">{t(notification.title)}</h4>
-                    <p className="mt-1 text-sm leading-6 text-slate-700">{t(notification.message)}</p>
+                    <h4 className="mt-3 text-sm font-semibold text-slate-950">{notification.title}</h4>
+                    <p className="mt-1 text-sm leading-6 text-slate-700">{notification.message}</p>
                     <p className="mt-2 text-xs text-slate-500">
                       {t("By")} {notification.sourceName} • {new Date(notification.date).toLocaleString("en-IN", {
                         month: "short",
@@ -327,7 +359,7 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN }) {
                       type="button"
                       className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-slate-700"
                     >
-                      {t(notification.actionLabel)}
+                      {notification.actionLabel}
                     </button>
                   </div>
                 </div>

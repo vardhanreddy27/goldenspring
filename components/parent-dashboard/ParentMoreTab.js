@@ -3,7 +3,7 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import { X } from "lucide-react";
 import ParentTimetableTab from "./ParentTimetableTab";
-import { PARENT_LANGUAGES, translateText } from "./i18n";
+import { translateText } from "./i18n";
 
 const ParentBusTrackingMap = dynamic(() => import("./ParentBusTrackingMap"), {
   ssr: false,
@@ -80,9 +80,8 @@ const teacherContactCards = [
   },
 ];
 
-export default function ParentMoreTab({ lang = PARENT_LANGUAGES.EN }) {
-  const [currentLang, setCurrentLang] = useState(lang);
-  const t = (text) => translateText(currentLang, text);
+export default function ParentMoreTab({ lang }) {
+  const t = (text) => translateText(lang, text);
   const [timetableOpen, setTimetableOpen] = useState(false);
   const [busTrackingOpen, setBusTrackingOpen] = useState(false);
 
@@ -99,14 +98,6 @@ export default function ParentMoreTab({ lang = PARENT_LANGUAGES.EN }) {
 
   return (
     <>
-      <div className="flex justify-end px-5 pt-3">
-        <button
-          className={`rounded-full px-3 py-1 text-xs font-semibold border ${currentLang === PARENT_LANGUAGES.TE ? "bg-[#16c7bd] text-white" : "bg-white text-[#16c7bd]"} border-[#16c7bd] transition`}
-          onClick={() => setCurrentLang(currentLang === PARENT_LANGUAGES.TE ? PARENT_LANGUAGES.EN : PARENT_LANGUAGES.TE)}
-        >
-          {currentLang === PARENT_LANGUAGES.TE ? "English" : "తెలుగు"}
-        </button>
-      </div>
       <section className="-mx-3 mt-6 min-h-[calc(100vh-10rem)] space-y-0 bg-white mb-9">
         <article className=" bg-white px-5 pt-5 ">
           <p className="text-sm text-slate-500">{t("Teacher connect")}</p>
@@ -220,7 +211,7 @@ export default function ParentMoreTab({ lang = PARENT_LANGUAGES.EN }) {
             </div>
 
             <div className="max-h-[calc(94vh-64px)] overflow-y-auto px-3 pb-4 sm:max-h-[calc(92vh-64px)] sm:px-5 sm:pb-5">
-              <ParentBusTrackingMap />
+              <ParentBusTrackingMap lang={lang} />
             </div>
           </div>
         </div>

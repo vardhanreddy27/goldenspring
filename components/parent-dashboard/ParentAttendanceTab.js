@@ -55,6 +55,7 @@ export default function ParentAttendanceTab({ lang = PARENT_LANGUAGES.EN }) {
       )),
     [donutData]
   );
+  const translateLabel = (value) => t(value);
 
   return (
     <div className="space-y-6 py-6 mb-9">
@@ -150,7 +151,7 @@ export default function ParentAttendanceTab({ lang = PARENT_LANGUAGES.EN }) {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="4 4" stroke="#e2e8f0" vertical={false} />
-                <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fill: "#475569", fontSize: 12 }} />
+                <XAxis dataKey="label" tickFormatter={translateLabel} tickLine={false} axisLine={false} tick={{ fill: "#475569", fontSize: 12 }} />
                 <YAxis domain={[0, 7]} ticks={[0, 2, 4, 6, 7]} tickLine={false} axisLine={false} tick={{ fill: "#475569", fontSize: 12 }} />
                 <ReferenceLine y={5} stroke="#94a3b8" strokeDasharray="4 4" />
                 <Tooltip content={<WeeklyTooltip t={t} />} cursor={{ fill: "rgba(148, 163, 184, 0.12)" }} />
@@ -169,7 +170,7 @@ export default function ParentAttendanceTab({ lang = PARENT_LANGUAGES.EN }) {
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
             {attendanceWeekly.map((week) => (
               <div key={week.label} className="rounded-xl bg-slate-50 px-3 py-2">
-                <p className="text-xs font-medium text-slate-500">{week.label}</p>
+                <p className="text-xs font-medium text-slate-500">{translateLabel(week.label)}</p>
                 <p className="text-sm font-semibold text-slate-900">{week.attendancePct}% {t("present")}</p>
               </div>
             ))}

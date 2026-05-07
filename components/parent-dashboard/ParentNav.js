@@ -1,13 +1,15 @@
 import { LogOut, Menu, X } from "lucide-react";
 import { parentMenuItems } from "./data";
 import { useEffect, useState } from "react";
+import { PARENT_LANGUAGES, translateText } from "./i18n";
 
-export function ParentSidebar({ activeMenu, onMenuChange, onLogout }) {
+export function ParentSidebar({ activeMenu, onMenuChange, onLogout, lang = PARENT_LANGUAGES.EN }) {
+  const t = (text) => translateText(lang, text);
   return (
     <aside className="hidden h-screen w-72 flex-col border-r border-slate-200 bg-white px-6 py-8 lg:flex sticky top-0">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-[#16c7bd]">GS</h1>
-        <p className="text-xs text-slate-500 mt-1">Parent Portal</p>
+        <p className="text-xs text-slate-500 mt-1">{t("Parent Portal")}</p>
       </div>
 
       <nav className="flex-1 space-y-1">
@@ -25,7 +27,7 @@ export function ParentSidebar({ activeMenu, onMenuChange, onLogout }) {
               }`}
             >
               <Icon className="h-5 w-5" />
-              {item.label}
+              {t(item.label)}
             </button>
           );
         })}
@@ -36,13 +38,14 @@ export function ParentSidebar({ activeMenu, onMenuChange, onLogout }) {
         className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all duration-150"
       >
         <LogOut className="h-5 w-5" />
-        Logout
+        {t("Logout")}
       </button>
     </aside>
   );
 }
 
-export function ParentBottomNav({ activeMenu, onMenuChange }) {
+export function ParentBottomNav({ activeMenu, onMenuChange, lang = PARENT_LANGUAGES.EN }) {
+  const t = (text) => translateText(lang, text);
   return (
     <nav className="fixed bottom-0 left-0 right-0 border-t border-slate-200 bg-white px-1 py-2 flex justify-around lg:hidden z-40">
       {parentMenuItems.map((item) => {
@@ -59,7 +62,7 @@ export function ParentBottomNav({ activeMenu, onMenuChange }) {
             }`}
           >
             <Icon className="h-5 w-5" />
-            <span className="hidden xs:inline">{item.label}</span>
+            <span className="hidden xs:inline">{t(item.label)}</span>
           </button>
         );
       })}
