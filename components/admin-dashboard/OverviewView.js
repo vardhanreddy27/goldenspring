@@ -473,6 +473,7 @@ function AnnouncementBoard() {
     const candidates = [
       parentProfileDefaults.contact,
       studentProfileDefaults.contact,
+      "8919344300",
     ];
 
     return [...new Set(candidates.filter(Boolean))];
