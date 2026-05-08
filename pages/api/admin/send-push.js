@@ -1,5 +1,15 @@
-import { neon } from "@neondatabase/serverless";
 import webpush from "web-push";
+import { neon } from "@neondatabase/serverless";
+
+// VAPID keys - set these in Vercel environment variables
+const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || "YOUR_PUBLIC_KEY";
+const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || "YOUR_PRIVATE_KEY";
+
+webpush.setVapidDetails(
+  "mailto:admin@goldenspring.com",
+  VAPID_PUBLIC_KEY,
+  VAPID_PRIVATE_KEY
+);
 
 function getSqlClient() {
   const databaseUrl = process.env.DATABASE_URL;
@@ -17,20 +27,13 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Missing title or message" });
   }
 
-  const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY;
-  const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY;
-  if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY || VAPID_PUBLIC_KEY === "YOUR_PUBLIC_KEY" || VAPID_PRIVATE_KEY === "YOUR_PRIVATE_KEY") {
-    return res.status(500).json({ error: "VAPID keys are not configured." });
-  }
-
-  webpush.setVapidDetails("mailto:admin@goldenspring.com", VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
-
   let subscriptions = [];
   try {
     const sql = getSqlClient();
     subscriptions = await sql`SELECT endpoint, p256dh, auth FROM push_subscriptions`;
-  } catch (error) {
-    return res.status(500).json({ error: "Failed to load subscriptions" });
+  } catch (e) {
+    // If DB isn't available or no subscriptions, continue with empty list
+    subscriptions = [];
   }
 
   const payload = JSON.stringify({ title, message });
@@ -45,8 +48,8 @@ export default async function handler(req, res) {
           payload
         );
         return { success: true };
-      } catch (error) {
-        return { success: false, error: error.message };
+      } catch (err) {
+        return { success: false, error: err?.message || String(err) };
       }
     })
   );

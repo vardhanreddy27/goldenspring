@@ -7,7 +7,7 @@ import {
   ChevronUp, 
 } from "lucide-react";
 import { studentAssignments, pendingHomework } from "./data";
-import { PARENT_LANGUAGES, translateText } from "./i18n";
+import { PARENT_LANGUAGES, translateText } from "./i18n.fixed";
 
 const SUBJECT_IMAGE_MAP = {
   science: "/science.png",

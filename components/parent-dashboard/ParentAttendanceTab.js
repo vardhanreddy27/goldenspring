@@ -2,7 +2,7 @@ import { BarChart, Bar, LabelList, XAxis, YAxis, CartesianGrid, Tooltip, Respons
 import { AlertTriangle } from "lucide-react";
 import { attendanceMonthly, attendanceLog } from "./data";
 import { useMemo } from "react";
-import { PARENT_LANGUAGES, translateText } from "./i18n";
+import { PARENT_LANGUAGES, translateText } from "./i18n.fixed";
 
 function WeeklyTooltip({ active, payload, label, t }) {
   if (!active || !payload?.length) {

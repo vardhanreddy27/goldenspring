@@ -1,6 +1,6 @@
 import { TrendingDown, TrendingUp, AlertTriangle, BookOpen } from "lucide-react";
 import { performanceInsights, childInfo } from "./data";
-import { PARENT_LANGUAGES, translateText } from "./i18n";
+import { PARENT_LANGUAGES, translateText } from "./i18n.fixed";
 
 export default function ParentReportsTab({ lang = PARENT_LANGUAGES.EN }) {
   const t = (text) => translateText(lang, text);

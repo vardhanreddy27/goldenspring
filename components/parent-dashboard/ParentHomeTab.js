@@ -14,7 +14,7 @@ import {
   Bus,
 } from "lucide-react";
 import { childInfo, performanceAlerts, upcomingTests, parentNotifications } from "./data";
-import { PARENT_LANGUAGES, translateText } from "./i18n";
+import { PARENT_LANGUAGES, translateText } from "./i18n.fixed";
 import { useEffect } from "react";
 import { urlBase64ToUint8Array } from "@/utils/push";
 

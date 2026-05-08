@@ -3,7 +3,7 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import { X } from "lucide-react";
 import ParentTimetableTab from "./ParentTimetableTab";
-import { translateText } from "./i18n";
+import { translateText } from "./i18n.fixed";
 
 const ParentBusTrackingMap = dynamic(() => import("./ParentBusTrackingMap"), {
   ssr: false,

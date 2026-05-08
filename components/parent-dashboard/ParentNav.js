@@ -1,7 +1,7 @@
 import { LogOut, Menu, X } from "lucide-react";
 import { parentMenuItems } from "./data";
 import { useEffect, useState } from "react";
-import { PARENT_LANGUAGES, translateText } from "./i18n";
+import { PARENT_LANGUAGES, translateText } from "./i18n.fixed";
 
 export function ParentSidebar({ activeMenu, onMenuChange, onLogout, lang = PARENT_LANGUAGES.EN }) {
   const t = (text) => translateText(lang, text);

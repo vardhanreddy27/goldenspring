@@ -3,7 +3,7 @@ import Image from "next/image";
 import { AlertTriangle, CheckCircle2, ChevronDown } from "lucide-react";
 import { BarChart, Bar, Cell, LabelList, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { subjectPerformance } from "./data";
-import { PARENT_LANGUAGES, translateText } from "./i18n";
+import { PARENT_LANGUAGES, translateText } from "./i18n.fixed";
 
 const progressOptions = [
   { id: "monthly", label: "Monthly" },

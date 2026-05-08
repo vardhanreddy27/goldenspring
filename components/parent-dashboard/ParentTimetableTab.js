@@ -1,5 +1,5 @@
 import { childTimetable } from "./data";
-import { PARENT_LANGUAGES, translateText } from "./i18n";
+import { PARENT_LANGUAGES, translateText } from "./i18n.fixed";
 
 export default function ParentTimetableTab({ lang = PARENT_LANGUAGES.EN }) {
   const t = (text) => translateText(lang, text);

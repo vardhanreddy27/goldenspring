@@ -20,7 +20,7 @@ import ParentTimetableTab from "@/components/parent-dashboard/ParentTimetableTab
 import ParentAcademicsTab from "@/components/parent-dashboard/ParentAcademicsTab";
 import ParentMoreTab from "@/components/parent-dashboard/ParentMoreTab";
 import { parentMenuItems, parentProfileDefaults, parentNotifications } from "@/components/parent-dashboard/data";
-import { languageToggleLabel, PARENT_LANGUAGES, translateText } from "@/components/parent-dashboard/i18n";
+import { languageToggleLabel, PARENT_LANGUAGES, translateText } from "@/components/parent-dashboard/i18n.fixed";
 import { Bell } from "lucide-react";
 
 const familyRoleItems = [

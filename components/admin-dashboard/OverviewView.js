@@ -69,7 +69,7 @@ const upcomingExams = [
   },
 ];
 
-const announcements = [
+const initialAnnouncements = [
   {
     id: "a1",
     audience: "Principal",
@@ -443,6 +443,7 @@ function AnnouncementBoard() {
   const [draftTitle, setDraftTitle] = useState("");
   const [draftMessage, setDraftMessage] = useState("");
   const [sending, setSending] = useState(false);
+  const [announcements, setAnnouncements] = useState(initialAnnouncements);
 
   const pageSize = 3;
 
@@ -510,16 +511,35 @@ function AnnouncementBoard() {
             onClick={async () => {
               setSending(true);
               try {
-                await fetch("/api/admin/send-push", {
+                const response = await fetch("/api/admin/send-push", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ title: draftTitle, message: draftMessage }),
                 });
+
+                const payload = await response.json().catch(() => ({}));
+                if (!response.ok) {
+                  throw new Error(payload?.error || "Failed to send push notification.");
+                }
+
+                setAnnouncements((prev) => [
+                  {
+                    id: `draft-${Date.now()}`,
+                    audience: "Principal",
+                    title: draftTitle.trim(),
+                    message: draftMessage.trim(),
+                    date: new Date().toLocaleDateString("en-GB"),
+                    category: "Announcement",
+                    icon: Megaphone,
+                    accent: "from-slate-500 to-slate-700",
+                  },
+                  ...prev,
+                ]);
                 setDraftTitle("");
                 setDraftMessage("");
                 alert("Announcement sent as push notification to parents.");
               } catch (e) {
-                alert("Failed to send push notification.");
+                alert(e.message || "Failed to send push notification.");
               } finally {
                 setSending(false);
               }

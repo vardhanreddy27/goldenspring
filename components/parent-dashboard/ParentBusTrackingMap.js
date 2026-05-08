@@ -3,7 +3,7 @@ import Image from "next/image";
 import { MapContainer, TileLayer, Marker, Polyline, Popup } from "react-leaflet";
 import { divIcon } from "leaflet";
 import { Bus } from "lucide-react";
-import { PARENT_LANGUAGES, translateText } from "./i18n";
+import { PARENT_LANGUAGES, translateText } from "./i18n.fixed";
 
 const SCHOOL_LOCATION = {
   name: "Nava Chaitanya Bharathi  School, Kadapa",
