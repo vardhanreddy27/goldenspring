@@ -71,7 +71,6 @@ function translateNotificationText(lang, value) {
 
 export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN, showNotificationsFeed = true }) {
   const [liveAnnouncements, setLiveAnnouncements] = useState([]);
-  const [pushStatus, setPushStatus] = useState("");
   // Push notification subscription logic
   useEffect(() => {
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
@@ -86,16 +85,10 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN, showNotifica
         ? "granted"
         : await Notification.requestPermission();
 
-      if (permission !== "granted" || cancelled) {
-        setPushStatus("Push notifications are blocked.");
-        return;
-      }
+      if (permission !== "granted" || cancelled) return;
 
       const { publicKey } = await fetch("/api/parent/push-vapid-key").then((res) => res.json());
-      if (!publicKey || cancelled) {
-        setPushStatus("Push setup is not configured yet.");
-        return;
-      }
+      if (!publicKey || cancelled) return;
 
       const registration = await navigator.serviceWorker.ready;
       const existingSubscription = await registration.pushManager.getSubscription();
@@ -112,14 +105,9 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN, showNotifica
         body: JSON.stringify(subscription),
       });
       window.localStorage.setItem("gs-push-subscribed", "1");
-      setPushStatus("Push notifications are enabled.");
     }
 
-    subscribeForPush().catch((error) => {
-      if (!cancelled) {
-        setPushStatus(error?.message || "Push setup failed.");
-      }
-    });
+    subscribeForPush().catch(() => {});
 
     return () => {
       cancelled = true;
@@ -269,11 +257,6 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN, showNotifica
     <div className="space-y-6 py-6">
       {/* Child Overview */}
       <section className="bg-linear-to-r from-[#fff4d6] to-yellow-50 rounded-2xl border border-yellow-100 p-6">
-        {pushStatus ? (
-          <div className="mb-3 rounded-xl border border-amber-200 bg-white/80 px-3 py-2 text-xs font-medium text-amber-800">
-            {pushStatus}
-          </div>
-        ) : null}
         <div className="flex items-start justify-between gap-4 mb-4">
           <div>
             <h3 className="text-sm font-semibold text-slate-600">{t("CHILD INFO")}</h3>

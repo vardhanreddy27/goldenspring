@@ -26,6 +26,8 @@ import {
   topMetrics,
   trendTabs,
 } from "@/components/admin-dashboard/data";
+import { parentProfileDefaults } from "@/components/parent-dashboard/data";
+import { studentProfileDefaults } from "@/components/student-dashboard/data";
 
 const EMPTY_ROWS = [];
 
@@ -442,6 +444,7 @@ function AnnouncementBoard() {
   const [page, setPage] = useState(1);
   const [draftTitle, setDraftTitle] = useState("");
   const [draftMessage, setDraftMessage] = useState("");
+  const [sendWhatsApp, setSendWhatsApp] = useState(true);
   const [sending, setSending] = useState(false);
   const [announcements, setAnnouncements] = useState(initialAnnouncements);
 
@@ -453,7 +456,7 @@ function AnnouncementBoard() {
     }
 
     return announcements.filter((item) => item.audience === activeAudience);
-  }, [activeAudience]);
+  }, [activeAudience, announcements]);
 
   const totalPages = Math.max(
     Math.ceil(filteredAnnouncements.length / pageSize),
@@ -465,6 +468,64 @@ function AnnouncementBoard() {
     const start = (safePage - 1) * pageSize;
     return filteredAnnouncements.slice(start, start + pageSize);
   }, [filteredAnnouncements, safePage]);
+
+  const whatsappRecipients = useMemo(() => {
+    const candidates = [
+      parentProfileDefaults.contact,
+      studentProfileDefaults.contact,
+    ];
+
+    return [...new Set(candidates.filter(Boolean))];
+  }, []);
+
+  function normalizeIndianPhone(phone) {
+    let cleanPhone = String(phone || "").replace(/\D/g, "");
+
+    if (cleanPhone.length === 10) {
+      cleanPhone = `91${cleanPhone}`;
+    }
+
+    return cleanPhone;
+  }
+
+  async function sendWhatsAppMessages(message) {
+    const results = [];
+
+    for (const phone of whatsappRecipients) {
+      const cleanPhone = normalizeIndianPhone(phone);
+
+      if (!cleanPhone) {
+        continue;
+      }
+
+      try {
+        const response = await fetch("/api/admin/send-whatsapp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone: cleanPhone, message }),
+        });
+
+        const payload = await response.json().catch(() => ({}));
+        console.log("WhatsApp API response:", payload);
+        results.push({
+          phone: cleanPhone,
+          success: response.ok,
+          response: payload,
+        });
+      } catch (error) {
+        const failure = {
+          phone: cleanPhone,
+          success: false,
+          response: { error: error.message || "WhatsApp request failed" },
+        };
+        console.log("WhatsApp API response:", failure.response);
+        results.push(failure);
+      }
+    }
+
+    console.log("All WhatsApp results:", results);
+    return results;
+  }
 
   const audienceTabs = ["All", "Principal", "Teachers"];
 
@@ -504,6 +565,16 @@ function AnnouncementBoard() {
             className="w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none ring-slate-300 placeholder:text-slate-400 focus:ring"
           />
 
+          <label className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700">
+            <input
+              type="checkbox"
+              checked={sendWhatsApp}
+              onChange={(event) => setSendWhatsApp(event.target.checked)}
+              className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500"
+            />
+            Send WhatsApp also
+          </label>
+
           <button
             type="button"
             className="inline-flex items-center justify-center gap-2 self-start rounded-full bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white outline-none transition hover:bg-slate-800 focus:outline-none focus:ring-0"
@@ -522,9 +593,10 @@ function AnnouncementBoard() {
                   throw new Error(payload?.error || "Failed to send push notification.");
                 }
 
-                const attempted = Number(payload?.attempted || 0);
-                const sent = Number(payload?.sent || 0);
-                const failed = Number(payload?.failed || 0);
+                let whatsappResults = [];
+                if (sendWhatsApp) {
+                  whatsappResults = await sendWhatsAppMessages(draftMessage.trim());
+                }
 
                 setAnnouncements((prev) => [
                   {
@@ -542,7 +614,11 @@ function AnnouncementBoard() {
                 setDraftTitle("");
                 setDraftMessage("");
 
-                alert("Announcement sent successfully.");
+                if (sendWhatsApp && whatsappResults.some((item) => item.success)) {
+                  alert("Push + WhatsApp sent successfully");
+                } else {
+                  alert("Notification sent successfully");
+                }
               } catch (e) {
                 alert(e.message || "Failed to send push notification.");
               } finally {
