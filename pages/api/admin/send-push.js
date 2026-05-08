@@ -1,15 +1,21 @@
 import webpush from "web-push";
 import { neon } from "@neondatabase/serverless";
 
-// VAPID keys - set these in Vercel environment variables
-const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || "YOUR_PUBLIC_KEY";
-const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || "YOUR_PRIVATE_KEY";
+let vapidConfigured = false;
 
-webpush.setVapidDetails(
-  "mailto:admin@goldenspring.com",
-  VAPID_PUBLIC_KEY,
-  VAPID_PRIVATE_KEY
-);
+function configureVapidDetails() {
+  if (vapidConfigured) return;
+
+  const publicKey = process.env.VAPID_PUBLIC_KEY;
+  const privateKey = process.env.VAPID_PRIVATE_KEY;
+
+  if (!publicKey || !privateKey) {
+    throw new Error("VAPID keys are not configured.");
+  }
+
+  webpush.setVapidDetails("mailto:admin@goldenspring.com", publicKey, privateKey);
+  vapidConfigured = true;
+}
 
 function getSqlClient() {
   const databaseUrl = process.env.DATABASE_URL;
@@ -25,6 +31,12 @@ export default async function handler(req, res) {
   const { title, message } = req.body;
   if (!title || !message) {
     return res.status(400).json({ error: "Missing title or message" });
+  }
+
+  try {
+    configureVapidDetails();
+  } catch (error) {
+    return res.status(500).json({ error: error.message || "VAPID keys are not configured." });
   }
 
   let subscriptions = [];
