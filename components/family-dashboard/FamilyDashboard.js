@@ -22,6 +22,7 @@ import ParentMoreTab from "@/components/parent-dashboard/ParentMoreTab";
 import { parentMenuItems, parentProfileDefaults, parentNotifications } from "@/components/parent-dashboard/data";
 import { languageToggleLabel, PARENT_LANGUAGES, translateText } from "@/components/parent-dashboard/i18n.fixed";
 import { Bell } from "lucide-react";
+import { urlBase64ToUint8Array } from "@/utils/push";
 
 const familyRoleItems = [
   { id: "student", label: "Student" },
@@ -150,6 +151,7 @@ export default function FamilyDashboard({ initialRole = "student" }) {
   const [studentProfileForm, setStudentProfileForm] = useState(getInitialStudentProfile());
   const [parentProfileForm, setParentProfileForm] = useState(getInitialParentProfile());
   const [parentLanguage, setParentLanguage] = useState(PARENT_LANGUAGES.EN);
+  const [liveAnnouncements, setLiveAnnouncements] = useState([]);
 
   const isStudent = activeRole === "student";
 
@@ -165,6 +167,16 @@ export default function FamilyDashboard({ initialRole = "student" }) {
 
   const attendancePercentage = 75;
   const parentT = (text) => translateText(parentLanguage, text);
+  const parentAnnouncementItems = useMemo(() => {
+    const mappedLiveAnnouncements = liveAnnouncements.map((item) => ({
+      id: `live-${item.id}`,
+      sourceRole: "School",
+      category: "Announcements",
+      title: item.title,
+      message: item.message,
+    }));
+    return [...mappedLiveAnnouncements, ...parentNotifications];
+  }, [liveAnnouncements]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -220,6 +232,83 @@ export default function FamilyDashboard({ initialRole = "student" }) {
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [activeRole, activeMenu]);
+
+  useEffect(() => {
+    if (activeRole !== "parent") {
+      return undefined;
+    }
+
+    let isMounted = true;
+
+    const loadAnnouncements = async () => {
+      try {
+        const response = await fetch("/api/parent/announcements");
+        if (!response.ok) return;
+        const payload = await response.json();
+        if (isMounted) {
+          setLiveAnnouncements(Array.isArray(payload?.announcements) ? payload.announcements : []);
+        }
+      } catch {
+        if (isMounted) {
+          setLiveAnnouncements([]);
+        }
+      }
+    };
+
+    loadAnnouncements();
+    const intervalId = window.setInterval(loadAnnouncements, 45000);
+
+    return () => {
+      isMounted = false;
+      window.clearInterval(intervalId);
+    };
+  }, [activeRole]);
+
+  useEffect(() => {
+    if (activeRole !== "parent") {
+      return undefined;
+    }
+
+    if (typeof window === "undefined" || !("serviceWorker" in navigator)) return undefined;
+    if (window.localStorage.getItem("gs-push-subscribed")) return undefined;
+    if (!("Notification" in window)) return undefined;
+
+    let cancelled = false;
+
+    const subscribeForPush = async () => {
+      const permission = Notification.permission === "granted"
+        ? "granted"
+        : await Notification.requestPermission();
+
+      if (permission !== "granted" || cancelled) return;
+
+      const { publicKey } = await fetch("/api/parent/push-vapid-key").then((res) => res.json());
+      if (!publicKey || cancelled || publicKey === "YOUR_PUBLIC_KEY") return;
+
+      const registration = await navigator.serviceWorker.ready;
+      const existingSubscription = await registration.pushManager.getSubscription();
+      const subscription = existingSubscription || await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicKey),
+      });
+
+      await fetch("/api/parent/push-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(subscription),
+      });
+
+      if (!cancelled) {
+        window.localStorage.setItem("gs-push-subscribed", "1");
+      }
+    };
+
+    subscribeForPush().catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeRole]);
 
   function handleRoleChange(nextRole) {
     setActiveRole(nextRole);
@@ -498,12 +587,13 @@ export default function FamilyDashboard({ initialRole = "student" }) {
         open={parentNotificationsOpen}
         onClose={() => setParentNotificationsOpen(false)}
         lang={parentLanguage}
+        items={parentAnnouncementItems}
       />
     </div>
   );
 }
 
-function NotificationsSheet({ open, onClose, lang }) {
+function NotificationsSheet({ open, onClose, lang, items }) {
   if (!open) return null;
   const t = (text) => translateText(lang, text);
 
@@ -520,13 +610,19 @@ function NotificationsSheet({ open, onClose, lang }) {
           {t("Important notices from the school office, teachers, sports staff, transport and exam cell.")}
         </p>
         <div className="mt-4 max-h-[70vh] space-y-3 overflow-auto">
-          {parentNotifications.map((item) => (
+          {items.map((item) => (
             <article key={item.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
               <p className="text-xs font-semibold text-slate-500">{t(item.sourceRole)} • {t(item.category)}</p>
               <h4 className="mt-2 text-sm font-semibold text-slate-950">{t(item.title)}</h4>
               <p className="mt-1 text-sm text-slate-700">{t(item.message)}</p>
             </article>
           ))}
+
+          {!items.length ? (
+            <article className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-sm text-slate-600">{t("No announcements yet.")}</p>
+            </article>
+          ) : null}
         </div>
       </div>
     </div>

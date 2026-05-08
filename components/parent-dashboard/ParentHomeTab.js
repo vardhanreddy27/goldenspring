@@ -70,6 +70,7 @@ function translateNotificationText(lang, value) {
 }
 
 export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN, showNotificationsFeed = true }) {
+  const [liveAnnouncements, setLiveAnnouncements] = useState([]);
   // Push notification subscription logic
   useEffect(() => {
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
@@ -112,6 +113,31 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN, showNotifica
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadAnnouncements() {
+      try {
+        const response = await fetch("/api/parent/announcements");
+        if (!response.ok || cancelled) return;
+        const payload = await response.json();
+        if (cancelled) return;
+        setLiveAnnouncements(Array.isArray(payload?.announcements) ? payload.announcements : []);
+      } catch {
+        if (!cancelled) setLiveAnnouncements([]);
+      }
+    }
+
+    loadAnnouncements();
+    const intervalId = window.setInterval(loadAnnouncements, 45000);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(intervalId);
+    };
+  }, []);
+
   const t = (text) => translateText(lang, text);
   const tNotification = (text) => translateNotificationText(lang, text);
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -120,28 +146,42 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN, showNotifica
   const [page, setPage] = useState(1);
   const [readIds, setReadIds] = useState(() => new Set());
   const pageSize = 4;
+  const notificationFeed = useMemo(() => {
+    const mappedLiveAnnouncements = liveAnnouncements.map((item) => ({
+      id: `live-${item.id}`,
+      category: "Announcements",
+      sourceRole: "School",
+      sourceName: "School",
+      title: item.title,
+      message: item.message,
+      priority: "medium",
+      date: item.created_at,
+      actionLabel: "View Update",
+    }));
+    return [...mappedLiveAnnouncements, ...parentNotifications];
+  }, [liveAnnouncements]);
 
   const categories = useMemo(
-    () => ["all", ...new Set(parentNotifications.map((notification) => notification.category))],
-    []
+    () => ["all", ...new Set(notificationFeed.map((notification) => notification.category))],
+    [notificationFeed]
   );
 
   const sources = useMemo(
-    () => ["all", ...new Set(parentNotifications.map((notification) => notification.sourceRole))],
-    []
+    () => ["all", ...new Set(notificationFeed.map((notification) => notification.sourceRole))],
+    [notificationFeed]
   );
 
   const filteredNotifications = useMemo(() => {
-    return parentNotifications
+    return notificationFeed
       .filter((notification) => (categoryFilter === "all" ? true : notification.category === categoryFilter))
       .filter((notification) => (sourceFilter === "all" ? true : notification.sourceRole === sourceFilter))
       .filter((notification) => (priorityFilter === "all" ? true : notification.priority === priorityFilter))
       .sort((a, b) => new Date(b.date) - new Date(a.date));
-  }, [categoryFilter, sourceFilter, priorityFilter]);
+  }, [categoryFilter, sourceFilter, priorityFilter, notificationFeed]);
 
   const totalPages = Math.max(1, Math.ceil(filteredNotifications.length / pageSize));
   const paginatedNotifications = filteredNotifications.slice((page - 1) * pageSize, page * pageSize);
-  const unreadCount = parentNotifications.filter((notification) => !readIds.has(notification.id)).length;
+  const unreadCount = notificationFeed.filter((notification) => !readIds.has(notification.id)).length;
 
   const weakSubjectItems = [
     { subject: t("Maths"), score: 52, tip: t("Revise formulas and solve 5 mixed problems daily.") },
@@ -365,7 +405,7 @@ export default function ParentHomeTab({ lang = PARENT_LANGUAGES.EN, showNotifica
           </div>
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <span className="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-700 shadow-sm">
-              {t("Total")}: {parentNotifications.length}
+              {t("Total")}: {notificationFeed.length}
             </span>
             <span className="rounded-full bg-[#fff6e6] px-3 py-1 font-semibold text-[#9a6b12] shadow-sm">
               {t("High")}: {unreadCount}

@@ -39,12 +39,30 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: error.message || "VAPID keys are not configured." });
   }
 
+  let sql;
   let subscriptions = [];
+  let announcement = null;
   try {
-    const sql = getSqlClient();
+    sql = getSqlClient();
+    await sql`
+      CREATE TABLE IF NOT EXISTS admin_announcements (
+        id BIGSERIAL PRIMARY KEY,
+        title TEXT NOT NULL,
+        message TEXT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `;
+
+    const inserted = await sql`
+      INSERT INTO admin_announcements (title, message)
+      VALUES (${title.trim()}, ${message.trim()})
+      RETURNING id, title, message, created_at
+    `;
+    announcement = inserted?.[0] || null;
+
     subscriptions = await sql`SELECT endpoint, p256dh, auth FROM push_subscriptions`;
   } catch (e) {
-    // If DB isn't available or no subscriptions, continue with empty list
+    // If DB isn't available, continue with push send attempt against empty subscriptions.
     subscriptions = [];
   }
 
@@ -66,5 +84,14 @@ export default async function handler(req, res) {
     })
   );
 
-  res.status(200).json({ sent: results.length, results });
+  const successful = results.filter((item) => item.success).length;
+  const failed = results.length - successful;
+
+  res.status(200).json({
+    attempted: results.length,
+    sent: successful,
+    failed,
+    announcement,
+    results,
+  });
 }

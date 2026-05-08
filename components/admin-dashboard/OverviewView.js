@@ -522,6 +522,10 @@ function AnnouncementBoard() {
                   throw new Error(payload?.error || "Failed to send push notification.");
                 }
 
+                const attempted = Number(payload?.attempted || 0);
+                const sent = Number(payload?.sent || 0);
+                const failed = Number(payload?.failed || 0);
+
                 setAnnouncements((prev) => [
                   {
                     id: `draft-${Date.now()}`,
@@ -537,7 +541,14 @@ function AnnouncementBoard() {
                 ]);
                 setDraftTitle("");
                 setDraftMessage("");
-                alert("Announcement sent as push notification to parents.");
+
+                if (attempted === 0) {
+                  alert("Announcement saved, but no parent devices are subscribed yet. Open Parent dashboard once and allow notifications.");
+                } else if (failed > 0) {
+                  alert(`Announcement sent to ${sent}/${attempted} parent devices. ${failed} delivery failures.`);
+                } else {
+                  alert(`Announcement sent to ${sent} parent device${sent === 1 ? "" : "s"}.`);
+                }
               } catch (e) {
                 alert(e.message || "Failed to send push notification.");
               } finally {
