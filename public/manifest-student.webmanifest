@@ -9,5 +9,12 @@
   "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#1f2937",
-  "icons": []
+  "icons": [
+    {
+      "src": "/s.jpg",
+      "sizes": "968x968",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
 }
