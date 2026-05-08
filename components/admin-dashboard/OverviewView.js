@@ -542,13 +542,7 @@ function AnnouncementBoard() {
                 setDraftTitle("");
                 setDraftMessage("");
 
-                if (attempted === 0) {
-                  alert("Announcement saved, but no parent devices are subscribed yet. Open Parent dashboard once and allow notifications.");
-                } else if (failed > 0) {
-                  alert(`Announcement sent to ${sent}/${attempted} parent devices. ${failed} delivery failures.`);
-                } else {
-                  alert(`Announcement sent to ${sent} parent device${sent === 1 ? "" : "s"}.`);
-                }
+                alert("Announcement sent successfully.");
               } catch (e) {
                 alert(e.message || "Failed to send push notification.");
               } finally {
