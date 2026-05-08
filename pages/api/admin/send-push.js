@@ -40,10 +40,23 @@ export default async function handler(req, res) {
   }
 
   let sql;
+  try {
+    sql = getSqlClient();
+  } catch (error) {
+    return res.status(500).json({ error: error.message || "Database is not configured." });
+  }
+
   let subscriptions = [];
   let announcement = null;
   try {
-    sql = getSqlClient();
+    await sql`
+      CREATE TABLE IF NOT EXISTS push_subscriptions (
+        endpoint TEXT PRIMARY KEY,
+        p256dh TEXT NOT NULL,
+        auth TEXT NOT NULL
+      )
+    `;
+
     await sql`
       CREATE TABLE IF NOT EXISTS admin_announcements (
         id BIGSERIAL PRIMARY KEY,
@@ -61,9 +74,8 @@ export default async function handler(req, res) {
     announcement = inserted?.[0] || null;
 
     subscriptions = await sql`SELECT endpoint, p256dh, auth FROM push_subscriptions`;
-  } catch (e) {
-    // If DB isn't available, continue with push send attempt against empty subscriptions.
-    subscriptions = [];
+  } catch (error) {
+    return res.status(500).json({ error: "Failed to save announcement or read subscriptions." });
   }
 
   const payload = JSON.stringify({ title, message });

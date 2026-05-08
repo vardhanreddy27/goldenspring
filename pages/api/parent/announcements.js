@@ -14,6 +14,14 @@ export default async function handler(req, res) {
   try {
     const sql = getSqlClient();
     await sql`
+      CREATE TABLE IF NOT EXISTS push_subscriptions (
+        endpoint TEXT PRIMARY KEY,
+        p256dh TEXT NOT NULL,
+        auth TEXT NOT NULL
+      )
+    `;
+
+    await sql`
       CREATE TABLE IF NOT EXISTS admin_announcements (
         id BIGSERIAL PRIMARY KEY,
         title TEXT NOT NULL,
